@@ -1,0 +1,255 @@
+<!DOCTYPE html>
+<html lang="tr">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Veritabani Goruntuleyici - Kargo Sistemi</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, sans-serif;
+            background: #1a1a2e;
+            color: #fff;
+            padding: 20px;
+        }
+
+        h1 {
+            text-align: center;
+            color: #4a9da4;
+            margin-bottom: 30px;
+        }
+
+        h2 {
+            color: #f59e0b;
+            margin: 20px 0 10px;
+            padding: 10px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 8px;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 30px;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 8px;
+            overflow: hidden;
+        }
+
+        th,
+        td {
+            padding: 12px 15px;
+            text-align: left;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        th {
+            background: rgba(74, 157, 164, 0.3);
+            color: #4a9da4;
+            font-weight: 600;
+        }
+
+        tr:hover {
+            background: rgba(255, 255, 255, 0.05);
+        }
+
+        .back-link {
+            display: inline-block;
+            padding: 10px 20px;
+            background: #4a9da4;
+            color: #fff;
+            text-decoration: none;
+            border-radius: 8px;
+            margin-bottom: 20px;
+        }
+
+        .back-link:hover {
+            background: #3d8b91;
+        }
+
+        .badge {
+            padding: 4px 10px;
+            border-radius: 12px;
+            font-size: 12px;
+        }
+
+        .badge-admin {
+            background: #f59e0b;
+            color: #000;
+        }
+
+        .badge-user {
+            background: #3b82f6;
+        }
+
+        .badge-active {
+            background: #22c55e;
+        }
+
+        .badge-inactive {
+            background: #ef4444;
+        }
+
+        .refresh-btn {
+            float: right;
+            padding: 8px 16px;
+            background: #22c55e;
+            color: #fff;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+        }
+
+        .refresh-btn:hover {
+            background: #16a34a;
+        }
+
+        .loading {
+            text-align: center;
+            padding: 50px;
+            color: #666;
+        }
+
+        .error {
+            background: #ef4444;
+            padding: 20px;
+            border-radius: 8px;
+            text-align: center;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <a href="/" class="back-link">← Ana Sayfaya Don</a>
+        <button class="refresh-btn" onclick="loadData()">Yenile</button>
+        <h1>Veritabani Goruntuleyici</h1>
+
+        <div id="content">
+            <div class="loading">Veriler yukleniyor...</div>
+        </div>
+
+        <p style="text-align:center; margin-top:30px; color:#666;">Kargo Isletme Sistemi - Kocaeli Universitesi Yazlab 3
+        </p>
+    </div>
+
+    <script>
+        async function loadData() {
+            const content = document.getElementById('content');
+            content.innerHTML = '<div class="loading">Veriler yukleniyor...</div>';
+
+            try {
+                const response = await fetch('/api/db-data');
+                const data = await response.json();
+
+                if (!data.success) {
+                    content.innerHTML = '<div class="error">Veritabani baglantisi kurulamadi</div>';
+                    return;
+                }
+
+                let html = '';
+
+
+                html += `<h2>Kullanicilar (${data.users.length} kayit)</h2>`;
+                html += `<table>
+                    <tr><th>ID</th><th>Kullanici Adi</th><th>Rol</th><th>Olusturulma</th></tr>`;
+                data.users.forEach(u => {
+                    html += `<tr>
+                        <td>${u.id}</td>
+                        <td>${u.username}</td>
+                        <td><span class="badge badge-${u.role}">${u.role}</span></td>
+                        <td>${u.created_at}</td>
+                    </tr>`;
+                });
+                html += '</table>';
+
+
+                html += `<h2>Istasyonlar (${data.stations.length} kayit)</h2>`;
+                html += `<table>
+                    <tr><th>ID</th><th>Ad</th><th>Enlem</th><th>Boylam</th><th>Durum</th></tr>`;
+                data.stations.forEach(s => {
+                    const statusClass = s.is_active ? 'badge-active' : 'badge-inactive';
+                    const statusText = s.is_active ? 'Aktif' : 'Pasif';
+                    html += `<tr>
+                        <td>${s.id}</td>
+                        <td>${s.name}</td>
+                        <td>${s.latitude}</td>
+                        <td>${s.longitude}</td>
+                        <td><span class="badge ${statusClass}">${statusText}</span></td>
+                    </tr>`;
+                });
+                html += '</table>';
+
+
+                html += `<h2>Araclar (${data.vehicles.length} kayit)</h2>`;
+                html += `<table>
+                    <tr><th>ID</th><th>Ad</th><th>Kapasite (kg)</th><th>Mevcut Yuk</th><th>Yakit Maliyeti</th><th>Durum</th></tr>`;
+                data.vehicles.forEach(v => {
+                    const statusClass = v.is_available ? 'badge-active' : 'badge-inactive';
+                    const statusText = v.is_available ? 'Musait' : 'Mesgul';
+                    html += `<tr>
+                        <td>${v.id}</td>
+                        <td>${v.name}</td>
+                        <td>${v.capacity}</td>
+                        <td>${v.current_load}</td>
+                        <td>${v.fuel_cost_per_km} TL/km</td>
+                        <td><span class="badge ${statusClass}">${statusText}</span></td>
+                    </tr>`;
+                });
+                html += '</table>';
+
+
+                html += `<h2>Kargolar (Son ${data.cargos.length} kayit)</h2>`;
+                html += `<table>
+                    <tr><th>ID</th><th>Gonderen</th><th>Alici</th><th>Agirlik</th><th>Oncelik</th><th>Durum</th><th>Tarih</th></tr>`;
+                data.cargos.forEach(c => {
+                    html += `<tr>
+                        <td>${c.id}</td>
+                        <td>${c.sender}</td>
+                        <td>${c.receiver}</td>
+                        <td>${c.weight} kg</td>
+                        <td>${c.priority}</td>
+                        <td>${c.status}</td>
+                        <td>${c.created_at}</td>
+                    </tr>`;
+                });
+                html += '</table>';
+
+
+                html += `<h2>Rotalar (Son ${data.routes.length} kayit)</h2>`;
+                html += `<table>
+                    <tr><th>ID</th><th>Arac ID</th><th>Toplam Mesafe</th><th>Toplam Maliyet</th><th>Tarih</th></tr>`;
+                data.routes.forEach(r => {
+                    html += `<tr>
+                        <td>${r.id}</td>
+                        <td>${r.vehicle_id}</td>
+                        <td>${r.total_distance.toFixed(2)} km</td>
+                        <td>${r.total_cost.toFixed(2)} TL</td>
+                        <td>${r.created_at}</td>
+                    </tr>`;
+                });
+                html += '</table>';
+
+                content.innerHTML = html;
+            } catch (err) {
+                content.innerHTML = '<div class="error">Veri yuklenirken hata olustu: ' + err.message + '</div>';
+            }
+        }
+
+
+        loadData();
+    </script>
+</body>
+
+</html>

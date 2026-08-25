@@ -1,0 +1,780 @@
+<!DOCTYPE html>
+<html lang="tr">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kargo Isletme Sistemi</title>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="stylesheet" href="/static/style.css">
+</head>
+
+<body>
+    <div id="loginScreen" class="login-screen">
+        <div class="login-center">
+            <div class="login-container">
+                <img src="/static/kou-logo.jpg" alt="Kocaeli Universitesi" class="kou-logo">
+
+                <p class="login-subtitle">YAZILIM LAB. | 2025-2026 GUZ - PROJE III</p>
+                <h1 class="login-title">Kargo Isletme Sistemi</h1>
+
+                <div class="login-box">
+                    <div class="login-tabs">
+                        <button type="button" class="login-tab active" data-tab="login">
+                            <i class="fas fa-sign-in-alt"></i> Giris Yap
+                        </button>
+                        <button type="button" class="login-tab" data-tab="register">
+                            <i class="fas fa-user-plus"></i> Kayit Ol
+                        </button>
+                    </div>
+
+                    <form id="loginForm" class="login-form">
+                        <div class="form-group">
+                            <label>Kullanici Adi</label>
+                            <div class="input-wrapper">
+                                <i class="fas fa-user"></i>
+                                <input type="text" id="loginUsername" required placeholder="Kullanici Adi">
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label>Sifre</label>
+                            <div class="input-wrapper">
+                                <i class="fas fa-lock"></i>
+                                <input type="password" id="loginPassword" required placeholder="Sifre">
+                                <button type="button" class="toggle-pass" onclick="togglePassword('loginPassword')">
+                                    <i class="fas fa-eye-slash"></i>
+                                </button>
+                            </div>
+                        </div>
+
+                        <button type="submit" class="btn-submit">Giris Yap</button>
+
+                        <div class="forgot-password-link">
+                            <a href="#" onclick="showForgotPassword(); return false;">
+                                <i class="fas fa-key"></i> Sifremi Unuttum
+                            </a>
+                        </div>
+
+                        <div id="loginError" class="error-message" style="display:none;">
+                            <i class="fas fa-exclamation-circle"></i>
+                            <span>Kullanici adi veya sifre hatali!</span>
+                        </div>
+                    </form>
+
+                    <form id="forgotPasswordForm" class="login-form" style="display:none;">
+                        <div class="form-header">
+                            <h3><i class="fas fa-unlock-alt"></i> Sifre Sifirlama</h3>
+                            <p>E-posta adresinize bir dogrulama kodu gonderecegiz.</p>
+                        </div>
+
+                        <div class="form-group">
+                            <label>E-posta Adresi</label>
+                            <div class="input-wrapper">
+                                <i class="fas fa-envelope"></i>
+                                <input type="email" id="forgotEmail" required placeholder="E-posta adresinizi girin">
+                            </div>
+                        </div>
+
+                        <button type="submit" class="btn-submit btn-send-code">
+                            <i class="fas fa-paper-plane"></i> Kod Gonder
+                        </button>
+
+                        <div id="forgotError" class="error-message" style="display:none;">
+                            <i class="fas fa-exclamation-circle"></i>
+                            <span>Hata!</span>
+                        </div>
+
+                        <div id="forgotSuccess" class="success-message" style="display:none;">
+                            <i class="fas fa-check-circle"></i>
+                            <span>Kod gonderildi!</span>
+                        </div>
+
+                        <div class="back-to-login">
+                            <a href="#" onclick="hideForgotPassword(); return false;">
+                                <i class="fas fa-arrow-left"></i> Giris Ekranina Don
+                            </a>
+                        </div>
+                    </form>
+
+                    <form id="resetPasswordForm" class="login-form" style="display:none;">
+                        <div class="form-header">
+                            <h3><i class="fas fa-key"></i> Yeni Sifre Belirle</h3>
+                            <p>E-postaniza gelen kodu girin ve yeni sifrenizi belirleyin.</p>
+                        </div>
+
+                        <div class="form-group">
+                            <label>Dogrulama Kodu</label>
+                            <div class="input-wrapper">
+                                <i class="fas fa-hashtag"></i>
+                                <input type="text" id="resetCode" required placeholder="6 haneli kod" maxlength="6">
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label>Yeni Sifre</label>
+                            <div class="input-wrapper">
+                                <i class="fas fa-lock"></i>
+                                <input type="password" id="newPassword" required placeholder="Yeni sifrenizi girin">
+                                <button type="button" class="toggle-pass" onclick="togglePassword('newPassword')">
+                                    <i class="fas fa-eye-slash"></i>
+                                </button>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label>Yeni Sifre Tekrar</label>
+                            <div class="input-wrapper">
+                                <i class="fas fa-lock"></i>
+                                <input type="password" id="newPasswordConfirm" required
+                                    placeholder="Sifreyi tekrar girin">
+                            </div>
+                        </div>
+
+                        <button type="submit" class="btn-submit btn-reset-password">
+                            <i class="fas fa-save"></i> Sifreyi Degistir
+                        </button>
+
+                        <div id="resetError" class="error-message" style="display:none;">
+                            <i class="fas fa-exclamation-circle"></i>
+                            <span>Hata!</span>
+                        </div>
+
+                        <div id="resetSuccess" class="success-message" style="display:none;">
+                            <i class="fas fa-check-circle"></i>
+                            <span>Sifre degistirildi!</span>
+                        </div>
+
+                        <div class="back-to-login">
+                            <a href="#" onclick="hideForgotPassword(); return false;">
+                                <i class="fas fa-arrow-left"></i> Giris Ekranina Don
+                            </a>
+                        </div>
+                    </form>
+
+                    <form id="registerForm" class="login-form" style="display:none;">
+                        <div class="form-group">
+                            <label>Kullanici Adi</label>
+                            <div class="input-wrapper">
+                                <i class="fas fa-user"></i>
+                                <input type="text" id="regUsername" required placeholder="Kullanici adi belirleyin">
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label>E-posta Adresi</label>
+                            <div class="input-wrapper">
+                                <i class="fas fa-envelope"></i>
+                                <input type="email" id="regEmail" required placeholder="E-posta adresinizi girin">
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label>Sifre</label>
+                            <div class="input-wrapper">
+                                <i class="fas fa-lock"></i>
+                                <input type="password" id="regPassword" required placeholder="Sifre belirleyin">
+                                <button type="button" class="toggle-pass" onclick="togglePassword('regPassword')">
+                                    <i class="fas fa-eye-slash"></i>
+                                </button>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label>Sifre Tekrar</label>
+                            <div class="input-wrapper">
+                                <i class="fas fa-lock"></i>
+                                <input type="password" id="regPasswordConfirm" required
+                                    placeholder="Sifreyi tekrar girin">
+                            </div>
+                        </div>
+
+                        <button type="submit" class="btn-submit btn-register">
+                            <i class="fas fa-user-plus"></i> Kayit Ol
+                        </button>
+
+                        <div id="registerError" class="error-message" style="display:none;">
+                            <i class="fas fa-exclamation-circle"></i>
+                            <span>Kayit hatasi!</span>
+                        </div>
+
+                        <div id="registerSuccess" class="success-message" style="display:none;">
+                            <i class="fas fa-check-circle"></i>
+                            <span>Kayit basarili! Giris yapabilirsiniz.</span>
+                        </div>
+                    </form>
+
+                    <div class="demo-accounts">
+                        <div class="demo-title"><i class="fas fa-info-circle"></i> Demo Hesaplar</div>
+                        <div class="demo-row">
+                            <span class="demo-badge admin"><i class="fas fa-crown"></i> Admin</span>
+                            <code>admin</code> / <code>admin123</code>
+                        </div>
+                        <div class="demo-row">
+                            <span class="demo-badge user"><i class="fas fa-user"></i> Kullanici</span>
+                            <code>user</code> / <code>user123</code>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="app" style="display:none;">
+        <aside class="sidebar">
+            <div class="sidebar-header">
+                <i class="fas fa-truck"></i>
+                <span>Kargo Sistemi</span>
+            </div>
+            <nav class="sidebar-nav">
+                <a href="#" class="nav-item active" data-page="dashboard">
+                    <i class="fas fa-tachometer-alt"></i> Dashboard
+                </a>
+                <a href="#" class="nav-item" data-page="map">
+                    <i class="fas fa-map-marked-alt"></i> Harita
+                </a>
+                <a href="#" class="nav-item" data-page="cargos">
+                    <i class="fas fa-boxes"></i> Kargolar
+                </a>
+                <a href="#" class="nav-item user-only" data-page="myroute">
+                    <i class="fas fa-map-marker-alt"></i> Kargom Nerede?
+                </a>
+                <a href="#" class="nav-item admin-only" data-page="stations">
+                    <i class="fas fa-warehouse"></i> Istasyonlar
+                </a>
+                <a href="#" class="nav-item admin-only" data-page="vehicles">
+                    <i class="fas fa-truck-moving"></i> Araclar
+                </a>
+                <a href="#" class="nav-item admin-only" data-page="optimize">
+                    <i class="fas fa-route"></i> Rota Planla
+                </a>
+                <a href="#" class="nav-item" data-page="routes">
+                    <i class="fas fa-history"></i> Rotalar
+                </a>
+                <a href="#" class="nav-item admin-only" data-page="settings">
+                    <i class="fas fa-cog"></i> Ayarlar
+                </a>
+                <a href="#" class="nav-item admin-only" data-page="database">
+                    <i class="fas fa-database"></i> Veritabani
+                </a>
+            </nav>
+            <div class="sidebar-footer">
+                <div class="user-info">
+                    <i class="fas fa-user-circle"></i>
+                    <span id="currentUser">-</span>
+                </div>
+                <button onclick="logout()" class="btn btn-danger btn-sm">
+                    <i class="fas fa-sign-out-alt"></i> Cikis
+                </button>
+            </div>
+        </aside>
+
+        <main class="main-content">
+            <section id="dashboard" class="page active">
+                <div class="page-header">
+                    <h1><i class="fas fa-tachometer-alt"></i> Dashboard</h1>
+                </div>
+                <div class="stats-grid admin-only">
+                    <div class="stat-card">
+                        <div class="stat-icon bg-primary"><i class="fas fa-boxes"></i></div>
+                        <div class="stat-info">
+                            <h3 id="statTotalCargos">0</h3>
+                            <p>Toplam Kargo</p>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon bg-warning"><i class="fas fa-clock"></i></div>
+                        <div class="stat-info">
+                            <h3 id="statPendingCargos">0</h3>
+                            <p>Bekleyen Kargo</p>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon bg-success"><i class="fas fa-route"></i></div>
+                        <div class="stat-info">
+                            <h3 id="statTotalRoutes">0</h3>
+                            <p>Toplam Rota</p>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon bg-info"><i class="fas fa-road"></i></div>
+                        <div class="stat-info">
+                            <h3 id="statTotalDistance">0 km</h3>
+                            <p>Toplam Mesafe</p>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon bg-danger"><i class="fas fa-money-bill-wave"></i></div>
+                        <div class="stat-info">
+                            <h3 id="statTotalCost">0 TL</h3>
+                            <p>Toplam Maliyet</p>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon bg-secondary"><i class="fas fa-weight-hanging"></i></div>
+                        <div class="stat-info">
+                            <h3 id="statTotalWeight">0 kg</h3>
+                            <p>Toplam Agirlik</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="charts-row admin-only" style="display: flex; gap: 20px; flex-wrap: wrap;">
+                    <div class="chart-card" style="flex: 1; min-width: 280px; max-height: 280px;">
+                        <h3 style="font-size: 14px; margin-bottom: 10px;"><i class="fas fa-chart-bar"></i> Istasyon
+                            Bazli Kargo Dagilimi</h3>
+                        <canvas id="stationChart" style="max-height: 220px;"></canvas>
+                    </div>
+                    <div class="chart-card" style="flex: 1; min-width: 280px; max-height: 280px;">
+                        <h3 style="font-size: 14px; margin-bottom: 10px;"><i class="fas fa-chart-pie"></i> Agirlik
+                            Dagilimi</h3>
+                        <canvas id="weightChart" style="max-height: 220px;"></canvas>
+                    </div>
+                </div>
+                <div class="user-dashboard-info" id="userDashboardInfo">
+                    <div class="welcome-card">
+                        <h2><i class="fas fa-user"></i> Hosgeldiniz!</h2>
+                        <p>Kargolarinizi takip etmek icin soldaki menuyu kullanabilirsiniz:</p>
+                        <ul>
+                            <li><i class="fas fa-boxes"></i> <strong>Kargolar:</strong> Kargolarinizi goruntuleyebilir
+                                ve yeni kargo ekleyebilirsiniz</li>
+                            <li><i class="fas fa-map-marker-alt"></i> <strong>Kargom Nerede?:</strong> Kargolarinizin
+                                hangi rotada oldugunu gorebilirsiniz</li>
+                            <li><i class="fas fa-route"></i> <strong>Rotalar:</strong> Tum rotalari inceleyebilirsiniz
+                            </li>
+                            <li><i class="fas fa-map"></i> <strong>Harita:</strong> Istasyonlari haritada gorebilirsiniz
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </section>
+
+            <section id="map" class="page">
+                <div class="page-header">
+                    <h1><i class="fas fa-map-marked-alt"></i> Harita</h1>
+                    <div class="header-actions">
+                        <button onclick="refreshMap()" class="btn btn-primary">
+                            <i class="fas fa-sync"></i> Yenile
+                        </button>
+                    </div>
+                </div>
+                <div class="map-container">
+                    <div id="mainMap"></div>
+                    <div class="map-legend">
+                        <h4>Gosterim</h4>
+                        <div class="legend-item">
+                            <span class="marker-icon station"></span> Istasyon (Ilce)
+                        </div>
+                        <div class="legend-item">
+                            <span class="marker-icon depot"></span> Varis Noktasi (Umuttepe KOU)
+                        </div>
+                        <div class="legend-item">
+                            <span class="route-line"></span> Rota
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <section id="cargos" class="page">
+                <div class="page-header">
+                    <h1><i class="fas fa-boxes"></i> Kargolar</h1>
+                    <div class="header-actions">
+                        <button onclick="showCargoModal()" class="btn btn-success">
+                            <i class="fas fa-plus"></i> Yeni Kargo
+                        </button>
+                    </div>
+                </div>
+                <div class="table-container">
+                    <table class="data-table">
+                        <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>Istasyon</th>
+                                <th>Agirlik (kg)</th>
+                                <th>Durum</th>
+                                <th>Teslim Tarihi</th>
+                                <th>Islem</th>
+                            </tr>
+                        </thead>
+                        <tbody id="cargosTable"></tbody>
+                    </table>
+                </div>
+            </section>
+
+            <section id="myroute" class="page user-only">
+                <div class="page-header">
+                    <h1><i class="fas fa-map-marker-alt"></i> Kargom Nerede?</h1>
+                </div>
+                <div class="card">
+                    <h3><i class="fas fa-truck"></i> Kargonuzun Rota Bilgisi</h3>
+                    <div id="myRouteInfo">
+                        <p class="loading"><i class="fas fa-spinner fa-spin"></i> Yukleniyor...</p>
+                    </div>
+                </div>
+                <div class="card">
+                    <h3><i class="fas fa-map"></i> Rota Haritasi</h3>
+                    <div id="myRouteMap" style="height: 400px;"></div>
+                </div>
+            </section>
+
+            <section id="stations" class="page admin-only">
+                <div class="page-header">
+                    <h1><i class="fas fa-warehouse"></i> Istasyonlar</h1>
+                    <div class="header-actions">
+                        <button onclick="showStationModal()" class="btn btn-success">
+                            <i class="fas fa-plus"></i> Yeni Istasyon
+                        </button>
+                    </div>
+                </div>
+                <div class="table-container">
+                    <table class="data-table">
+                        <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>Istasyon Adi</th>
+                                <th>Enlem</th>
+                                <th>Boylam</th>
+                                <th>Islem</th>
+                            </tr>
+                        </thead>
+                        <tbody id="stationsTable"></tbody>
+                    </table>
+                </div>
+            </section>
+
+            <section id="vehicles" class="page admin-only">
+                <div class="page-header">
+                    <h1><i class="fas fa-truck-moving"></i> Araclar</h1>
+                    <div class="header-actions">
+                        <button onclick="showVehicleModal()" class="btn btn-success">
+                            <i class="fas fa-plus"></i> Yeni Arac
+                        </button>
+                    </div>
+                </div>
+                <div class="table-container">
+                    <table class="data-table">
+                        <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>Arac Adi</th>
+                                <th>Kapasite (kg)</th>
+                                <th>Kiralama Maliyeti</th>
+                                <th>Yakit Tuketimi</th>
+                                <th>Durum</th>
+                                <th>Islem</th>
+                            </tr>
+                        </thead>
+                        <tbody id="vehiclesTable"></tbody>
+                    </table>
+                </div>
+            </section>
+
+            <section id="optimize" class="page admin-only">
+                <div class="page-header">
+                    <h1><i class="fas fa-route"></i> Rota Planlamasi</h1>
+                </div>
+
+                <div class="card">
+                    <h3><i class="fas fa-clipboard-list"></i> Bekleyen Kargolar <small>(Planlamak istediklerini
+                            sec)</small></h3>
+                    <div id="pendingCargosSummary">
+                        <p class="text-muted">Yükleniyor...</p>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <h3><i class="fas fa-cogs"></i> Optimizasyon</h3>
+                    <div class="optimize-options">
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label>Problem Tipi:</label>
+                                <select id="problemType" class="form-control">
+                                    <option value="limited">Belirli Sayida Arac</option>
+                                    <option value="unlimited">Sinirsiz Arac</option>
+                                </select>
+                            </div>
+
+                            <div class="form-group">
+                                <label>Teslim Tarihi:</label>
+                                <input type="date" id="deliveryDate" class="form-control">
+                                <small class="text-muted">Kullaniciya gosterilecek teslim tarihi</small>
+                                <script>
+                                    document.addEventListener('DOMContentLoaded', function () {
+                                        const dateInput = document.getElementById('deliveryDate');
+                                        if (dateInput) {
+                                            const today = new Date().toISOString().split('T')[0];
+                                            dateInput.min = today;
+                                            dateInput.value = today;
+                                        }
+                                    });
+                                </script>
+                            </div>
+                        </div>
+                        <div class="button-row">
+                            <button onclick="runOptimizationSelected()" class="btn btn-primary btn-lg">
+                                <i class="fas fa-play"></i> Secilenleri Planla
+                            </button>
+                            <button onclick="compareSelectedCargos()" class="btn btn-info btn-lg">
+                                <i class="fas fa-chart-bar"></i> Secilenleri Karsilastir
+                            </button>
+                        </div>
+                        <div class="form-row mt-3" style="align-items: flex-end;">
+                            <div class="form-group">
+                                <label>Test Senaryosu:</label>
+                                <select id="scenarioSelect" class="form-control">
+                                    <option value="1">Senaryo 1</option>
+                                    <option value="2">Senaryo 2</option>
+                                    <option value="3">Senaryo 3</option>
+                                    <option value="4">Senaryo 4</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <button onclick="compareSelectedScenario()" class="btn btn-secondary btn-lg">
+                                    <i class="fas fa-flask"></i> Senaryoyu Karsilastir
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="comparisonResults" class="card" style="display:none;">
+                    <h3><i class="fas fa-table"></i> Mod Karsilastirmasi</h3>
+                    <div id="comparisonTable"></div>
+                </div>
+
+
+                <div id="optimizationResults" class="card" style="display:none;">
+                    <h3><i class="fas fa-chart-line"></i> Optimizasyon Sonuclari</h3>
+                    <div class="results-summary">
+                        <div class="result-item">
+                            <span class="label">Toplam Maliyet:</span>
+                            <span id="resultTotalCost" class="value">-</span>
+                        </div>
+                        <div class="result-item" id="fuelCostInfo" style="display:none;">
+                            <span class="label">Yakit Maliyeti:</span>
+                            <span id="resultFuelCost" class="value">-</span>
+                        </div>
+                        <div class="result-item">
+                            <span class="label">Toplam Kargo:</span>
+                            <span id="resultTotalCargos" class="value">-</span>
+                        </div>
+                        <div class="result-item">
+                            <span class="label">Toplam Agirlik:</span>
+                            <span id="resultTotalWeight" class="value">-</span>
+                        </div>
+                        <div class="result-item" id="rentedInfo" style="display:none;">
+                            <span class="label">Kiralanan Arac:</span>
+                            <span id="resultRentedVehicles" class="value">-</span>
+                        </div>
+                    </div>
+                    <div id="routeDetails"></div>
+                    <div id="optimizeMap" style="height: 400px; margin-top: 20px;"></div>
+                </div>
+            </section>
+
+            <section id="routes" class="page">
+                <div class="page-header">
+                    <h1><i class="fas fa-history"></i> Rota Gecmisi</h1>
+                </div>
+                <div class="alert alert-info user-only" style="margin-bottom: 20px;">
+                    <i class="fas fa-info-circle"></i> Sadece kendi kargolarinizin bulundugu rotalar gosterilmektedir.
+                    Diger araclarin rotalarini goremezsiniz.
+                </div>
+                <div class="table-container">
+                    <table class="data-table">
+                        <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>Arac</th>
+                                <th>Guzergah</th>
+                                <th>Mesafe (km)</th>
+                                <th>Maliyet</th>
+                                <th>Agirlik (kg)</th>
+                                <th>Kargo Sayisi</th>
+                                <th>Kargo ID</th>
+                                <th>Tarih</th>
+                                <th>Islem</th>
+                            </tr>
+                        </thead>
+                        <tbody id="routesTable"></tbody>
+                    </table>
+                </div>
+                <div id="routeMapContainer" style="display:none;">
+                    <h3>Rota Haritasi</h3>
+                    <div id="routeDetailMap" style="height: 400px;"></div>
+                </div>
+            </section>
+
+            <section id="settings" class="page admin-only">
+                <div class="page-header">
+                    <h1><i class="fas fa-cog"></i> Sistem Ayarlari</h1>
+                </div>
+                <div class="card">
+                    <h3><i class="fas fa-sliders-h"></i> Parametreler</h3>
+                    <form id="settingsForm">
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label>Km Basina Maliyet (birim)</label>
+                                <input type="number" id="costPerKm" step="0.1" class="form-control">
+                            </div>
+                            <div class="form-group">
+                                <label>Arac Kiralama Maliyeti (birim)</label>
+                                <input type="number" id="rentalCost" class="form-control">
+                            </div>
+                            <div class="form-group">
+                                <label>Kiralik Arac Kapasitesi (kg)</label>
+                                <input type="number" id="rentalCapacity" class="form-control">
+                            </div>
+                        </div>
+                        <button type="submit" class="btn btn-primary">
+                            <i class="fas fa-save"></i> Kaydet
+                        </button>
+                    </form>
+                </div>
+            </section>
+
+            <section id="database" class="page admin-only">
+                <div class="page-header">
+                    <h1><i class="fas fa-database"></i> Veritabani Yonetimi</h1>
+                </div>
+
+                <div class="card">
+                    <h3><i class="fas fa-users"></i> Kayitli Kullanicilar</h3>
+                    <div class="table-container">
+                        <table class="data-table">
+                            <thead>
+                                <tr>
+                                    <th>ID</th>
+                                    <th>Kullanici Adi</th>
+                                    <th>E-posta</th>
+                                    <th>Sifre (Hash)</th>
+                                    <th>Rol</th>
+                                    <th>Kayit Tarihi</th>
+                                    <th>Islem</th>
+                                </tr>
+                            </thead>
+                            <tbody id="usersTable"></tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <div class="card" style="margin-top: 20px;">
+                    <h3><i class="fas fa-chart-bar"></i> Veritabani Istatistikleri</h3>
+                    <div class="stats-grid" id="dbStats">
+                        <div class="stat-item">
+                            <i class="fas fa-users"></i>
+                            <span class="stat-value" id="totalUsers">0</span>
+                            <span class="stat-label">Toplam Kullanici</span>
+                        </div>
+                        <div class="stat-item">
+                            <i class="fas fa-user-shield"></i>
+                            <span class="stat-value" id="totalAdmins">0</span>
+                            <span class="stat-label">Admin Sayisi</span>
+                        </div>
+                        <div class="stat-item">
+                            <i class="fas fa-warehouse"></i>
+                            <span class="stat-value" id="totalStations">0</span>
+                            <span class="stat-label">Istasyon Sayisi</span>
+                        </div>
+                        <div class="stat-item">
+                            <i class="fas fa-boxes"></i>
+                            <span class="stat-value" id="totalCargosDb">0</span>
+                            <span class="stat-label">Kargo Sayisi</span>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <div id="cargoModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3><i class="fas fa-box"></i> Yeni Kargo Ekle</h3>
+                <button onclick="closeModal('cargoModal')" class="close-btn">&times;</button>
+            </div>
+            <form id="cargoForm">
+                <div class="form-group">
+                    <label>Istasyon</label>
+                    <select id="cargoStation" required class="form-control"></select>
+                </div>
+                <div class="form-group">
+                    <label>Agirlik (kg)</label>
+                    <input type="number" id="cargoWeight" required min="1" class="form-control">
+                </div>
+                <button type="submit" class="btn btn-success btn-block">
+                    <i class="fas fa-plus"></i> Ekle
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <div id="stationModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3><i class="fas fa-warehouse"></i> Yeni Istasyon Ekle</h3>
+                <button onclick="closeModal('stationModal')" class="close-btn">&times;</button>
+            </div>
+            <form id="stationForm">
+                <div class="form-group">
+                    <label>Istasyon Adi</label>
+                    <input type="text" id="stationName" required class="form-control">
+                </div>
+                <div class="form-group">
+                    <label>Enlem (Latitude)</label>
+                    <input type="number" id="stationLat" required step="0.0001" class="form-control">
+                </div>
+                <div class="form-group">
+                    <label>Boylam (Longitude)</label>
+                    <input type="number" id="stationLon" required step="0.0001" class="form-control">
+                </div>
+                <button type="submit" class="btn btn-success btn-block">
+                    <i class="fas fa-plus"></i> Ekle
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <div id="vehicleModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3><i class="fas fa-truck"></i> Yeni Arac Ekle</h3>
+                <button onclick="closeModal('vehicleModal')" class="close-btn">&times;</button>
+            </div>
+            <form id="vehicleForm">
+                <div class="form-group">
+                    <label>Arac Adi</label>
+                    <input type="text" id="vehicleName" required class="form-control">
+                </div>
+                <div class="form-group">
+                    <label>Kapasite (kg)</label>
+                    <input type="number" id="vehicleCapacity" required class="form-control">
+                </div>
+                <div class="form-group">
+                    <label>Yakit Tuketimi (lt/km)</label>
+                    <input type="number" id="vehicleFuel" step="0.01" value="0.1" class="form-control">
+                </div>
+                <button type="submit" class="btn btn-success btn-block">
+                    <i class="fas fa-plus"></i> Ekle
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <div id="routeModal" class="modal">
+        <div class="modal-content modal-xl">
+            <div class="modal-header">
+                <h3><i class="fas fa-route"></i> Rota Detayi</h3>
+                <button onclick="closeModal('routeModal')" class="close-btn">&times;</button>
+            </div>
+            <div id="routeModalContent" style="padding: 15px; font-size: 16px;"></div>
+            <div id="routeModalMap" style="height: 550px; margin: 10px;"></div>
+        </div>
+    </div>
+
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    <script src="/static/app.js"></script>
+</body>
+
+</html>
