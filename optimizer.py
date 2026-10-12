@@ -346,14 +346,20 @@ class RouteOptimizer:
             full_route.append(depot_id)
 
         dist = round(dist, 2)
-        fuel_liters_100km = vehicle.get('fuel_liters_per_100km', 10.0)
+        base_fuel_100km = float(vehicle.get('fuel_liters_per_100km', 10.0))
         fuel_type = vehicle.get('fuel_type', 'diesel')
         fuel_prices = self.params.get('fuel_prices', {})
         unit_fuel_price = fuel_prices.get('gasoline_per_liter', 85.50) if fuel_type == 'gasoline' else fuel_prices.get('diesel_per_liter', 92.50)
 
-        # 1. Gerçek Akaryakıt Tüketimi (Litre ve TL)
-        fuel_liters = round((dist / 100.0) * fuel_liters_100km, 2)
-        fuel_cost = round(dist * vehicle.get('fuel_consumption', (fuel_liters_100km * unit_fuel_price / 100.0)), 2)
+        # 1. Taşınan Kargo Ağırlığına Göre Dinamik Yakıt Tüketimi (Payload Load Factor)
+        # Araç boşken baz tüketim geçerlidir; taşınan kargo ağırlığı kapasiteye yaklaştıkça tüketim %35'e kadar artar
+        carried_weight = sum(c['weight'] for c in selected_cargos)
+        v_capacity = max(float(vehicle.get('capacity', 1000)), 100.0)
+        load_ratio = min(1.0, carried_weight / v_capacity)
+
+        effective_consumption_100km = round(base_fuel_100km * (1.0 + 0.35 * load_ratio), 2)
+        fuel_liters = round((dist / 100.0) * effective_consumption_100km, 2)
+        fuel_cost = round(fuel_liters * unit_fuel_price, 2)
 
         # 2. Güzergah Tercihi (D-100 / E-5 Devlet Yolu vs O-4 / KMO Otoyol)
         road_type = self.params.get('road_type', 'otoyol')
@@ -384,9 +390,10 @@ class RouteOptimizer:
         rental_cost = vehicle.get('rental_cost', 0.0) if not vehicle.get('is_owned', True) else 0.0
         total_cost = round(fuel_cost + toll_cost + rental_cost + driver_cost, 2)
 
-        # 6. Karbon Ayak İzi (kg CO2)
-        co2_g_km = vehicle.get('co2_g_per_km', 250.0)
-        co2_emission_kg = round((dist * co2_g_km) / 1000.0, 2)
+        # 6. Karbon Ayak İzi (kg CO2) - Ağırlığa ve araç katsayısına göre dinamik
+        base_co2_g_km = float(vehicle.get('co2_g_per_km', 250.0))
+        effective_co2_g_km = round(base_co2_g_km * (1.0 + 0.35 * load_ratio), 1)
+        co2_emission_kg = round((dist * effective_co2_g_km) / 1000.0, 2)
 
         # İstasyon bazlı kargo detayları
         station_cargo_details = []

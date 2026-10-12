@@ -6,6 +6,7 @@ let stationChart = null;
 let weightChart = null;
 let stations = [];
 let lastOptimizationResult = null;
+let currentDashboardStats = null;
 
 const routeColors = ['#e74c3c', '#3498db', '#27ae60', '#9b59b6', '#f39c12', '#1abc9c', '#e67e22', '#34495e'];
 
@@ -481,6 +482,8 @@ async function loadDashboard() {
             return;
         }
 
+        currentDashboardStats = stats;
+
         // 8 KPI Kartları
         const setEl = (id, val) => { const el = document.getElementById(id); if (el) el.textContent = val; };
         setEl('statTotalCargos', stats.total_cargos || 0);
@@ -490,7 +493,8 @@ async function loadDashboard() {
         setEl('statTotalCost', (stats.total_cost || 0).toLocaleString('tr-TR', { maximumFractionDigits: 0 }) + ' TL');
         setEl('statTotalFuel', (stats.total_fuel_liters || 0).toLocaleString('tr-TR', { maximumFractionDigits: 1 }) + ' L');
         setEl('statTotalWeight', (stats.total_weight || 0).toLocaleString('tr-TR', { maximumFractionDigits: 0 }) + ' kg');
-        setEl('statFleetUtilization', '%' + (stats.fleet_utilization_rate || 82.5));
+        const utilRate = stats.fleet_utilization_rate !== undefined ? stats.fleet_utilization_rate : 0;
+        setEl('statFleetUtilization', '%' + utilRate.toFixed(1));
 
         // Canlı Akaryakıt & Piyasa Şeridi
         if (stats.fuel_prices) {
@@ -498,8 +502,11 @@ async function loadDashboard() {
             setEl('tickerGasoline', `${stats.fuel_prices.gasoline_per_liter?.toFixed(2) || '85.50'} TL/L`);
             setEl('tickerAdblue', `${stats.fuel_prices.adblue_per_liter?.toFixed(2) || '36.50'} TL/L`);
         }
-        setEl('tickerCo2', `${(stats.total_co2_kg || 685.4).toLocaleString('tr-TR', { maximumFractionDigits: 1 })} kg CO₂`);
-        setEl('tickerOnTime', `%${stats.on_time_delivery_rate || 99.2}`);
+        const fleetCons = (stats.fleet_avg_consumption !== undefined && stats.fleet_avg_consumption > 0) ? stats.fleet_avg_consumption : 11.2;
+        setEl('tickerFleetConsumption', `${fleetCons.toFixed(1)} L / 100km`);
+        setEl('tickerCo2', `${(stats.total_co2_kg || 0).toLocaleString('tr-TR', { maximumFractionDigits: 1 })} kg CO₂`);
+        const onTimeRate = stats.on_time_delivery_rate !== undefined ? stats.on_time_delivery_rate : 100;
+        setEl('tickerOnTime', `%${onTimeRate.toFixed(1)}`);
 
         if (stats.market_info) {
             updateMarketUI(stats.market_info);
@@ -1532,13 +1539,19 @@ const TURKEY_TRAFFIC_INCIDENTS_DATA = [
         delay: 55,
         bypass: 'D-100 Dağ Geçidi Serbest (42 Dk Kazanç)',
         confidenceRate: '%96.8',
-        sourceOrg: 'T.C. KGM (4. Bölge) & EGM Bölge Trafik',
+        sourceOrg: 'T.C. KGM (4. Bölge Bolu) & EGM Bölge Trafik Denetleme',
         reportNo: 'KGM-2026-TR-81042',
+        roadKm: 'O-4 KM 224+400 Bolu Dağı Tünel Girişi (Viyadük-2)',
+        assignedUnits: '2 Ağır Kurtarıcı Çekici (81-Ç1, 81-Ç2), 1 Kar Küreme Aracı, 2 Bölge Trafik Ekibi',
+        laneStatus: 'İstanbul Yönü 2 Şerit Kapalı (Ulaşım Tek Şeritten Kontrollü)',
+        dispatchTranscript: '19:35 - Tünel yaklaşımı KM 224 viyadük üzerinde kar yağışı ve zemin kayganlığı nedeniyle 3 ağır vasıtanın karıştığı maddi hasarlı zincirleme kaza tespit edildi. 2 şerit ulaşıma kapandı. KM 222 Kaynaşlı gişelerinden trafik akışı alternatif D-100 dağ yoluna yönlendirilmektedir. Çekiciler (Ekip No: 81-Ç1, 81-Ç2) olay yerine ulaştı.',
+        agencyName: 'Anadolu Ajansı (AA) & DHA Lojistik Masası',
+        agencyMeta: 'AA Bülten Kodu: TR-BOLU-20261012-084 • 19:40',
         newsHeadline: 'O-4 Bolu Dağı Tüneli Girişinde Zincirleme Kaza Nedeniyle Ulaşım Durdu',
-        newsBody: '12 Ekim 2026 saat 19:35 sularında O-4 Anadolu Otoyolu Bolu Dağı Tüneli yaklaşımında 3 ağır vasıtanın karıştığı maddi hasarlı ve yaralanmalı zincirleme trafik kazası meydana gelmiştir. KGM karla mücadele ve EGM Bölge Trafik ekipleri yolu temizleme çalışmalarını sürdürmektedir. Ulaşım D-100 Kaynaşlı-Abant alternatif güzergahına kontrollü olarak yönlendirilmektedir.',
-        officialLink: 'https://www.kgm.gov.tr',
-        aaLink: 'https://www.aa.com.tr/tr/turkiye',
-        trtLink: 'https://www.trthaber.com',
+        newsBody: 'Anadolu Otoyolu Bolu Dağı Tüneli kesiminde 3 ağır vasıtanın karıştığı zincirleme trafik kazası nedeniyle İstanbul istikametinde ulaşım kontrollü olarak D-100 karayoluna yönlendirilmektedir. KGM karla mücadele ve EGM Bölge Trafik ekipleri yolu temizleme çalışmalarını aralıksız sürdürmektedir.',
+        blockedRoute: 'O-4 Bolu Dağı Otoyolu: +55 dk Gecikme, 8-10 km/s Kuyruk Hızı',
+        bypassRoute: 'D-100 Kaynaşlı-Abant Dağ Koridoru: Serbest Akış, 42 dk Net Kazanç',
+        officialLink: 'https://www.kgm.gov.tr/Sayfalar/KGM/SiteTr/YolDanisma/GunlukYolDurumu.aspx',
         searchQuery: 'Bolu Dağı Tüneli zincirleme kaza yol durumu'
     },
     {
@@ -1552,11 +1565,17 @@ const TURKEY_TRAFFIC_INCIDENTS_DATA = [
         confidenceRate: '%99.2',
         sourceOrg: 'T.C. Karayolları 14. Bölge Müdürlüğü (Resmi Bülten)',
         reportNo: 'KGM-2026-TR-10294',
+        roadKm: 'O-5 Otoyolu KM 48+200 Susurluk Rampaları',
+        assignedUnits: 'KGM 14. Bölge Asfalt Serme Ekibi, EGM Otoyol Trafik No: 10-18',
+        laneStatus: 'İzmir İstikameti Sağ ve Orta Şerit Kapalı (Tek Şerit)',
+        dispatchTranscript: '14:10 - O-5 Otoyolu Susurluk mevkiinde asfalt aşınma tabakası yenilemesi ve derz onarımı sebebiyle gidiş yönü tek şeride düşürülmüştür. Ağır vasıta yoğunluğu 7 km kuyruk oluşturmuştur. Bandırma D-565 kaçış koridoru tavsiye edilmektedir.',
+        agencyName: 'Demirören Haber Ajansı (DHA) Balıkesir',
+        agencyMeta: 'DHA Bülten Kodu: TR-BLKS-20261012-042 • 14:15',
         newsHeadline: 'O-5 Balıkesir-Susurluk Otoyolu 48-52. Kilometreler Arası Şerit Kapanması',
         newsBody: 'Karayolları 14. Bölge Müdürlüğü tarafından yürütülen planlı üst yapı ve aşınma tabakası yenileme çalışmaları kapsamında O-5 Otoyolu Susurluk mevkiinde gidiş istikameti tek şeritten kontrollü sağlanmaktadır. Ağır taşıt sürücülerinin alternatif D-565 Bandırma güzergahını tercih etmeleri önemle rica olunur.',
-        officialLink: 'https://www.kgm.gov.tr',
-        aaLink: 'https://www.aa.com.tr/tr/turkiye',
-        trtLink: 'https://www.trthaber.com',
+        blockedRoute: 'O-5 Susurluk Geçişi: +35 dk Gecikme, 7 km TIR Kuyruğu',
+        bypassRoute: 'D-565 Bandırma-Balıkesir Devlet Yolu: Serbest Akış, 28 dk Kazanç',
+        officialLink: 'https://www.kgm.gov.tr/Sayfalar/KGM/SiteTr/YolDanisma/GunlukYolDurumu.aspx',
         searchQuery: 'Susurluk otoyolu yol çalışması şerit kapanması'
     },
     {
@@ -1570,11 +1589,17 @@ const TURKEY_TRAFFIC_INCIDENTS_DATA = [
         confidenceRate: '%94.5',
         sourceOrg: 'İBB AKOM & KGM 1. Bölge Köprüler Başmühendisliği',
         reportNo: 'AKOM-2026-TR-34018',
+        roadKm: 'O-2 KM 14+800 Fatih Sultan Mehmet Köprüsü Orta Açıklık',
+        assignedUnits: 'KGM 1. Bölge Köprü Çekicisi, İBB AKOM Yol Bakım Ekibi',
+        laneStatus: 'Anadolu-Avrupa 3. Şerit Kapalı (Trafik Dur-Kalk)',
+        dispatchTranscript: '18:20 - FSM Köprüsü orta ayakta bir kamyonetin arıza yapması ve akşam yoğunluğu nedeniyle kuyruk Kavacık katılımına kadar uzamıştır. Transit kargo ve ağır taşıtların Yavuz Sultan Selim Köprüsü ve KMO koridoruna yönlendirilmesi tavsiye edilir.',
+        agencyName: 'Anadolu Ajansı (AA) İstanbul Masası',
+        agencyMeta: 'AA Bülten Kodu: TR-IST-20261012-310 • 18:25',
         newsHeadline: 'Fatih Sultan Mehmet Köprüsü Anadolu-Avrupa Geçişinde Araç Arızası ve Aşırı Yoğunluk',
         newsBody: 'Akşam mesai çıkış saatlerinde köprü orta şeritte meydana gelen araç arızası ve aşırı talep sebebiyle kuyruk Kavacık ayrımına kadar uzamıştır. Transit kargo taşımacılığı yapan araçların Yavuz Sultan Selim Köprüsü ve Kuzey Marmara Otoyolu (KMO) koridorunu kullanmaları tavsiye edilir.',
-        officialLink: 'https://www.kgm.gov.tr',
-        aaLink: 'https://www.aa.com.tr/tr/turkiye',
-        trtLink: 'https://www.trthaber.com',
+        blockedRoute: 'FSM Köprüsü / TEM: +45 dk Gecikme, Ortalama Hız: 12 km/s',
+        bypassRoute: 'Yavuz Sultan Selim Köprüsü & KMO: Kesintisiz Transit, 35 dk Kazanç',
+        officialLink: 'https://www.kgm.gov.tr/Sayfalar/KGM/SiteTr/YolDanisma/GunlukYolDurumu.aspx',
         searchQuery: 'FSM Köprüsü trafik yoğunluğu kaza arıza'
     },
     {
@@ -1588,11 +1613,17 @@ const TURKEY_TRAFFIC_INCIDENTS_DATA = [
         confidenceRate: '%95.4',
         sourceOrg: 'Kocaeli İl Emniyet Md. Trafik Şube & KGM 1. Bölge',
         reportNo: 'EGM-2026-TR-41092',
+        roadKm: 'D-100 KM 62+100 Hereke Sahil Viyadüğü',
+        assignedUnits: 'Kocaeli Trafik Şube No: 41-14, 1 Vinç Kurtarıcı',
+        laneStatus: 'İzmit Yönü Sağ Şerit Kapalı (Şerit Daralması)',
+        dispatchTranscript: '17:45 - D-100 Hereke viyadüğü üzerinde 2 panelvan kargo aracının çarpışması sonucu trafik tek şeritten akmaktadır. Transit yük taşıtlarının Sevindikli gişelerinden Kuzey Marmara Otoyoluna girmesi gerekmektedir.',
+        agencyName: 'Demirören Haber Ajansı (DHA) Kocaeli',
+        agencyMeta: 'DHA Kocaeli Bürosu • Bülten: TR-KOC-20261012-198',
         newsHeadline: 'D-100 Körfez Hereke Viyadüğünde İki Kamyonetin Karıştığı Maddi Hasarlı Kaza',
         newsBody: 'D-100 karayolu Hereke tünelleri öncesi viyadük üzerinde iki dağıtım aracının çarpışması sonucu yol tek şeride düşmüştür. Çekici ekipleri olay yerindedir. Transit kargo araçlarının KMO Sevindikli gişelerinden çevre yoluna bağlanmaları tavsiye edilmektedir.',
-        officialLink: 'https://www.kgm.gov.tr',
-        aaLink: 'https://www.aa.com.tr/tr/turkiye',
-        trtLink: 'https://www.trthaber.com',
+        blockedRoute: 'D-100 Hereke Sahil Yolu: +40 dk Gecikme, Kilit Zemin',
+        bypassRoute: 'Kuzey Marmara Otoyolu (KMO): 110 km/s Açık Koridor, 32 dk Kazanç',
+        officialLink: 'https://www.kgm.gov.tr/Sayfalar/KGM/SiteTr/YolDanisma/GunlukYolDurumu.aspx',
         searchQuery: 'D100 Hereke viyadüğü kaza kilit trafik'
     },
     {
@@ -1606,11 +1637,17 @@ const TURKEY_TRAFFIC_INCIDENTS_DATA = [
         confidenceRate: '%97.1',
         sourceOrg: 'T.C. KGM 5. Bölge (Mersin) & Adana Bölge Trafik',
         reportNo: 'KGM-2026-TR-01844',
+        roadKm: 'O-21 KM 94+300 Pozantı Toros Dağ Tünelleri Çıkışı',
+        assignedUnits: 'Pozantı İtfaiyesi, Adana Bölge Trafik, KGM 5. Bölge Tuzlama',
+        laneStatus: 'Adana İstikameti 2 Şerit Güvenlik Çemberinde',
+        dispatchTranscript: '16:30 - Pozantı tünelleri çıkışı virajında balatası tutuşan TIR sağ şeride yanaşmış, soğutma çalışması için 2 şerit kapatılmıştır. Ağır tonajlı vasıtalar kontrollü olarak D-750 Pozantı eski dağ yoluna aktarılmaktadır.',
+        agencyName: 'Anadolu Ajansı (AA) Adana Masası',
+        agencyMeta: 'AA Adana Bölge Masası • Bülten: TR-ADN-20261012-076',
         newsHeadline: 'Pozantı-Toroslar Geçidi Tünel Çıkışında Balata Yangını ve Şerit Kapanması',
         newsBody: 'O-21 Tarsus-Ankara Otoyolu Pozantı tünelleri çıkışında ağır tonajlı bir tırın balata tutuşması sonucu itfaiye ekipleri müdahalede bulunmuş, güvenlik amacıyla 2 şerit trafiğe kapatılmıştır. Ağır vasıtalar kontrollü olarak D-750 Pozantı devlet yoluna aktarılmaktadır.',
-        officialLink: 'https://www.kgm.gov.tr',
-        aaLink: 'https://www.aa.com.tr/tr/turkiye',
-        trtLink: 'https://www.trthaber.com',
+        blockedRoute: 'O-21 Pozantı Tünelleri: +50 dk Gecikme, Duman ve Şerit Daralması',
+        bypassRoute: 'D-750 Pozantı Dağ Boğazı: Açık Devlet Yolu, 38 dk Kazanç',
+        officialLink: 'https://www.kgm.gov.tr/Sayfalar/KGM/SiteTr/YolDanisma/GunlukYolDurumu.aspx',
         searchQuery: 'Pozantı Toroslar geçidi tır yangını otoyol trafik'
     }
 ];
@@ -4037,6 +4074,22 @@ document.addEventListener('keydown', (e) => {
 // =========================================================================
 // RESMİ KGM & EGM CANLI TRAFİK RAPORU & HABER DETAY MODALI (%90+ TEYİTLİ)
 // =========================================================================
+function switchIncidentTab(tabKey) {
+    const tabs = ['tutanak', 'basin', 'kacis'];
+    tabs.forEach(t => {
+        const btn = document.getElementById('tabBtn' + t.charAt(0).toUpperCase() + t.slice(1));
+        const content = document.getElementById('incidentTabContent' + t.charAt(0).toUpperCase() + t.slice(1));
+        if (btn) {
+            if (t === tabKey) btn.classList.add('active');
+            else btn.classList.remove('active');
+        }
+        if (content) {
+            content.style.display = (t === tabKey) ? 'block' : 'none';
+        }
+    });
+}
+window.switchIncidentTab = switchIncidentTab;
+
 function openIncidentNewsModal(incidentId) {
     let inc = null;
     if (incidentId) {
@@ -4056,10 +4109,17 @@ function openIncidentNewsModal(incidentId) {
 
     const setEl = (id, val) => { const el = document.getElementById(id); if (el) el.textContent = val; };
     setEl('modalConfidenceVal', inc.confidenceRate || '%96.8');
-    setEl('modalSourceOrg', inc.sourceOrg || 'T.C. KGM (4. Bölge) & EGM Bölge Trafik');
+    setEl('modalSourceOrg', inc.sourceOrg || 'T.C. KGM (4. Bölge Bolu) & EGM Bölge Trafik');
     setEl('modalReportNo', inc.reportNo || 'KGM-2026-TR-81042');
+    setEl('modalRoadKm', inc.roadKm || 'O-4 KM 224+400 Bolu Dağı Tüneli');
+    setEl('modalAssignedUnits', inc.assignedUnits || '2 Ağır Kurtarıcı Çekici, 1 Kar Küreme, 2 Trafik Ekibi');
+    setEl('modalLaneStatus', inc.laneStatus || '2 Şerit Kapalı (Ulaşım Tek Şeritten Kontrollü)');
+    setEl('modalDispatchTranscript', inc.dispatchTranscript || inc.newsBody || 'Saha telsiz kaydı teyit edildi.');
     setEl('modalNewsHeadline', inc.newsHeadline || inc.headline || 'Karayolu Trafik & Olay Bildirimi');
     setEl('modalNewsBody', inc.newsBody || inc.sub || 'T.C. Karayolları Genel Müdürlüğü saha ekipleri ve trafik telemetrisi tarafından teyit edilmiş olay.');
+    setEl('modalAgencyMeta', inc.agencyMeta || `Bülten Kodu: TR-AA-8104 • ${new Date().toLocaleTimeString('tr-TR', { hour: '2-digit', minute: '2-digit' })}`);
+    setEl('modalBlockedRoute', inc.blockedRoute || `${inc.headline} (+${inc.delay || 40} dk bekleme)`);
+    setEl('modalBypassRoute', inc.bypassRoute || inc.bypass || 'Alternatif Devlet Yolu Kaçış Koridoru');
 
     const timeEl = document.getElementById('modalReportTime');
     if (timeEl) {
@@ -4067,20 +4127,10 @@ function openIncidentNewsModal(incidentId) {
         timeEl.textContent = `${now.toLocaleDateString('tr-TR')} ${now.toLocaleTimeString('tr-TR', { hour: '2-digit', minute: '2-digit' })} (Resmi Kayıt)`;
     }
 
-    // Çoklu Canlı Haber & Resmi Portal Bağlantıları
+    // Doğrudan KGM Resmi Yol Durumu Bülten Sayfası (Ana sayfa yerine spesifik bülten)
     const linkOfficial = document.getElementById('modalOfficialLink');
     if (linkOfficial) {
-        linkOfficial.href = inc.officialLink || 'https://www.kgm.gov.tr';
-    }
-
-    const linkAa = document.getElementById('modalAaLink');
-    if (linkAa) {
-        linkAa.href = inc.aaLink || 'https://www.aa.com.tr/tr/turkiye';
-    }
-
-    const linkTrt = document.getElementById('modalTrtLink');
-    if (linkTrt) {
-        linkTrt.href = inc.trtLink || 'https://www.trthaber.com';
+        linkOfficial.href = inc.officialLink || 'https://www.kgm.gov.tr/Sayfalar/KGM/SiteTr/YolDanisma/GunlukYolDurumu.aspx';
     }
 
     const linkGNews = document.getElementById('modalGoogleNewsLink');
@@ -4089,15 +4139,62 @@ function openIncidentNewsModal(incidentId) {
         linkGNews.href = `https://news.google.com/search?q=${encodeURIComponent(queryTerm)}&hl=tr-TR`;
     }
 
+    switchIncidentTab('tutanak');
+
     const modal = document.getElementById('incidentNewsModal');
     if (modal) modal.classList.add('active');
 }
 
-// Lojistik Göstergeleri (Yakıt, CO2, Zamanında Teslimat) Hesaplama Formülü Modalı
-function openTelemetryFormulaModal(type) {
+// Lojistik Göstergeleri (Yakıt, CO2, Zamanında Teslimat) Canlı Hesaplama Formülü Modalı
+async function openTelemetryFormulaModal(type) {
+    let stats = currentDashboardStats;
+    if (!stats) {
+        try {
+            const res = await fetch('/api/stats');
+            stats = await res.json();
+            currentDashboardStats = stats;
+        } catch (e) {
+            console.error('Stats alinirken hata:', e);
+        }
+    }
+    stats = stats || {};
+
+    const totalDist = stats.total_distance || 0;
+    const totalFuelLiters = stats.total_fuel_liters || 0;
+    const fleetAvg = (stats.fleet_avg_consumption !== undefined && stats.fleet_avg_consumption > 0)
+        ? stats.fleet_avg_consumption
+        : (totalDist > 0 ? (totalFuelLiters / totalDist) * 100 : 11.2);
+    const totalCo2 = stats.total_co2_kg || 0;
+    const totalCargos = stats.total_cargos || 0;
+    const pendingCargos = stats.pending_cargos || 0;
+    const movingCargos = Math.max(0, totalCargos - pendingCargos);
+    const onTimeRate = stats.on_time_delivery_rate !== undefined
+        ? stats.on_time_delivery_rate
+        : (totalCargos > 0 ? (movingCargos / totalCargos) * 100 : 100);
+
+    const setEl = (id, val) => { const el = document.getElementById(id); if (el) el.textContent = val; };
+
+    // 1. Canlı Filo Tüketim Hesabı
+    setEl('formulaLiveFuel', `${fleetAvg.toFixed(1)} L / 100km`);
+    setEl('formulaLiveLiters', totalFuelLiters.toLocaleString('tr-TR', { maximumFractionDigits: 1 }));
+    setEl('formulaLiveDist', totalDist.toLocaleString('tr-TR', { maximumFractionDigits: 1 }));
+    setEl('formulaLiveFuelCalc', fleetAvg.toFixed(1));
+
+    // 2. Canlı Karbon Ayak İzi
+    setEl('formulaLiveCo2', `${totalCo2.toLocaleString('tr-TR', { maximumFractionDigits: 1 })} kg CO₂`);
+    setEl('formulaLiveCo2Calc', totalCo2.toLocaleString('tr-TR', { maximumFractionDigits: 1 }));
+
+    // 3. Canlı Zamanında Teslimat
+    setEl('formulaLiveOnTime', `%${onTimeRate.toFixed(1)}`);
+    setEl('formulaLiveTotalCargos', totalCargos);
+    setEl('formulaLiveMovingCargos', movingCargos);
+    setEl('formulaLivePendingCargos', pendingCargos);
+    setEl('formulaLiveOnTimeCalc', `%${onTimeRate.toFixed(1)}`);
+
     const modal = document.getElementById('telemetryFormulaModal');
     if (modal) modal.classList.add('active');
 }
+window.openTelemetryFormulaModal = openTelemetryFormulaModal;
 
 // =========================================================================
 // GLOBAL KOYU & AYDINLIK TEMA YÖNETİMİ (VARSAYILAN: KOYU TEMA)

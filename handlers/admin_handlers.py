@@ -120,23 +120,94 @@ def handle_get_stats(handler):
     all_cargos = list(db.cargos.find())
     total_weight = sum(c.get('weight', 0) for c in all_cargos)
 
-    all_routes = list(db.routes.find())
-    total_distance = sum(r.get('total_distance', 0) for r in all_routes)
-    total_cost = sum(r.get('total_cost', 0) for r in all_routes)
-    total_fuel_cost = sum(r.get('total_fuel_cost', 0) for r in all_routes)
-    total_fuel_liters = sum(r.get('total_fuel_liters', 0) for r in all_routes)
-    total_toll_cost = sum(r.get('total_toll_cost', 0) for r in all_routes)
-    total_driver_cost = sum(r.get('total_driver_cost', 0) for r in all_routes)
-    total_co2_kg = sum(r.get('co2_emission_kg', 0) for r in all_routes)
+    vehicles = list(db.vehicles.find())
+    vehicles_map = {v['id']: v for v in vehicles}
+    params = db.parameters.find_one({'id': 1}) or {}
+    fuel_prices = params.get('fuel_prices', {
+        'diesel_per_liter': 92.50,
+        'gasoline_per_liter': 85.50,
+        'adblue_per_liter': 36.50,
+        'lpg_per_liter': 45.00
+    })
+    unit_diesel = fuel_prices.get('diesel_per_liter', 92.50)
 
-    # Eğer henüz tamamlanmış rota yoksa gerçekçi varsayılan değerler
-    if total_cost == 0 and total_distance > 0:
-        total_fuel_cost = round(total_distance * 4.45, 2)
-        total_fuel_liters = round((total_distance / 100.0) * 10.0, 2)
-        total_toll_cost = round(total_distance * 0.40, 2)
-        total_driver_cost = round(total_distance * 0.85, 2)
-        total_cost = round(total_fuel_cost + total_toll_cost + total_driver_cost, 2)
-        total_co2_kg = round(total_distance * 0.25, 2)
+    all_routes = list(db.routes.find())
+    total_distance = 0.0
+    total_cost = 0.0
+    total_fuel_cost = 0.0
+    total_fuel_liters = 0.0
+    total_toll_cost = 0.0
+    total_driver_cost = 0.0
+    total_co2_kg = 0.0
+    total_used_capacity = 0.0
+    total_carried_weight_on_routes = 0.0
+
+    for r in all_routes:
+        dist = float(r.get('total_distance', 0))
+        total_distance += dist
+        v = vehicles_map.get(r.get('vehicle_id')) or vehicles[0]
+        v_cap = max(float(v.get('capacity', 1000)), 100.0)
+        w = float(r.get('total_weight', 0))
+        total_used_capacity += v_cap
+        total_carried_weight_on_routes += w
+
+        # Ağırlığa ve kapasiteye bağlı yük faktörü (Payload Load Factor)
+        load_ratio = min(1.0, w / v_cap)
+        base_cons = float(v.get('fuel_liters_per_100km', 10.0))
+        eff_cons = round(base_cons * (1.0 + 0.35 * load_ratio), 2)
+        f_liters = round((dist / 100.0) * eff_cons, 2)
+        f_cost = round(f_liters * unit_diesel, 2)
+
+        base_co2 = float(v.get('co2_g_per_km', 250.0))
+        eff_co2 = round(base_co2 * (1.0 + 0.35 * load_ratio), 1)
+        co2_kg = round((dist * eff_co2) / 1000.0, 2)
+
+        t_cost = float(r.get('total_toll_cost', 0))
+        if t_cost == 0 and r.get('road_type') != 'devlet_yolu':
+            t_cost = round(dist * 0.45, 2) if dist > 60 else 0.0
+
+        d_cost = float(r.get('total_driver_cost', 0))
+        if d_cost == 0:
+            d_cost = round(min(2500.0, max(250.0, (dist / 75.0) * 160.0)), 2)
+
+        r_cost = round(f_cost + t_cost + d_cost, 2)
+
+        # Rota kaydını eksiksiz güncelle
+        db.routes.update_one({'_id': r['_id']}, {'$set': {
+            'total_fuel_liters': f_liters,
+            'total_fuel_cost': f_cost,
+            'total_toll_cost': t_cost,
+            'total_driver_cost': d_cost,
+            'total_cost': r_cost,
+            'co2_emission_kg': co2_kg
+        }})
+
+        total_fuel_liters += f_liters
+        total_fuel_cost += f_cost
+        total_toll_cost += t_cost
+        total_driver_cost += d_cost
+        total_cost += r_cost
+        total_co2_kg += co2_kg
+
+    # 1. Gerçek Filo Tüketim Ortalaması (L/100km):
+    if total_distance > 0 and total_fuel_liters > 0:
+        fleet_avg_consumption = round((total_fuel_liters / total_distance) * 100.0, 1)
+    else:
+        fleet_avg_consumption = round(sum(v.get('fuel_liters_per_100km', 10.0) for v in vehicles) / max(len(vehicles), 1), 1)
+
+    # 2. Gerçek Filo Kapasite Doluluk Oranı (%):
+    if total_used_capacity > 0:
+        fleet_utilization_rate = round((total_carried_weight_on_routes / total_used_capacity) * 100.0, 1)
+    else:
+        fleet_utilization_rate = 0.0
+
+    # 3. Gerçek Zamanında Teslimat Oranı (%) - db.cargos'taki gerçek durumlar:
+    total_cargos_count = len(all_cargos)
+    if total_cargos_count > 0:
+        on_schedule_count = sum(1 for c in all_cargos if c.get('status') in ['teslim_edildi', 'dagitimda', 'yolda', 'assigned'])
+        on_time_delivery_rate = round((on_schedule_count / total_cargos_count) * 100.0, 1)
+    else:
+        on_time_delivery_rate = 100.0
 
     # 1. İstasyon Dağılımı (Kargosu olan istasyonlar + öne çıkan transfer hub'ları)
     stations_map = {s['id']: s for s in db.stations.find({'is_active': 1})}
@@ -229,8 +300,9 @@ def handle_get_stats(handler):
         'total_fuel_liters': round(total_fuel_liters, 2),
         'total_toll_cost': round(total_toll_cost, 2),
         'total_co2_kg': round(total_co2_kg, 2),
-        'fleet_utilization_rate': 82.5,
-        'on_time_delivery_rate': 98.7,
+        'fleet_avg_consumption': fleet_avg_consumption,
+        'fleet_utilization_rate': fleet_utilization_rate,
+        'on_time_delivery_rate': on_time_delivery_rate,
         'fuel_prices': fuel_prices,
         'station_distribution': station_distribution,
         'regional_distribution': regional_data,
