@@ -319,11 +319,15 @@ async function handleForgotPassword(e) {
             if (errorDiv) errorDiv.style.display = 'none';
             if (successDiv) {
                 successDiv.style.display = 'flex';
-                successDiv.querySelector('span').textContent = data.message || 'Kod gonderildi!';
+                successDiv.querySelector('span').textContent = data.message || 'Doğrulama kodu oluşturuldu!';
+            }
+            if (data.code) {
+                const resetCodeInput = document.getElementById('resetCode');
+                if (resetCodeInput) resetCodeInput.value = data.code;
             }
             setTimeout(() => {
                 showResetPasswordForm();
-            }, 2000);
+            }, 1200);
         } else {
             if (successDiv) successDiv.style.display = 'none';
             if (errorDiv) {
@@ -495,6 +499,10 @@ async function loadDashboard() {
         setEl('tickerCo2', `${(stats.total_co2_kg || 685.4).toLocaleString('tr-TR', { maximumFractionDigits: 1 })} kg CO₂`);
         setEl('tickerOnTime', `%${stats.on_time_delivery_rate || 99.2}`);
 
+        if (stats.market_info) {
+            updateMarketUI(stats.market_info);
+        }
+
         // Canlı Kargo Akış Tablosu
         const activityTbody = document.getElementById('dashboardActivityTable');
         if (activityTbody && stats.activity_log) {
@@ -659,11 +667,6 @@ async function initMainMap() {
             attribution: '© OpenStreetMap katkıda bulunanlar',
             maxZoom: 19
         }).addTo(mainMap);
-
-        darkLayer = L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {
-            attribution: '© CartoDB DarkMatter',
-            maxZoom: 19
-        });
     }
 
     // Harita üzerindeki mevcut marker ve rotaları temizle
@@ -815,89 +818,372 @@ function zoomToTurkey() {
 function toggleDarkMapMode() {
     if (!mainMap) return;
     isDarkMap = !isDarkMap;
+    const mainEl = document.getElementById('mainMap');
+    const optEl = document.getElementById('optimizeMap');
     const btn = document.getElementById('btnMapTheme');
+
     if (isDarkMap) {
-        if (mainMap.hasLayer(standardLayer)) mainMap.removeLayer(standardLayer);
-        darkLayer.addTo(mainMap);
+        if (mainEl) mainEl.classList.add('dark-map-tiles');
+        if (optEl) optEl.classList.add('dark-map-tiles');
         if (btn) btn.innerHTML = '<i class="fas fa-sun"></i>';
     } else {
-        if (mainMap.hasLayer(darkLayer)) mainMap.removeLayer(darkLayer);
-        standardLayer.addTo(mainMap);
+        if (mainEl) mainEl.classList.remove('dark-map-tiles');
+        if (optEl) optEl.classList.remove('dark-map-tiles');
         if (btn) btn.innerHTML = '<i class="fas fa-moon"></i>';
     }
 }
 
-function toggleMapRoutes() {
-    routeLinesVisible = !routeLinesVisible;
-    const btn = document.getElementById('btnToggleRoutes');
-    if (btn) btn.classList.toggle('active', routeLinesVisible);
+// ==========================================
+// CANLI AKARYAKIT VE BRENT PETROL PİYASA MASASI
+// ==========================================
+let fuelMarketCheckIntervalId = null;
 
-    routeLayers.forEach(layer => {
-        if (routeLinesVisible) {
-            if (!mainMap.hasLayer(layer)) mainMap.addLayer(layer);
-        } else {
-            if (mainMap.hasLayer(layer)) mainMap.removeLayer(layer);
+async function triggerMarketFuelCheck() {
+    const btn = document.getElementById('btnMarketScan');
+    if (btn) {
+        btn.classList.add('scanning');
+        btn.disabled = true;
+    }
+
+    try {
+        const intervalSelect = document.getElementById('marketFuelInterval');
+        const intervalHours = intervalSelect ? parseInt(intervalSelect.value) : 8;
+
+        const res = await fetch('/api/market-fuel-check', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ interval_hours: intervalHours })
+        });
+        const data = await res.json();
+
+        if (data.success && data.market_info) {
+            updateMarketUI(data.market_info);
+            if (data.fuel_prices) {
+                const setEl = (id, val) => { const el = document.getElementById(id); if (el) el.textContent = val; };
+                setEl('tickerDiesel', `${data.fuel_prices.diesel_per_liter?.toFixed(2) || '92.50'} TL/L`);
+                setEl('tickerGasoline', `${data.fuel_prices.gasoline_per_liter?.toFixed(2) || '85.50'} TL/L`);
+                setEl('tickerAdblue', `${data.fuel_prices.adblue_per_liter?.toFixed(2) || '36.50'} TL/L`);
+            }
+            alert(`⛽ Brent Petrol ve Akaryakıt Piyasası Güncellendi!\n\n• Brent Petrol: $${data.market_info.brent_barrel_usd} / varil (${data.market_info.brent_change_pct >= 0 ? '+' : ''}${data.market_info.brent_change_pct}%)\n• Dolar Kuru: ₺${data.market_info.usd_try}\n• Yeni Motorin: ₺${data.fuel_prices.diesel_per_liter} / L\n• Yeni Benzin: ₺${data.fuel_prices.gasoline_per_liter} / L\n• Durum: ${data.market_info.geopolitical_note}`);
         }
-    });
+    } catch(err) {
+        console.error('Market tarama hatası:', err);
+    } finally {
+        if (btn) {
+            btn.classList.remove('scanning');
+            btn.disabled = false;
+        }
+    }
 }
 
-function toggleVehicleSimulation() {
-    const btn = document.getElementById('btnSimulate');
-    if (simulationInterval) {
-        clearInterval(simulationInterval);
-        simulationInterval = null;
-        if (simulationMarker && mainMap) mainMap.removeLayer(simulationMarker);
-        simulationMarker = null;
-        if (btn) {
-            btn.classList.remove('active');
-            btn.innerHTML = '<i class="fas fa-play"></i> Simülasyon';
+function updateMarketUI(market) {
+    if (!market) return;
+    const brentVal = document.getElementById('hudBrentVal');
+    const brentChange = document.getElementById('hudBrentChange');
+    const lastCheckTime = document.getElementById('lastFuelCheckTime');
+
+    if (brentVal && market.brent_barrel_usd) {
+        brentVal.textContent = `$${market.brent_barrel_usd}`;
+    }
+    if (brentChange && market.brent_change_pct !== undefined) {
+        const isPos = market.brent_change_pct >= 0;
+        brentChange.textContent = `${isPos ? '+' : ''}${market.brent_change_pct}%`;
+        brentChange.className = `trend-badge ${isPos ? 'trend-up' : 'trend-down'}`;
+    }
+    if (lastCheckTime && market.last_updated) {
+        lastCheckTime.textContent = market.last_updated.substring(0, 5);
+    }
+}
+
+function setFuelInterval(hours) {
+    if (fuelMarketCheckIntervalId) {
+        clearInterval(fuelMarketCheckIntervalId);
+        fuelMarketCheckIntervalId = null;
+    }
+    const h = parseInt(hours) || 8;
+    console.log(`[Akaryakıt Masası] Otomatik tarama aralığı: ${h} saat.`);
+    // Gerçek periyodik tarama arka plan saati
+    fuelMarketCheckIntervalId = setInterval(() => {
+        triggerMarketFuelCheck();
+    }, h * 60 * 60 * 1000);
+}
+
+// ==========================================
+// GERÇEKÇİ KOKPİT HUD VE HAZIR SİMÜLASYONLAR
+// ==========================================
+const CURATED_SCENARIOS = {
+    marmara_express: {
+        title: 'Marmara Express Dağıtım Hattı',
+        vehicle: 'Ford Transit Panelvan',
+        plate: '41 KRG 018',
+        roadType: 'devlet_yolu',
+        roadBadge: 'D-100 / E-5 (Ücretsiz)',
+        speedRange: [65, 82],
+        rpmRange: [2100, 2400],
+        fuelBurn: '8.4 L/100km',
+        totalDistance: 178,
+        etaMinutes: 145,
+        path: [
+            [40.8027, 29.4307], // Gebze Lojistik Hub
+            [40.7890, 29.5400], // Dilovası D-100
+            [40.7654, 29.9408], // Kocaeli / İzmit Dağıtım Şubesi
+            [40.7180, 29.8000], // Gölcük D-130
+            [40.6552, 29.2769], // Yalova Merkez Depo
+            [40.4200, 29.2900], // Orhangazi
+            [40.3200, 29.2200], // Gemlik Sanayi
+            [40.1885, 29.0610]  // Bursa Nilüfer Bölge Hub
+        ]
+    },
+    baskent_d100: {
+        title: 'Başkent D-100 Devlet Yolu Seferi',
+        vehicle: 'Isuzu NPR Kamyonet',
+        plate: '06 TR 1923',
+        roadType: 'devlet_yolu',
+        roadBadge: 'D-100 Devlet Yolu (0 TL Geçiş)',
+        speedRange: [62, 75],
+        rpmRange: [1950, 2250],
+        fuelBurn: '14.2 L/100km',
+        totalDistance: 452,
+        etaMinutes: 380,
+        path: [
+            [40.9927, 29.0277], // İstanbul Kadıköy Transfer
+            [40.8767, 29.2344], // Pendik D-100
+            [40.8027, 29.4307], // Gebze
+            [40.7654, 29.9408], // Kocaeli
+            [40.7731, 30.4028], // Sakarya / Adapazarı
+            [40.7500, 30.9000], // Hendek D-100
+            [40.8438, 31.1565], // Düzce Merkez
+            [40.7350, 31.6080], // Bolu Dağı Geçidi (D-100)
+            [40.7600, 32.2000], // Gerede Kavşağı
+            [40.4000, 32.5500], // Kızılcahamam
+            [40.0300, 32.7000], // Kahramankazan
+            [39.9334, 32.8597]  // Ankara Ana Lojistik Hub
+        ]
+    },
+    ege_osmangazi: {
+        title: 'Ege Otoyol Ekspres (Osmangazi Köprüsü)',
+        vehicle: 'Mercedes-Benz Actros 1845 Çekici',
+        plate: '35 LOG 770',
+        roadType: 'otoyol',
+        roadBadge: 'O-5 Otoyolu (Köprü & HGS)',
+        speedRange: [88, 98],
+        rpmRange: [1300, 1500],
+        fuelBurn: '27.5 L/100km',
+        totalDistance: 480,
+        etaMinutes: 295,
+        path: [
+            [41.0082, 28.9784], // İstanbul Avrupa Hub
+            [40.7700, 29.5100], // Osmangazi Köprüsü Girişi
+            [40.6552, 29.2769], // Yalova O-5 Otoyolu
+            [40.1885, 29.0610], // Bursa Otoyol Hattı
+            [39.6484, 27.8826], // Balıkesir Merkez
+            [39.1200, 27.5000], // Akhisar Çevre Yolu
+            [38.6191, 27.4289], // Manisa Hub
+            [38.4192, 27.1287]  // İzmir Bornova Ana Dağıtım Merkezi
+        ]
+    },
+    anadolu_mega: {
+        title: 'Anadolu Mega Sevkiyat (İç Anadolu & Akdeniz)',
+        vehicle: 'Scania R500 V8 Tır',
+        plate: '34 MEGA 500',
+        roadType: 'otoyol',
+        roadBadge: 'O-4 & O-21 Anadolu Otoyolu',
+        speedRange: [82, 94],
+        rpmRange: [1250, 1450],
+        fuelBurn: '29.8 L/100km',
+        totalDistance: 740,
+        etaMinutes: 510,
+        path: [
+            [40.7654, 29.9408], // Kocaeli Hub
+            [40.7731, 30.4028], // Sakarya
+            [40.7350, 31.6080], // Bolu
+            [39.9334, 32.8597], // Ankara Ana Hub
+            [39.4000, 33.1000], // Kulu Kavşağı
+            [38.4025, 33.4147], // Aksaray - Eskil Dağıtım Şubesi (Düzeltilen Konum)
+            [38.3687, 34.0370], // Aksaray Merkez Depo
+            [37.9667, 34.6833], // Niğde
+            [37.2000, 34.9000], // Pozantı Boğazı
+            [37.0000, 35.3213]  // Adana Ana Dağıtım Merkezi
+        ]
+    }
+};
+
+let curatedSimState = {
+    key: null,
+    scenario: null,
+    polyline: null,
+    marker: null,
+    interpolatedPoints: [],
+    step: 0,
+    intervalId: null,
+    speedMultiplier: 1
+};
+
+function interpolatePath(points, segmentsPerLeg = 12) {
+    const result = [];
+    for (let i = 0; i < points.length - 1; i++) {
+        const p1 = points[i];
+        const p2 = points[i + 1];
+        for (let s = 0; s < segmentsPerLeg; s++) {
+            const frac = s / segmentsPerLeg;
+            result.push([
+                p1[0] + (p2[0] - p1[0]) * frac,
+                p1[1] + (p2[1] - p1[1]) * frac
+            ]);
         }
-        return;
     }
+    result.push(points[points.length - 1]);
+    return result;
+}
 
-    // Aktif simülasyon koordinatları yoksa ilk rotayı veya Türkiye omurgasını kullan
-    if (!currentSimulationCoords || currentSimulationCoords.length === 0) {
-        currentSimulationCoords = [
-            [40.8225, 29.9213], [40.7654, 29.9408], [40.8027, 29.4307],
-            [40.8767, 29.2344], [40.9927, 29.0277], [40.8167, 29.3000],
-            [40.7731, 30.4028], [39.7767, 30.5206], [39.9208, 32.8541],
-            [40.7731, 30.4028], [40.8225, 29.9213]
-        ];
-    }
+function startCuratedSimulation(scenarioKey) {
+    if (!mainMap) return;
+    const scenario = CURATED_SCENARIOS[scenarioKey];
+    if (!scenario) return;
 
-    if (btn) {
-        btn.classList.add('active');
-        btn.innerHTML = '<i class="fas fa-stop"></i> Durdur';
-    }
+    stopVehicleSimulation();
 
+    curatedSimState.key = scenarioKey;
+    curatedSimState.scenario = scenario;
+    curatedSimState.interpolatedPoints = interpolatePath(scenario.path, 15);
+    curatedSimState.step = 0;
+
+    // Harita çizgisini çiz
+    curatedSimState.polyline = L.polyline(scenario.path, {
+        color: scenario.roadType === 'devlet_yolu' ? '#10b981' : '#6366f1',
+        weight: 6,
+        opacity: 0.9,
+        dashArray: scenario.roadType === 'devlet_yolu' ? '8, 6' : null
+    }).addTo(mainMap);
+
+    mainMap.fitBounds(curatedSimState.polyline.getBounds(), { padding: [50, 50], maxZoom: 9 });
+
+    // Kokpit HUD Panelini Doldur ve Aç
+    const hud = document.getElementById('simTelemetryHud');
+    if (hud) hud.classList.add('active');
+
+    const setHud = (id, val) => { const el = document.getElementById(id); if (el) el.textContent = val; };
+    setHud('hudVehicleBadge', `${scenario.vehicle} • ${scenario.plate}`);
+    setHud('hudScenarioTitle', scenario.title);
+    setHud('hudRoadTypeBadge', scenario.roadBadge);
+    setHud('hudFuelBurn', scenario.fuelBurn);
+    setHud('hudDistanceLeft', `${scenario.totalDistance} km`);
+    setHud('hudPlateVal', scenario.plate);
+    setHud('hudEtaValue', `${Math.floor(scenario.etaMinutes / 60)} sa ${scenario.etaMinutes % 60} dk`);
+
+    // Araç Marker'ı
     const truckIcon = L.divIcon({
         className: 'sim-truck-marker',
         html: `
             <div style="position:relative; display:flex; flex-direction:column; align-items:center;">
-                <div style="background:linear-gradient(135deg, #10b981, #047857); color:white; width:38px; height:38px; border-radius:50%; border:3px solid white; box-shadow:0 0 20px rgba(16,185,129,0.9); display:flex; align-items:center; justify-content:center; font-size:17px;">
-                    <i class="fas fa-truck-fast"></i>
+                <div style="background:linear-gradient(135deg, ${scenario.roadType === 'devlet_yolu' ? '#10b981, #047857' : '#6366f1, #4338ca'}); color:white; width:40px; height:40px; border-radius:50%; border:3px solid white; box-shadow:0 0 22px rgba(99,102,241,0.9); display:flex; align-items:center; justify-content:center; font-size:18px;">
+                    <i class="fas fa-truck-moving"></i>
                 </div>
-                <div style="background:rgba(15,23,42,0.92); color:#4ade80; font-family:'Outfit',sans-serif; font-size:10px; font-weight:700; padding:2px 7px; border-radius:6px; margin-top:4px; white-space:nowrap; border:1px solid rgba(16,185,129,0.6); box-shadow:0 2px 8px rgba(0,0,0,0.4);">
-                    <span id="simSpeedVal">86</span> km/s • Canlı Sevkiyat
+                <div style="background:rgba(15,23,42,0.95); color:#38bdf8; font-family:'Outfit',sans-serif; font-size:11px; font-weight:800; padding:2px 8px; border-radius:6px; margin-top:4px; white-space:nowrap; border:1px solid rgba(56,189,248,0.7); box-shadow:0 4px 12px rgba(0,0,0,0.5);">
+                    <span id="markerLiveSpeed">${scenario.speedRange[0]}</span> km/s
                 </div>
             </div>
         `,
-        iconSize: [80, 56],
-        iconAnchor: [40, 20]
+        iconSize: [90, 60],
+        iconAnchor: [45, 22]
     });
 
-    let step = 0;
-    simulationMarker = L.marker(currentSimulationCoords[0], { icon: truckIcon }).addTo(mainMap);
+    curatedSimState.marker = L.marker(curatedSimState.interpolatedPoints[0], { icon: truckIcon }).addTo(mainMap);
 
-    simulationInterval = setInterval(() => {
-        step = (step + 1) % currentSimulationCoords.length;
-        const pos = currentSimulationCoords[step];
-        simulationMarker.setLatLng(pos);
-        const speedEl = document.getElementById('simSpeedVal');
-        if (speedEl && step % 4 === 0) {
-            speedEl.textContent = Math.floor(78 + Math.random() * 16);
-        }
-    }, 120);
+    const btnSim = document.getElementById('btnSimulate');
+    if (btnSim) {
+        btnSim.classList.add('active');
+        btnSim.innerHTML = '<i class="fas fa-stop"></i> Durdur';
+    }
+
+    const selectEl = document.getElementById('curatedScenarioSelect');
+    if (selectEl) selectEl.value = scenarioKey;
+
+    startSimTimer();
+}
+
+function startSimTimer() {
+    if (curatedSimState.intervalId) clearInterval(curatedSimState.intervalId);
+
+    const baseDelay = Math.max(30, Math.floor(180 / curatedSimState.speedMultiplier));
+
+    curatedSimState.intervalId = setInterval(() => {
+        const pts = curatedSimState.interpolatedPoints;
+        if (!pts || pts.length === 0) return;
+
+        curatedSimState.step = (curatedSimState.step + 1) % pts.length;
+        const currentCoord = pts[curatedSimState.step];
+        curatedSimState.marker.setLatLng(currentCoord);
+
+        const scenario = curatedSimState.scenario;
+        const speedMin = scenario.speedRange[0];
+        const speedMax = scenario.speedRange[1];
+        const curSpeed = Math.floor(speedMin + Math.random() * (speedMax - speedMin + 1));
+        const curRpm = Math.floor(scenario.rpmRange[0] + Math.random() * (scenario.rpmRange[1] - scenario.rpmRange[0]));
+
+        // İlerledikçe kalan mesafe ve süreyi dinamik eksilt
+        const progressFrac = curatedSimState.step / pts.length;
+        const distLeft = Math.max(0, Math.round(scenario.totalDistance * (1 - progressFrac)));
+        const minsLeft = Math.max(1, Math.round(scenario.etaMinutes * (1 - progressFrac)));
+        const hoursLeft = Math.floor(minsLeft / 60);
+        const remMins = minsLeft % 60;
+
+        const setHud = (id, val) => { const el = document.getElementById(id); if (el) el.textContent = val; };
+        setHud('hudSpeedValue', curSpeed);
+        setHud('hudRpmValue', curRpm);
+        setHud('hudDistanceLeft', `${distLeft} km`);
+        setHud('hudEtaValue', `${hoursLeft > 0 ? hoursLeft + ' sa ' : ''}${remMins} dk`);
+
+        const markerSpeed = document.getElementById('markerLiveSpeed');
+        if (markerSpeed) markerSpeed.textContent = curSpeed;
+    }, baseDelay);
+}
+
+function setSimSpeed(multiplier) {
+    curatedSimState.speedMultiplier = multiplier;
+    document.querySelectorAll('.btn-sim-speed').forEach(btn => {
+        btn.classList.toggle('active', btn.getAttribute('data-speed') == multiplier);
+    });
+    if (curatedSimState.intervalId) {
+        startSimTimer();
+    }
+}
+
+function stopVehicleSimulation() {
+    if (curatedSimState.intervalId) {
+        clearInterval(curatedSimState.intervalId);
+        curatedSimState.intervalId = null;
+    }
+    if (curatedSimState.marker && mainMap) {
+        mainMap.removeLayer(curatedSimState.marker);
+        curatedSimState.marker = null;
+    }
+    if (curatedSimState.polyline && mainMap) {
+        mainMap.removeLayer(curatedSimState.polyline);
+        curatedSimState.polyline = null;
+    }
+
+    const hud = document.getElementById('simTelemetryHud');
+    if (hud) hud.classList.remove('active');
+
+    const btnSim = document.getElementById('btnSimulate');
+    if (btnSim) {
+        btnSim.classList.remove('active');
+        btnSim.innerHTML = '<i class="fas fa-play"></i> Simülasyon';
+    }
+
+    const selectEl = document.getElementById('curatedScenarioSelect');
+    if (selectEl) selectEl.value = '';
+
+    curatedSimState.key = null;
+}
+
+function toggleVehicleSimulation() {
+    if (curatedSimState.intervalId) {
+        stopVehicleSimulation();
+    } else {
+        startCuratedSimulation('marmara_express');
+    }
 }
 
 async function showRoutesOnMap(map) {
@@ -1410,6 +1696,8 @@ async function runOptimization() {
     }
 
     try {
+        const roadType = document.getElementById('roadTypePreference')?.value || 'otoyol';
+
         const res = await fetch('/api/optimize', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
@@ -1417,7 +1705,8 @@ async function runOptimization() {
                 type: problemType,
                 optimize_for: optimizeFor,
                 delivery_date: deliveryDate || null,
-                cargo_ids: cargoIds
+                cargo_ids: cargoIds,
+                road_type: roadType
             })
         });
 
@@ -1430,7 +1719,7 @@ async function runOptimization() {
 
         lastOptimizationResult = result;
 
-        alert(`✅ Rota planlamasi tamamlandi!\n\n📦 ${result.total_cargos} kargo planlandi\n🚚 ${result.routes.length} rota olusturuldu\n📏 Toplam mesafe: ${result.routes.reduce((sum, r) => sum + r.distance, 0).toFixed(1)} km\n💰 Toplam maliyet: ${result.total_cost.toFixed(0)} birim`);
+        alert(`✅ Rota planlamasi tamamlandi!\n\n📦 ${result.total_cargos} kargo planlandi\n🚚 ${result.routes.length} rota olusturuldu\n🛣️ Güzergah Tipi: ${roadType === 'devlet_yolu' ? 'D-100 Devlet Yolu (0 TL Geçiş)' : 'Otoyol (HGS)'}\n📏 Toplam mesafe: ${result.routes.reduce((sum, r) => sum + r.distance, 0).toFixed(1)} km\n💰 Toplam maliyet: ${result.total_cost.toFixed(0)} TL`);
 
         selectedCargoIds.clear();
 
@@ -1447,20 +1736,20 @@ async function displayOptimizationResults(result) {
     const container = document.getElementById('optimizationResults');
     container.style.display = 'block';
 
-    document.getElementById('resultTotalCost').textContent = result.total_cost.toFixed(0) + ' birim';
+    document.getElementById('resultTotalCost').textContent = result.total_cost.toFixed(0) + ' TL';
     document.getElementById('resultTotalCargos').textContent = result.total_cargos;
     document.getElementById('resultTotalWeight').textContent = result.total_weight.toFixed(0) + ' kg';
 
     if (result.total_fuel_cost) {
         document.getElementById('fuelCostInfo').style.display = 'block';
-        document.getElementById('resultFuelCost').textContent = result.total_fuel_cost.toFixed(0) + ' birim';
+        document.getElementById('resultFuelCost').textContent = result.total_fuel_cost.toFixed(0) + ' TL';
     } else {
         document.getElementById('fuelCostInfo').style.display = 'none';
     }
 
     if (result.rented_vehicles > 0) {
         document.getElementById('rentedInfo').style.display = 'block';
-        document.getElementById('resultRentedVehicles').textContent = result.rented_vehicles + ` (${result.rental_cost} birim)`;
+        document.getElementById('resultRentedVehicles').textContent = result.rented_vehicles + ` (${result.rental_cost} TL)`;
     } else {
         document.getElementById('rentedInfo').style.display = 'none';
     }
@@ -1471,22 +1760,29 @@ async function displayOptimizationResults(result) {
         if (route.cargo_users && route.cargo_users.length > 0) {
             usersHtml = `<div class="cargo-users"><strong>Kargo Sahipleri:</strong><ul>${route.cargo_users.map(u => `<li>${u.username || 'Anonim'} - ${u.weight}kg (${u.station})</li>`).join('')}</ul></div>`;
         }
+        const roadBadge = route.road_type_label || (route.road_type === 'devlet_yolu' ? '🚗 D-100 / E-5 (0 TL Geçiş)' : '🛣️ Otoyol (HGS)');
+        const durationText = route.duration_formatted || (route.duration_hours ? `${route.duration_hours.toFixed(1)} sa` : '-');
+        const tollText = route.toll_cost ? `${route.toll_cost.toFixed(0)} TL` : '0 TL (Ücretsiz)';
+
         return `
         <div class="route-card ${route.is_rented ? 'rented' : ''}">
             <h4>
                 <i class="fas fa-truck" style="color:${routeColors[i % routeColors.length]}"></i>
                 ${route.vehicle.name}
-                ${route.is_rented ? '<span class="status status-pending">Kiralik</span>' : ''}
+                <span style="display:inline-block; font-size:11px; background:#1e293b; color:#38bdf8; padding:2px 8px; border-radius:6px; margin-left:8px; border:1px solid #334155;">${roadBadge}</span>
+                ${route.is_rented ? '<span class="status status-pending">Kiralık</span>' : ''}
             </h4>
             <div class="route-info">
+                <span>Tahmini Süre: <strong style="color:#f59e0b;">${durationText}</strong></span>
                 <span>Mesafe: <strong>${route.distance} km</strong></span>
-                <span>Yakit: <strong>${route.fuel_cost || 0} birim</strong></span>
-                <span>Maliyet: <strong>${route.cost} birim</strong></span>
-                <span>Agirlik: <strong>${route.weight} kg</strong></span>
+                <span>Geçiş Ücreti: <strong>${tollText}</strong></span>
+                <span>Yakıt: <strong>${route.fuel_cost || 0} TL</strong></span>
+                <span>Toplam Maliyet: <strong>${route.cost} TL</strong></span>
+                <span>Ağırlık: <strong>${route.weight} kg</strong></span>
                 <span>Kargo: <strong>${route.cargo_count} adet</strong></span>
             </div>
             <div class="route-path">
-                <strong>Guzergah:</strong> ${route.route_names.join(' <i class="fas fa-arrow-right"></i> ')}
+                <strong>Güzergah:</strong> ${route.route_names.join(' <i class="fas fa-arrow-right"></i> ')}
             </div>
             ${usersHtml}
         </div>
@@ -1607,10 +1903,14 @@ async function loadRoutes() {
             return `
             <tr>
                 <td>${r.id}</td>
-                <td>${r.vehicle_name || 'Kiralik'}</td>
+                <td>
+                    <strong>${r.vehicle_name || 'Kiralık'}</strong>
+                    ${r.road_type_label ? `<br><small style="color:#0284c7; font-weight:600;">${r.road_type_label}</small>` : ''}
+                    ${r.duration_formatted ? `<br><small style="color:#d97706; font-weight:600;"><i class="fas fa-clock"></i> ${r.duration_formatted}</small>` : ''}
+                </td>
                 <td>${routeStations}</td>
                 <td>${r.total_distance?.toFixed(1) || '-'}</td>
-                <td>${r.total_cost?.toFixed(0) || '-'} birim</td>
+                <td>${r.total_cost?.toFixed(0) || '-'} TL</td>
                 <td>${r.total_weight?.toFixed(0) || '-'}</td>
                 <td>${r.cargo_count || '-'}</td>
                 <td><small title="Kargo ID'leri: ${cargoIds}">${cargoIds}</small></td>
@@ -2329,4 +2629,16 @@ async function showSimulationRouteOnMap(routeStations, color) {
         routeModalMap.invalidateSize();
     }, 200);
 }
+
+// Global Klavye Kısayolları (Ctrl+K Arama Odaklanma)
+document.addEventListener('keydown', (e) => {
+    if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'k') {
+        const input = document.getElementById('mapSearchInput');
+        if (input) {
+            e.preventDefault();
+            input.focus();
+            input.select();
+        }
+    }
+});
 

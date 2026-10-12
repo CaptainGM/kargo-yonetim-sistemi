@@ -2836,11 +2836,11 @@ TURKEY_STATIONS = [
         "is_depot": False
     },
     {
-        "name": "Aksaray - Eskil Tuz Gölü Hub",
+        "name": "Aksaray - Eskil Dağıtım Şubesi",
         "city": "Aksaray",
         "district": "Eskil",
-        "latitude": 38.58,
-        "longitude": 33.41,
+        "latitude": 38.4025,
+        "longitude": 33.4147,
         "station_type": "branch",
         "daily_capacity": 6500,
         "is_depot": False

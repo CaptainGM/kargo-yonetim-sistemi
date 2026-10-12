@@ -349,26 +349,42 @@ class RouteOptimizer:
         fuel_liters_100km = vehicle.get('fuel_liters_per_100km', 10.0)
         fuel_type = vehicle.get('fuel_type', 'diesel')
         fuel_prices = self.params.get('fuel_prices', {})
-        unit_fuel_price = fuel_prices.get('gasoline_per_liter', 43.20) if fuel_type == 'gasoline' else fuel_prices.get('diesel_per_liter', 44.50)
+        unit_fuel_price = fuel_prices.get('gasoline_per_liter', 85.50) if fuel_type == 'gasoline' else fuel_prices.get('diesel_per_liter', 92.50)
 
         # 1. Gerçek Akaryakıt Tüketimi (Litre ve TL)
         fuel_liters = round((dist / 100.0) * fuel_liters_100km, 2)
         fuel_cost = round(dist * vehicle.get('fuel_consumption', (fuel_liters_100km * unit_fuel_price / 100.0)), 2)
 
-        # 2. Otoyol / HGS / Köprü Geçiş Tahmini
-        toll_cost = round(dist * 0.40, 2) if dist > 80 else 0.0
-
-        # 3. Sürücü Günlük Yevmiye & Operasyon Payı
+        # 2. Güzergah Tercihi (D-100 / E-5 Devlet Yolu vs O-4 / KMO Otoyol)
+        road_type = self.params.get('road_type', 'otoyol')
         speed_factor = vehicle.get('speed_factor', 1.0)
-        avg_speed = 75.0 * speed_factor
-        est_duration_hours = round(dist / max(avg_speed, 30.0), 1)
-        driver_cost = round(min(1250.0, max(150.0, est_duration_hours * 120.0)), 2)
 
-        # 4. Kiralama ve Toplam Operasyonel Maliyet
+        if road_type == 'devlet_yolu':
+            # D-100 / E-5: Trafik ışıkları, meskun mahal kısıtlamaları (65-72 km/s), 0 TL HGS/Köprü
+            avg_speed = 68.0 * speed_factor
+            toll_cost = 0.0
+            road_type_label = "D-100 / E-5 Devlet Yolu (Ücretsiz)"
+        else:
+            # O-4 / KMO / O-5: Bölünmüş otoyol, yüksek seyir hızı (92-105 km/s), HGS/Köprü geçiş tarifesi
+            avg_speed = 95.0 * speed_factor
+            toll_cost = round(dist * 0.65, 2) if dist > 60 else 0.0
+            road_type_label = "O-4 / KMO Anadolu Otoyolu (HGS)"
+
+        # 3. Sefer Süresi (Saat & Dakika)
+        est_duration_hours = round(dist / max(avg_speed, 30.0), 2)
+        total_mins = int(round(est_duration_hours * 60))
+        hours = total_mins // 60
+        mins = total_mins % 60
+        duration_formatted = f"{hours} sa {mins} dk" if hours > 0 else f"{mins} dk"
+
+        # 4. Sürücü Günlük Yevmiye & Operasyon Payı (Saatlik 160 TL, Min 250 TL, Maks 2.500 TL)
+        driver_cost = round(min(2500.0, max(250.0, est_duration_hours * 160.0)), 2)
+
+        # 5. Kiralama ve Toplam Operasyonel Maliyet
         rental_cost = vehicle.get('rental_cost', 0.0) if not vehicle.get('is_owned', True) else 0.0
         total_cost = round(fuel_cost + toll_cost + rental_cost + driver_cost, 2)
 
-        # 5. Karbon Ayak İzi (kg CO2)
+        # 6. Karbon Ayak İzi (kg CO2)
         co2_g_km = vehicle.get('co2_g_per_km', 250.0)
         co2_emission_kg = round((dist * co2_g_km) / 1000.0, 2)
 
@@ -410,6 +426,9 @@ class RouteOptimizer:
             'cost': total_cost,
             'co2_emission_kg': co2_emission_kg,
             'duration_hours': est_duration_hours,
+            'duration_formatted': duration_formatted,
+            'road_type': road_type,
+            'road_type_label': road_type_label,
             'weight': round(sum(c['weight'] for c in selected_cargos), 2),
             'cargo_count': len(selected_cargos),
             'is_rented': not bool(vehicle.get('is_owned', True)),

@@ -46,6 +46,7 @@ def handle_optimize(handler, data: Dict):
 
     vehicles = list(db.vehicles.find({'is_owned': 1}))
     params = db.parameters.find_one({'id': 1}) or {'cost_per_km': 1.0, 'rental_cost': 200.0, 'rental_capacity': 500}
+    params['road_type'] = data.get('road_type', 'otoyol')
 
     optimizer = RouteOptimizer(stations, cargos, vehicles, params, optimize_for)
     if problem_type == 'unlimited':
@@ -73,6 +74,10 @@ def handle_optimize(handler, data: Dict):
             'total_fuel_liters': route_info.get('fuel_liters', 0),
             'total_toll_cost': route_info.get('toll_cost', 0),
             'total_driver_cost': route_info.get('driver_cost', 0),
+            'duration_hours': route_info.get('duration_hours', 0),
+            'duration_formatted': route_info.get('duration_formatted', ''),
+            'road_type': route_info.get('road_type', 'otoyol'),
+            'road_type_label': route_info.get('road_type_label', ''),
             'co2_emission_kg': route_info.get('co2_emission_kg', 0),
             'total_weight': route_info.get('weight', 0),
             'cargo_count': route_info.get('cargo_count', 0),

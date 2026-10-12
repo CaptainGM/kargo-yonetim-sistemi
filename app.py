@@ -36,7 +36,8 @@ from handlers.optimize_handlers import (
 from handlers.admin_handlers import (
     handle_get_parameters, handle_update_parameters,
     handle_get_stats, handle_get_db_stats, handle_get_db_data,
-    handle_get_users, handle_delete_user, handle_get_reset_codes
+    handle_get_users, handle_delete_user, handle_get_reset_codes,
+    handle_market_fuel_check
 )
 
 
@@ -133,6 +134,8 @@ class KargoRequestHandler(SimpleHTTPRequestHandler):
             handle_compare_pending(self, data)
         elif path == '/api/route-geometry':
             handle_route_geometry(self, data)
+        elif path == '/api/market-fuel-check':
+            handle_market_fuel_check(self, data)
         else:
             BaseHandler.send_json(self, {'error': f'Geçersiz POST endpoint: {path}'}, 404)
 

@@ -140,10 +140,12 @@ def handle_forgot_password(handler, data: Dict):
             'message': 'Doğrulama kodu e-posta adresinize gönderildi'
         })
     else:
+        print(f"\n[GÜVENLİK / ŞİFRE SIFIRLAMA] Kullanıcı: {username} ({email}) -> Doğrulama Kodu: {code}\n")
         BaseHandler.send_json(handler, {
             'success': True,
-            'message': f'Doğrulama kodunuz: {code} (E-posta sunucusu bağlı değil)',
-            'code': code
+            'message': f'Doğrulama kodunuz: {code} (Demo modunda ekranda ve terminalde gösterilmektedir)',
+            'code': code,
+            'is_dev_mode': True
         })
 
 

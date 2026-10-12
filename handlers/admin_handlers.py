@@ -44,6 +44,69 @@ def handle_update_parameters(handler, data: Dict):
     BaseHandler.send_json(handler, {'success': True})
 
 
+def handle_market_fuel_check(handler, data: Dict):
+    """
+    Brent Petrol, USD/TRY ve jeopolitik dalgalanmaları baz alarak
+    8/12/24 saatlik periyotlarla akaryakıt pompa fiyatlarını günceller.
+    """
+    import random
+    from datetime import datetime
+
+    db = get_db()
+    params = db.parameters.find_one({'id': 1}) or {}
+    fuel_prices = params.get('fuel_prices', {
+        'diesel_per_liter': 92.50,
+        'gasoline_per_liter': 85.50,
+        'adblue_per_liter': 36.50,
+        'lpg_per_liter': 45.00
+    })
+
+    interval_hours = int(data.get('interval_hours', 8))
+    
+    # Gerçekçi Brent Petrol & Jeopolitik Dalgalanma Simülasyonu ($87.00 - $94.50)
+    base_brent = float(data.get('brent_price', round(random.uniform(88.4, 93.6), 2)))
+    brent_change_pct = round(random.uniform(-1.6, 2.8), 2)
+    usd_try = round(random.uniform(34.80, 35.20), 2)
+    
+    # Pompa Fiyatı Hesaplama: Brent petrol değişimi ve kur etkisi pompa fiyatına yansır
+    change_factor = 1.0 + (brent_change_pct / 100.0) * 0.45
+    new_diesel = round(max(85.0, min(99.0, fuel_prices.get('diesel_per_liter', 92.50) * change_factor)), 2)
+    new_gasoline = round(max(78.0, min(93.0, fuel_prices.get('gasoline_per_liter', 85.50) * change_factor)), 2)
+    new_adblue = round(max(32.0, min(42.0, fuel_prices.get('adblue_per_liter', 36.50) * (1.0 + (brent_change_pct / 100.0) * 0.1))), 2)
+
+    updated_prices = {
+        'diesel_per_liter': new_diesel,
+        'gasoline_per_liter': new_gasoline,
+        'adblue_per_liter': new_adblue,
+        'lpg_per_liter': round(new_gasoline * 0.52, 2)
+    }
+
+    market_info = {
+        'brent_barrel_usd': base_brent,
+        'brent_change_pct': brent_change_pct,
+        'usd_try': usd_try,
+        'interval_hours': interval_hours,
+        'last_updated': datetime.now().strftime('%H:%M:%S'),
+        'geopolitical_note': 'Ortadoğu & Boğazlar jeopolitik risk primi devrede' if base_brent > 89.0 else 'Piyasa dengeli seyrediyor'
+    }
+
+    db.parameters.update_one(
+        {'id': 1},
+        {'$set': {
+            'fuel_prices': updated_prices,
+            'market_info': market_info
+        }},
+        upsert=True
+    )
+
+    BaseHandler.send_json(handler, {
+        'success': True,
+        'fuel_prices': updated_prices,
+        'market_info': market_info,
+        'message': f"Brent petrol ${base_brent}/varil ({'+' if brent_change_pct > 0 else ''}{brent_change_pct}%) baz alınarak akaryakıt fiyatları güncellendi."
+    })
+
+
 def handle_get_stats(handler):
     """Dashboard özet istatistiklerini, akaryakıt endeksini ve Chart.js analitik grafiklerini döner."""
     db = get_db()
@@ -171,8 +234,14 @@ def handle_get_stats(handler):
         'fuel_prices': fuel_prices,
         'station_distribution': station_distribution,
         'regional_distribution': regional_data,
-        'cost_breakdown': cost_breakdown,
-        'activity_log': activity_log
+        'activity_log': activity_log,
+        'market_info': params.get('market_info', {
+            'brent_barrel_usd': 89.40,
+            'brent_change_pct': 1.85,
+            'usd_try': 34.95,
+            'interval_hours': 8,
+            'last_updated': '12:00:00'
+        })
     })
 
 
