@@ -1,30 +1,23 @@
 services:
   db:
-    image: mysql:8
+    image: mongo:7
     environment:
-      MYSQL_ROOT_PASSWORD: rootpass
-      MYSQL_DATABASE: kargo_sistemi
+      MONGO_INITDB_DATABASE: kargo_sistemi
     volumes:
-      - db_data:/var/lib/mysql
-    healthcheck:
-      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
-      interval: 5s
-      timeout: 5s
-      retries: 10
+      - mongo_data:/data/db
+    ports:
+      - "27017:27017"
 
   app:
     build: .
     depends_on:
-      db:
-        condition: service_healthy
+      - db
     environment:
-      DB_HOST: db
-      DB_PORT: 3306
-      DB_USER: root
-      DB_PASSWORD: rootpass
-      DB_NAME: kargo_sistemi
+      MONGO_URI: mongodb://db:27017/
+      MONGO_DB_NAME: kargo_sistemi
+      SERVER_PORT: 8000
     ports:
       - "8000:8000"
 
 volumes:
-  db_data:
+  mongo_data:

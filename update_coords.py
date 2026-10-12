@@ -1,36 +1,41 @@
-import os
-import mysql.connector
+# -*- coding: utf-8 -*-
+"""
+Kocaeli İstasyon Koordinatlarını Güncelleme Scripti (MongoDB)
+"""
+import database
 
-conn = mysql.connector.connect(
-    host=os.environ.get('DB_HOST', 'localhost'),
-    user=os.environ.get('DB_USER', 'root'),
-    password=os.environ.get('DB_PASSWORD', ''),
-    database=os.environ.get('DB_NAME', 'kargo_sistemi'),
-)
-cursor = conn.cursor()
+def update_coordinates():
+    if not database.check_connection():
+        print("[X] MongoDB sunucusuna bağlanılamadı!")
+        return
 
+    db = database.get_db()
 
-updates = [
-    ("Başiskele", 40.714025, 29.928362),
-    ("Çayırova", 40.8261, 29.3711),
-    ("Darıca", 40.7692, 29.3753),
-    ("Derince", 40.7550, 29.8314),
-    ("Dilovası", 40.7833, 29.5333),
-    ("Gebze", 40.8027, 29.4307),
-    ("Gölcük", 40.72, 29.82),
-    ("Kandıra", 41.0711, 30.1528),
-    ("Karamürsel", 40.6917, 29.6167),
-    ("Kartepe", 40.7533, 30.0224),
-    ("Körfez", 40.762527, 29.777346),
-    ("İzmit", 40.7654, 29.9408),
-]
+    updates = [
+        ("Umuttepe Kampüsü (KOÜ)", 40.8225, 29.9213, True),
+        ("Başiskele", 40.714025, 29.928362, False),
+        ("Çayırova", 40.8261, 29.3711, False),
+        ("Darıca", 40.7692, 29.3753, False),
+        ("Derince", 40.7550, 29.8314, False),
+        ("Dilovası", 40.7833, 29.5333, False),
+        ("Gebze", 40.8027, 29.4307, False),
+        ("Gölcük", 40.72, 29.82, False),
+        ("Kandıra", 41.0711, 30.1528, False),
+        ("Karamürsel", 40.6917, 29.6167, False),
+        ("Kartepe", 40.7533, 30.0224, False),
+        ("Körfez", 40.762527, 29.777346, False),
+        ("İzmit", 40.7654, 29.9408, False),
+    ]
 
-for name, lat, lon in updates:
-    cursor.execute("UPDATE stations SET latitude=%s, longitude=%s WHERE name=%s", (lat, lon, name))
-    print(f"{name} güncellendi: {cursor.rowcount} satır")
+    for name, lat, lon, is_depot in updates:
+        res = db.stations.update_one(
+            {'name': name},
+            {'$set': {'latitude': lat, 'longitude': lon, 'is_depot': is_depot}},
+            upsert=True
+        )
+        print(f"[*] {name}: ({lat}, {lon}) - Güncellendi (Matched: {res.matched_count}, Upserted: {res.upserted_id})")
 
-conn.commit()
-print("Tüm koordinatlar başarıyla güncellendi!")
+    print("\n[OK] Tüm istasyon koordinatları başarıyla güncellendi!")
 
-cursor.close()
-conn.close()
+if __name__ == '__main__':
+    update_coordinates()

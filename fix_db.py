@@ -1,71 +1,48 @@
 # -*- coding: utf-8 -*-
-# type: ignore
-"""Veritabanı düzeltme ve temizleme scripti"""
-import os
-import mysql.connector
-from mysql.connector import Error
-
-DB_CONFIG = {
-    'host': os.environ.get('DB_HOST', 'localhost'),
-    'port': int(os.environ.get('DB_PORT', 3306)),
-    'user': os.environ.get('DB_USER', 'root'),
-    'password': os.environ.get('DB_PASSWORD', ''),
-    'database': os.environ.get('DB_NAME', 'kargo_sistemi'),
-    'charset': 'utf8mb4',
-    'collation': 'utf8mb4_unicode_ci'
-}
+"""
+MongoDB Veritabanı Temizleme ve Sıfırlama Scripti
+Kargo ve rotaları temizler; istasyon ve araçları korur.
+"""
+import database
 
 def fix_database():
-    conn = mysql.connector.connect(**DB_CONFIG)
-    cursor = conn.cursor(buffered=True)
-    
-    try:
-        print("=" * 50)
-        print("VERİTABANI TEMİZLEME")
-        print("=" * 50)
-        
-     
-        cursor.execute("DELETE FROM route_cargos")
-        print("[OK] route_cargos temizlendi")
-        
-        cursor.execute("DELETE FROM routes")
-        print("[OK] routes temizlendi")
-        
-        
-        cursor.execute("DELETE FROM cargos")
-        print("[OK] cargos temizlendi")
-       
-        cursor.execute("SELECT id, name FROM stations ORDER BY id")
-        stations = cursor.fetchall()
-        print(f"\n[İSTASYONLAR] {len(stations)} adet:")
-        
-        has_umuttepe = False
-        for row in stations:
-            station_id = row[0]
-            station_name = str(row[1]) if row[1] else ""
-            is_depot = 'umuttepe' in station_name.lower() or 'koü' in station_name.lower() or 'kampüs' in station_name.lower()
-            if is_depot:
-                has_umuttepe = True
-                print(f"  {station_id}: {station_name} [DEPO]")
-            else:
-                print(f"  {station_id}: {station_name}")
-        
-        if not has_umuttepe:
-            print("\n[!] Umuttepe Kampüsü bulunamadı, ekleniyor...")
-            cursor.execute("INSERT INTO stations (name, latitude, longitude) VALUES ('Umuttepe Kampüsü (KOÜ)', 40.8225, 29.9213)")
-            print("[OK] Umuttepe Kampüsü eklendi")
-        
-        conn.commit()
-        
-        print("\n" + "=" * 50)
-        print("[OK] Veritabanı temizlendi!")
-        print("=" * 50)
-        
-    except Error as e:
-        print(f"Veritabanı Hatası: {e}")
-    finally:
-        cursor.close()
-        conn.close()
+    print("=" * 55)
+    print("   LOGIROUTE - MONGODB TEMİZLEME VE SIFIRLAMA")
+    print("=" * 55)
+
+    if not database.check_connection():
+        print("[X] MongoDB sunucusuna bağlanılamadı!")
+        return
+
+    db = database.get_db()
+
+    # Rotaları ve kargoları sil
+    r_del = db.routes.delete_many({})
+    print(f"[OK] {r_del.deleted_count} adet rota silindi.")
+
+    c_del = db.cargos.delete_many({})
+    print(f"[OK] {c_del.deleted_count} adet kargo silindi.")
+
+    # Ana Depo Hub kontrolü
+    depot = db.stations.find_one({'is_depot': True})
+    if not depot:
+        sid = database.get_next_id('stations')
+        db.stations.insert_one({
+            'id': sid,
+            'name': 'Marmara Lojistik Ana Hub (Kocaeli)',
+            'city': 'Kocaeli',
+            'district': 'İzmit',
+            'latitude': 40.8225,
+            'longitude': 29.9213,
+            'is_active': 1,
+            'is_depot': True
+        })
+        print(f"[OK] Ana Lojistik Depo Hub yeniden eklendi (ID: {sid})")
+    else:
+        print(f"[OK] Ana Lojistik Depo Hub ({depot['name']}) doğrulandı.")
+
+    print("\n[OK] Veritabanı başarıyla sıfırlandı ve temizlendi!")
+    print("=" * 55)
 
 if __name__ == '__main__':
     confirm = input("Tüm kargolar ve rotalar silinecek. Emin misiniz? (e/h): ")

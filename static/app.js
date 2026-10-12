@@ -31,60 +31,50 @@ let myRouteMap = null;
 
 const scenarios = {
     1: [
-        { district: 'Başiskele', count: 10, weight: 120 },
-        { district: 'Çayırova', count: 8, weight: 80 },
-        { district: 'Darıca', count: 15, weight: 200 },
-        { district: 'Derince', count: 10, weight: 150 },
-        { district: 'Dilovası', count: 12, weight: 180 },
-        { district: 'Gebze', count: 5, weight: 70 },
-        { district: 'Gölcük', count: 7, weight: 90 },
-        { district: 'Kandıra', count: 6, weight: 60 },
-        { district: 'Karamürsel', count: 9, weight: 110 },
-        { district: 'Kartepe', count: 11, weight: 130 },
-        { district: 'Körfez', count: 6, weight: 75 },
-        { district: 'İzmit', count: 14, weight: 160 }
+        // Senaryo 1: Marmara Bölgesel Dağıtım Ağı
+        { district: 'Kadıköy', count: 12, weight: 350 },
+        { district: 'Pendik', count: 15, weight: 600 },
+        { district: 'Gebze', count: 20, weight: 1100 },
+        { district: 'İzmit', count: 18, weight: 850 },
+        { district: 'Adapazarı', count: 14, weight: 700 },
+        { district: 'Nilüfer', count: 16, weight: 950 },
+        { district: 'Çorlu', count: 10, weight: 650 },
+        { district: 'Yalova', count: 8, weight: 400 }
     ],
     2: [
-        { district: 'Başiskele', count: 40, weight: 200 },
-        { district: 'Çayırova', count: 35, weight: 175 },
-        { district: 'Darıca', count: 10, weight: 150 },
-        { district: 'Derince', count: 5, weight: 100 },
-        { district: 'Dilovası', count: 0, weight: 0 },
-        { district: 'Gebze', count: 8, weight: 120 },
-        { district: 'Gölcük', count: 0, weight: 0 },
-        { district: 'Kandıra', count: 0, weight: 0 },
-        { district: 'Karamürsel', count: 0, weight: 0 },
-        { district: 'Kartepe', count: 0, weight: 0 },
-        { district: 'Körfez', count: 0, weight: 0 },
-        { district: 'İzmit', count: 20, weight: 160 }
+        // Senaryo 2: Metropoller Arası Ana Hat (Linehaul Express: İst - Kocaeli - Ankara - İzmir)
+        { district: 'İkitelli', count: 25, weight: 2400 },
+        { district: 'Gebze', count: 20, weight: 1800 },
+        { district: 'Nilüfer', count: 18, weight: 1600 },
+        { district: 'OSTİM', count: 22, weight: 2200 },
+        { district: 'Çankaya', count: 25, weight: 2500 },
+        { district: 'Eskişehir', count: 14, weight: 1200 },
+        { district: 'Konak', count: 20, weight: 2100 }
     ],
     3: [
-        { district: 'Başiskele', count: 0, weight: 0 },
-        { district: 'Çayırova', count: 3, weight: 700 },
-        { district: 'Darıca', count: 0, weight: 0 },
-        { district: 'Derince', count: 0, weight: 0 },
-        { district: 'Dilovası', count: 4, weight: 800 },
-        { district: 'Gebze', count: 5, weight: 900 },
-        { district: 'Gölcük', count: 0, weight: 0 },
-        { district: 'Kandıra', count: 0, weight: 0 },
-        { district: 'Karamürsel', count: 0, weight: 0 },
-        { district: 'Kartepe', count: 0, weight: 0 },
-        { district: 'Körfez', count: 0, weight: 0 },
-        { district: 'İzmit', count: 5, weight: 300 }
+        // Senaryo 3: Ege & Akdeniz Kargo Koridoru
+        { district: 'Bornova', count: 15, weight: 900 },
+        { district: 'Efeler', count: 12, weight: 600 },
+        { district: 'Bodrum', count: 14, weight: 800 },
+        { district: 'Pamukkale', count: 16, weight: 1100 },
+        { district: 'Muratpaşa', count: 22, weight: 1800 },
+        { district: 'Akdeniz', count: 18, weight: 1500 },
+        { district: 'Seyhan', count: 20, weight: 1700 }
     ],
     4: [
-        { district: 'Başiskele', count: 30, weight: 300 },
-        { district: 'Çayırova', count: 0, weight: 0 },
-        { district: 'Darıca', count: 0, weight: 0 },
-        { district: 'Derince', count: 0, weight: 0 },
-        { district: 'Dilovası', count: 0, weight: 0 },
-        { district: 'Gebze', count: 0, weight: 0 },
-        { district: 'Gölcük', count: 15, weight: 220 },
-        { district: 'Kandıra', count: 5, weight: 250 },
-        { district: 'Karamürsel', count: 20, weight: 180 },
-        { district: 'Kartepe', count: 10, weight: 200 },
-        { district: 'Körfez', count: 8, weight: 400 },
-        { district: 'İzmit', count: 0, weight: 0 }
+        // Senaryo 4: Türkiye Geneli 81 İl Sevk Dağıtımı (Tüm Coğrafi Bölgeler)
+        { district: 'Kadıköy', count: 10, weight: 800 },
+        { district: 'Çankaya', count: 12, weight: 1200 },
+        { district: 'Konak', count: 10, weight: 900 },
+        { district: 'Nilüfer', count: 8, weight: 700 },
+        { district: 'Muratpaşa', count: 10, weight: 850 },
+        { district: 'İlkadım', count: 8, weight: 650 },
+        { district: 'Trabzon', count: 7, weight: 600 },
+        { district: 'Melikgazi', count: 9, weight: 750 },
+        { district: 'Selçuklu', count: 10, weight: 850 },
+        { district: 'Şehitkamil', count: 12, weight: 1100 },
+        { district: 'Kayapınar', count: 8, weight: 700 },
+        { district: 'Yakutiye', count: 6, weight: 500 }
     ]
 };
 
@@ -565,42 +555,261 @@ function renderCharts(stats) {
     });
 }
 
+let darkLayer = null;
+let standardLayer = null;
+let isDarkMap = false;
+let stationMarkers = [];
+let routeLayers = [];
+let routeLinesVisible = true;
+let simulationMarker = null;
+let simulationInterval = null;
+let currentSimulationCoords = [];
+
+const TURKEY_REGIONS_MAP = {
+    "Marmara": { center: [40.7, 29.5], zoom: 8, cities: ["Kocaeli", "İstanbul", "Bursa", "Sakarya", "Yalova", "Tekirdağ", "Edirne", "Kırklareli", "Balıkesir", "Çanakkale", "Bilecik"] },
+    "Ege": { center: [38.3, 27.8], zoom: 8, cities: ["İzmir", "Manisa", "Aydın", "Denizli", "Muğla", "Afyonkarahisar", "Kütahya", "Uşak"] },
+    "İç Anadolu": { center: [39.3, 33.2], zoom: 7, cities: ["Ankara", "Konya", "Eskişehir", "Kayseri", "Sivas", "Aksaray", "Kırıkkale", "Kırşehir", "Nevşehir", "Niğde", "Karaman", "Yozgat", "Çankırı"] },
+    "Akdeniz": { center: [36.9, 32.5], zoom: 7, cities: ["Antalya", "Adana", "Mersin", "Hatay", "Kahramanmaraş", "Osmaniye", "Isparta", "Burdur"] },
+    "Karadeniz": { center: [41.2, 35.5], zoom: 7, cities: ["Samsun", "Trabzon", "Ordu", "Giresun", "Rize", "Artvin", "Zonguldak", "Bolu", "Düzce", "Karabük", "Bartın", "Kastamonu", "Sinop", "Amasya", "Çorum", "Tokat", "Gümüşhane", "Bayburt"] },
+    "Güneydoğu Anadolu": { center: [37.5, 39.5], zoom: 7, cities: ["Gaziantep", "Diyarbakır", "Şanlıurfa", "Batman", "Mardin", "Adıyaman", "Siirt", "Şırnak", "Kilis"] },
+    "Doğu Anadolu": { center: [39.2, 41.8], zoom: 7, cities: ["Malatya", "Elazığ", "Erzurum", "Van", "Erzincan", "Kars", "Ağrı", "Muş", "Bitlis", "Bingöl", "Tunceli", "Iğdır", "Ardahan", "Hakkari"] }
+};
+
 async function initMainMap() {
     await loadStationsData();
 
     if (!mainMap) {
-        mainMap = L.map('mainMap').setView([40.7654, 29.9408], 10);
-        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-            attribution: ' OpenStreetMap'
+        // Tüm Türkiye'yi kapsayan merkez koordinatı ve görünüm
+        mainMap = L.map('mainMap', {
+            zoomControl: true,
+            preferCanvas: true
+        }).setView([39.1, 35.2], 6);
+
+        standardLayer = L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            attribution: '© OpenStreetMap katkıda bulunanlar',
+            maxZoom: 19
         }).addTo(mainMap);
+
+        darkLayer = L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {
+            attribution: '© CartoDB DarkMatter',
+            maxZoom: 19
+        });
     }
 
-    mainMap.eachLayer(layer => {
-        if (layer instanceof L.Marker || layer instanceof L.Polyline) {
-            mainMap.removeLayer(layer);
-        }
-    });
+    // Harita üzerindeki mevcut marker ve rotaları temizle
+    stationMarkers.forEach(m => mainMap.removeLayer(m));
+    stationMarkers = [];
+    routeLayers.forEach(l => mainMap.removeLayer(l));
+    routeLayers = [];
 
+    // İl seçim kutusunu doldur
+    populateMapCityFilter();
+
+    // HUD Sayaçlarını Güncelle
+    updateMapHud();
+
+    // İstasyon markerlarını oluştur
     stations.forEach(station => {
+        const isDepot = Boolean(station.is_depot) || station.name.toLowerCase().includes('hub') || station.name.toLowerCase().includes('depo');
+        
+        const markerHtml = isDepot
+            ? `<div style="background:linear-gradient(135deg, #ef4444, #b91c1c); width:28px; height:28px; border-radius:50%; border:3px solid white; box-shadow:0 0 14px rgba(239,68,68,0.7); display:flex; align-items:center; justify-content:center; color:white; font-size:12px;"><i class="fas fa-warehouse"></i></div>`
+            : `<div style="background:linear-gradient(135deg, #3b82f6, #1d4ed8); width:22px; height:22px; border-radius:50%; border:2px solid white; box-shadow:0 2px 8px rgba(0,0,0,0.3); display:flex; align-items:center; justify-content:center; color:white; font-size:10px;"><i class="fas fa-cube"></i></div>`;
 
-        const isDepot = station.name.toLowerCase().includes('umuttepe') || station.name.toLowerCase().includes('koü') || station.name.toLowerCase().includes('kampüs');
         const icon = L.divIcon({
             className: 'custom-marker',
-            html: `<div style="background:${isDepot ? '#e74c3c' : '#3498db'}; width:24px; height:24px; border-radius:50%; border:3px solid white; box-shadow:0 2px 5px rgba(0,0,0,0.3);"></div>`,
-            iconSize: [24, 24],
-            iconAnchor: [12, 12]
+            html: markerHtml,
+            iconSize: isDepot ? [28, 28] : [22, 22],
+            iconAnchor: isDepot ? [14, 14] : [11, 11]
         });
 
-        L.marker([station.latitude, station.longitude], { icon })
-            .bindPopup(`<b>${station.name}</b>${isDepot ? '<br><i style="color:#e74c3c">Varış Noktası (KOÜ)</i>' : ''}<br>Enlem: ${station.latitude}<br>Boylam: ${station.longitude}`)
+        const popupContent = `
+            <div style="font-family:'Inter',sans-serif; min-width:180px; padding:4px;">
+                <div style="font-size:14px; font-weight:700; color:#0f172a; margin-bottom:4px;">${station.name}</div>
+                ${isDepot ? '<div style="display:inline-block; background:#fee2e2; color:#ef4444; font-size:11px; font-weight:700; padding:2px 8px; border-radius:12px; margin-bottom:6px;"><i class="fas fa-star"></i> Ana Lojistik Hub (Merkez Depo)</div>' : '<div style="font-size:12px; color:#64748b; margin-bottom:4px;"><i class="fas fa-map-pin"></i> Dağıtım İstasyonu</div>'}
+                <div style="font-size:11px; color:#475569; border-top:1px solid #e2e8f0; padding-top:4px;">
+                    <div><strong>İl / İlçe:</strong> ${station.city || '-'} / ${station.district || '-'}</div>
+                    <div><strong>Koordinat:</strong> ${station.latitude.toFixed(4)}, ${station.longitude.toFixed(4)}</div>
+                </div>
+            </div>
+        `;
+
+        const marker = L.marker([station.latitude, station.longitude], { icon })
+            .bindPopup(popupContent)
             .addTo(mainMap);
+
+        marker.stationData = station;
+        stationMarkers.push(marker);
     });
 
-    if (currentUser.role === 'admin') {
+    // Rotaları haritaya çiz
+    if (currentUser && currentUser.role === 'admin') {
         await showRoutesOnMap(mainMap);
     }
 
-    setTimeout(() => mainMap.invalidateSize(), 100);
+    // Leaflet'in tam ekran oturmasını sağla
+    setTimeout(() => {
+        if (mainMap) mainMap.invalidateSize();
+    }, 150);
+}
+
+function updateMapHud() {
+    const elStation = document.getElementById('hudStationCount');
+    const elCity = document.getElementById('hudCityCount');
+    const elVehicle = document.getElementById('hudVehicleCount');
+
+    if (elStation) elStation.textContent = stations.length;
+    if (elCity) {
+        const uniqueCities = new Set(stations.map(s => s.city).filter(Boolean));
+        elCity.textContent = uniqueCities.size || '81';
+    }
+}
+
+function populateMapCityFilter() {
+    const select = document.getElementById('mapCityFilter');
+    if (!select) return;
+
+    const cities = Array.from(new Set(stations.map(s => s.city).filter(Boolean))).sort((a, b) => a.localeCompare(b, 'tr'));
+    
+    select.innerHTML = '<option value="all">Hızlı İl Seç (81 İl)...</option>' +
+        cities.map(c => `<option value="${c}">${c}</option>`).join('');
+}
+
+function filterMapByRegion(region) {
+    if (!mainMap) return;
+    if (region === 'all') {
+        zoomToTurkey();
+        return;
+    }
+    const reg = TURKEY_REGIONS_MAP[region];
+    if (reg) {
+        mainMap.flyTo(reg.center, reg.zoom, { duration: 1.2 });
+    }
+}
+
+function filterMapByCity(city) {
+    if (!mainMap) return;
+    if (city === 'all') {
+        zoomToTurkey();
+        return;
+    }
+    const match = stations.find(s => s.city === city);
+    if (match) {
+        mainMap.flyTo([match.latitude, match.longitude], 11, { duration: 1.2 });
+        const marker = stationMarkers.find(m => m.stationData && m.stationData.id === match.id);
+        if (marker) {
+            setTimeout(() => marker.openPopup(), 1200);
+        }
+    }
+}
+
+function searchMapStations(query) {
+    if (!mainMap) return;
+    const q = query.trim().toLowerCase();
+    if (!q) {
+        stationMarkers.forEach(m => {
+            if (m.getElement()) m.getElement().style.opacity = '1';
+        });
+        return;
+    }
+
+    let firstMatch = null;
+    stationMarkers.forEach(m => {
+        const s = m.stationData || {};
+        const text = `${s.name || ''} ${s.city || ''} ${s.district || ''}`.toLowerCase();
+        const el = m.getElement();
+        if (text.includes(q)) {
+            if (el) el.style.opacity = '1';
+            if (!firstMatch) firstMatch = m;
+        } else {
+            if (el) el.style.opacity = '0.25';
+        }
+    });
+
+    if (firstMatch) {
+        mainMap.panTo(firstMatch.getLatLng());
+        firstMatch.openPopup();
+    }
+}
+
+function zoomToTurkey() {
+    if (mainMap) {
+        mainMap.flyTo([39.1, 35.2], 6, { duration: 1 });
+        const regSelect = document.getElementById('mapRegionFilter');
+        const citySelect = document.getElementById('mapCityFilter');
+        if (regSelect) regSelect.value = 'all';
+        if (citySelect) citySelect.value = 'all';
+    }
+}
+
+function toggleDarkMapMode() {
+    if (!mainMap) return;
+    isDarkMap = !isDarkMap;
+    const btn = document.getElementById('btnMapTheme');
+    if (isDarkMap) {
+        if (mainMap.hasLayer(standardLayer)) mainMap.removeLayer(standardLayer);
+        darkLayer.addTo(mainMap);
+        if (btn) btn.innerHTML = '<i class="fas fa-sun"></i>';
+    } else {
+        if (mainMap.hasLayer(darkLayer)) mainMap.removeLayer(darkLayer);
+        standardLayer.addTo(mainMap);
+        if (btn) btn.innerHTML = '<i class="fas fa-moon"></i>';
+    }
+}
+
+function toggleMapRoutes() {
+    routeLinesVisible = !routeLinesVisible;
+    const btn = document.getElementById('btnToggleRoutes');
+    if (btn) btn.classList.toggle('active', routeLinesVisible);
+
+    routeLayers.forEach(layer => {
+        if (routeLinesVisible) {
+            if (!mainMap.hasLayer(layer)) mainMap.addLayer(layer);
+        } else {
+            if (mainMap.hasLayer(layer)) mainMap.removeLayer(layer);
+        }
+    });
+}
+
+function toggleVehicleSimulation() {
+    const btn = document.getElementById('btnSimulate');
+    if (simulationInterval) {
+        clearInterval(simulationInterval);
+        simulationInterval = null;
+        if (simulationMarker && mainMap) mainMap.removeLayer(simulationMarker);
+        simulationMarker = null;
+        if (btn) {
+            btn.classList.remove('active');
+            btn.innerHTML = '<i class="fas fa-play"></i> Simülasyon';
+        }
+        return;
+    }
+
+    if (!currentSimulationCoords || currentSimulationCoords.length === 0) {
+        alert('Simülasyon için aktif bir rota bulunamadı. Lütfen önce "Rota Planla" bölümünden rota oluşturun.');
+        return;
+    }
+
+    if (btn) {
+        btn.classList.add('active');
+        btn.innerHTML = '<i class="fas fa-stop"></i> Durdur';
+    }
+
+    const truckIcon = L.divIcon({
+        className: 'sim-truck-marker',
+        html: `<div style="background:#10b981; color:white; width:34px; height:34px; border-radius:50%; border:3px solid white; box-shadow:0 0 15px rgba(16,185,129,0.8); display:flex; align-items:center; justify-content:center; font-size:16px;"><i class="fas fa-truck-fast"></i></div>`,
+        iconSize: [34, 34],
+        iconAnchor: [17, 17]
+    });
+
+    let step = 0;
+    simulationMarker = L.marker(currentSimulationCoords[0], { icon: truckIcon }).addTo(mainMap);
+
+    simulationInterval = setInterval(() => {
+        step = (step + 1) % currentSimulationCoords.length;
+        const pos = currentSimulationCoords[step];
+        simulationMarker.setLatLng(pos);
+    }, 80);
 }
 
 async function showRoutesOnMap(map) {
@@ -608,17 +817,32 @@ async function showRoutesOnMap(map) {
         const res = await fetch('/api/routes');
         const routes = await res.json();
 
-        const recentRoutes = routes.slice(0, 5);
+        routeLayers.forEach(l => {
+            if (map.hasLayer(l)) map.removeLayer(l);
+        });
+        routeLayers = [];
+        currentSimulationCoords = [];
+
+        const elRoute = document.getElementById('hudRouteCount');
+        if (elRoute) elRoute.textContent = routes.length;
+
+        const recentRoutes = routes.slice(0, 8);
 
         for (let i = 0; i < recentRoutes.length; i++) {
             const route = recentRoutes[i];
             if (route.route_data) {
-                const routeStations = JSON.parse(route.route_data);
-                await drawRoute(map, routeStations, routeColors[i % routeColors.length]);
+                let routeStations = [];
+                try {
+                    routeStations = typeof route.route_data === 'string' ? JSON.parse(route.route_data) : route.route_data;
+                } catch(e) {
+                    routeStations = route.route_names || [];
+                }
+                const color = routeColors[i % routeColors.length];
+                await drawRoute(map, routeStations, color);
             }
         }
     } catch (err) {
-        console.error('Rotalar yuklenemedi:', err);
+        console.error('Rotalar yüklenemedi:', err);
     }
 }
 
@@ -634,14 +858,19 @@ async function drawRoute(map, stationNames, color) {
 
         if (data.geometry && data.geometry.coordinates) {
             const coordinates = data.geometry.coordinates.map(c => [c[1], c[0]]);
-            L.polyline(coordinates, {
+            const polyline = L.polyline(coordinates, {
                 color: color,
-                weight: 4,
-                opacity: 0.8
+                weight: 5,
+                opacity: 0.85
             }).addTo(map);
+
+            routeLayers.push(polyline);
+            if (currentSimulationCoords.length === 0) {
+                currentSimulationCoords = coordinates;
+            }
         }
     } catch (err) {
-        console.error('Rota cizilemedi:', err);
+        console.error('Rota çizilemedi:', err);
     }
 }
 
@@ -697,18 +926,8 @@ function getStatusText(status) {
 function showCargoModal() {
     loadStationsData().then(() => {
         const select = document.getElementById('cargoStation');
-
-        const cargoStations = stations.filter(s => {
-            const name = s.name.toLowerCase();
-            return !name.includes('umuttepe') &&
-                !name.includes('koü') &&
-                !name.includes('kou') &&
-                !name.includes('kampüs') &&
-                !name.includes('kampus') &&
-                !name.includes('üniversite') &&
-                !name.includes('universite');
-        });
-        select.innerHTML = cargoStations.map(s => `<option value="${s.id}">${s.name}</option>`).join('');
+        const cargoStations = stations.filter(s => !s.is_depot);
+        select.innerHTML = cargoStations.map(s => `<option value="${s.id}">${s.name} (${s.city || ''})</option>`).join('');
         document.getElementById('cargoModal').classList.add('active');
     });
 }
@@ -753,19 +972,27 @@ async function loadStations() {
     await loadStationsData();
 
     const tbody = document.getElementById('stationsTable');
-    tbody.innerHTML = stations.map(s => `
+    tbody.innerHTML = stations.map(s => {
+        const isDepot = Boolean(s.is_depot);
+        return `
         <tr>
-            <td>${s.id}</td>
-            <td>${s.name}</td>
-            <td>${s.latitude}</td>
-            <td>${s.longitude}</td>
+            <td><strong>#${s.id}</strong></td>
             <td>
-                <button onclick="deleteStation(${s.id})" class="btn btn-danger btn-sm">
+                <div style="display:flex; align-items:center; gap:8px;">
+                    <i class="fas ${isDepot ? 'fa-warehouse text-danger' : 'fa-map-pin text-primary'}"></i>
+                    <strong>${s.name}</strong>
+                    ${isDepot ? '<span style="background:#fee2e2; color:#ef4444; font-size:10px; font-weight:700; padding:2px 6px; border-radius:10px;">ANA HUB</span>' : ''}
+                </div>
+            </td>
+            <td>${s.latitude.toFixed(4)}</td>
+            <td>${s.longitude.toFixed(4)}</td>
+            <td>
+                <button onclick="deleteStation(${s.id})" class="btn btn-danger btn-sm" title="İstasyonu Sil">
                     <i class="fas fa-trash"></i>
                 </button>
             </td>
         </tr>
-    `).join('');
+    `}).join('');
 }
 
 function showStationModal() {
@@ -781,8 +1008,11 @@ async function handleAddStation(e) {
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({
                 name: document.getElementById('stationName').value,
+                city: document.getElementById('stationCity') ? document.getElementById('stationCity').value : '',
+                district: document.getElementById('stationDistrict') ? document.getElementById('stationDistrict').value : '',
                 latitude: document.getElementById('stationLat').value,
-                longitude: document.getElementById('stationLon').value
+                longitude: document.getElementById('stationLon').value,
+                is_depot: document.getElementById('stationIsDepot') ? document.getElementById('stationIsDepot').checked : false
             })
         });
 
@@ -791,23 +1021,23 @@ async function handleAddStation(e) {
         if (data.success) {
             closeModal('stationModal');
             loadStations();
-            alert('Istasyon eklendi!');
+            alert('İstasyon başarıyla eklendi!');
         } else {
-            alert(data.error || 'Istasyon eklenemedi');
+            alert(data.error || 'İstasyon eklenemedi');
         }
     } catch (err) {
-        alert('Baglanti hatasi');
+        alert('Bağlantı hatası');
     }
 }
 
 async function deleteStation(id) {
-    if (!confirm('Bu istasyonu silmek istediginize emin misiniz?')) return;
+    if (!confirm('Bu istasyonu silmek istediğinize emin misiniz?')) return;
 
     try {
         await fetch(`/api/stations/${id}`, { method: 'DELETE' });
         loadStations();
     } catch (err) {
-        alert('Silme hatasi');
+        alert('Silme hatası');
     }
 }
 
@@ -817,21 +1047,59 @@ async function loadVehicles() {
         const vehicles = await res.json();
 
         const tbody = document.getElementById('vehiclesTable');
-        tbody.innerHTML = vehicles.map(v => `
+        tbody.innerHTML = vehicles.map(v => {
+            const vType = v.type || 'medium_truck';
+            const icon = v.icon || 'fa-truck';
+            const cat = v.category || 'Standart Dağıtım';
+            const vol = v.volume_m3 ? `${v.volume_m3} m³` : '-';
+            const rental = v.rental_cost > 0 ? `${v.rental_cost} TL` : '0 TL (Özmal)';
+            return `
             <tr>
-                <td>${v.id}</td>
-                <td>${v.name}</td>
-                <td>${v.capacity}</td>
-                <td>${v.rental_cost} birim</td>
-                <td>${v.fuel_consumption} lt/km</td>
-                <td><span class="status ${v.is_owned ? 'status-assigned' : 'status-pending'}">${v.is_owned ? 'Sahip' : 'Kiralik'}</span></td>
+                <td><strong style="color: #0f172a; font-weight:700;">#${v.id}</strong></td>
                 <td>
-                    <button onclick="deleteVehicle(${v.id})" class="btn btn-danger btn-sm"><i class="fas fa-trash"></i></button>
+                    <div style="display:flex; align-items:center; gap:10px;">
+                        <i class="fas ${icon}" style="color:${v.color || '#6366f1'}; font-size:18px;"></i>
+                        <div>
+                            <div style="color: #0f172a; font-weight:700; font-size: 14px;">${v.name}</div>
+                            <div style="font-size:11px; color:#475569; margin-top:2px;">
+                                ${v.plate ? `<span style="display:inline-block; background:#0f172a; color:#f8fafc; padding:1px 6px; border-radius:4px; font-weight:700; font-size:10px; letter-spacing:0.5px; margin-right:6px;">${v.plate}</span>` : ''}
+                                <span>${v.description || ''}</span>
+                            </div>
+                        </div>
+                    </div>
+                </td>
+                <td><span class="vehicle-type-badge vehicle-type-${vType}"><i class="fas ${icon}"></i> ${cat}</span></td>
+                <td><strong style="color: #0f172a; font-weight: 700;">${v.capacity.toLocaleString('tr-TR')} kg</strong></td>
+                <td style="color: #334155; font-weight: 500;">${vol}</td>
+                <td><span style="color:#059669; font-weight:700; background:rgba(5,150,105,0.08); padding:3px 8px; border-radius:6px;">${v.fuel_consumption} TL/km</span></td>
+                <td style="color: #334155; font-weight: 500;">${rental}</td>
+                <td><span class="status ${v.is_owned ? 'status-assigned' : 'status-pending'}">${v.is_owned ? 'Özmal Filo' : 'Kiralık'}</span></td>
+                <td>
+                    <button onclick="deleteVehicle(${v.id})" class="btn btn-danger btn-sm" title="Aracı Sil"><i class="fas fa-trash"></i></button>
                 </td>
             </tr>
-        `).join('');
+        `}).join('');
     } catch (err) {
-        console.error('Araclar yuklenemedi:', err);
+        console.error('Araçlar yüklenemedi:', err);
+    }
+}
+
+function onVehicleTypeChange(type) {
+    const presets = {
+        'courier': { cap: 50, vol: 0.3, fuel: 0.35, rental: 80, name: 'Moto Kurye - Honda CBF 150 (Express)' },
+        'van': { cap: 400, vol: 4.2, fuel: 0.75, rental: 180, name: 'Panelvan - Fiat Doblo Maxi (Hafif Ticari)' },
+        'light_truck': { cap: 1000, vol: 12.5, fuel: 1.15, rental: 280, name: 'Dağıtım Kamyoneti - Ford Transit 350L' },
+        'medium_truck': { cap: 2500, vol: 28.0, fuel: 1.85, rental: 450, name: 'Bölgesel Kamyon - Isuzu NPR Long' },
+        'heavy_truck': { cap: 6000, vol: 50.0, fuel: 3.10, rental: 750, name: 'Ağır Hizmet Kamyonu - Mercedes-Benz Axor' },
+        'trailer': { cap: 15000, vol: 95.0, fuel: 4.60, rental: 1200, name: 'Mega Treyler TIR - Scania R450 Highline' }
+    };
+    const p = presets[type];
+    if (p) {
+        document.getElementById('vehicleName').value = p.name;
+        document.getElementById('vehicleCapacity').value = p.cap;
+        document.getElementById('vehicleVolume').value = p.vol;
+        document.getElementById('vehicleFuel').value = p.fuel;
+        document.getElementById('vehicleRentalCost').value = p.rental;
     }
 }
 
@@ -843,13 +1111,19 @@ async function handleAddVehicle(e) {
     e.preventDefault();
 
     try {
+        const typeEl = document.getElementById('vehicleType');
         const res = await fetch('/api/vehicles', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({
                 name: document.getElementById('vehicleName').value,
-                capacity: document.getElementById('vehicleCapacity').value,
-                fuel_consumption: document.getElementById('vehicleFuel').value
+                type: typeEl ? typeEl.value : 'truck',
+                category: typeEl ? typeEl.selectedOptions[0].text : 'Lojistik',
+                capacity: parseInt(document.getElementById('vehicleCapacity').value),
+                volume_m3: parseFloat(document.getElementById('vehicleVolume') ? document.getElementById('vehicleVolume').value : 10),
+                fuel_consumption: parseFloat(document.getElementById('vehicleFuel').value),
+                rental_cost: parseFloat(document.getElementById('vehicleRentalCost') ? document.getElementById('vehicleRentalCost').value : 0),
+                is_owned: parseInt(document.getElementById('vehicleIsOwned') ? document.getElementById('vehicleIsOwned').value : 1)
             })
         });
 
@@ -858,12 +1132,12 @@ async function handleAddVehicle(e) {
         if (data.success) {
             closeModal('vehicleModal');
             loadVehicles();
-            alert('Arac eklendi!');
+            alert('Lojistik aracı başarıyla eklendi!');
         } else {
-            alert(data.error || 'Arac eklenemedi');
+            alert(data.error || 'Araç eklenemedi');
         }
     } catch (err) {
-        alert('Baglanti hatasi');
+        alert('Bağlantı hatası');
     }
 }
 
@@ -904,18 +1178,18 @@ async function loadPendingCargos() {
             const statusColor = c.status === 'pending' ? '#ffc107' : '#28a745';
             const statusText = c.status === 'pending' ? 'Bekliyor' : 'Atandi';
             const rowStyle = c.status === 'assigned' ? 'background-color: rgba(40, 167, 69, 0.1);' : '';
-            html += `<tr style="${rowStyle}">
+            html += `<tr style="${rowStyle}; color:#1e293b;">
                 <td><input type="checkbox" class="cargo-checkbox" value="${c.id}" ${isChecked} onchange="updateCargoSelection(${c.id}, this.checked)"></td>
-                <td>${c.id}</td>
-                <td>${c.station_name}</td>
-                <td>${c.weight}</td>
+                <td><strong>#${c.id}</strong></td>
+                <td><strong style="color:#0f172a;">${c.station_name}</strong></td>
+                <td><strong>${c.weight} kg</strong></td>
                 <td><span style="color:${statusColor}; font-weight:bold;">${statusText}</span></td>
-                <td>${formattedDate}</td>
+                <td style="color:#475569;">${formattedDate}</td>
             </tr>`;
         });
 
         const totalWeight = allCargos.reduce((sum, c) => sum + c.weight, 0);
-        html += `<tr style="font-weight:bold;background:#e3f2fd;"><td></td><td></td><td>TOPLAM</td><td>${totalWeight.toFixed(1)}</td><td>${pending.length} bekliyor / ${assigned.length} atandi</td><td>${allCargos.length} kargo</td></tr>`;
+        html += `<tr style="font-weight:bold; background:#f1f5f9; color:#0f172a;"><td></td><td></td><td>TOPLAM</td><td>${totalWeight.toFixed(1)} kg</td><td>${pending.length} bekliyor / ${assigned.length} atandı</td><td>${allCargos.length} kargo</td></tr>`;
         html += '</tbody></table>';
 
         html += '<div id="selectedCargosSummary" style="margin-top:10px;padding:10px;background:#fff3cd;border-radius:5px;display:none;"></div>';
@@ -1162,9 +1436,9 @@ async function initOptimizeMap(routes) {
     await loadStationsData();
 
     if (!optimizeMap) {
-        optimizeMap = L.map('optimizeMap').setView([40.7654, 29.9408], 10);
+        optimizeMap = L.map('optimizeMap').setView([39.1, 35.2], 6);
         L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-            attribution: ' OpenStreetMap'
+            attribution: '© OpenStreetMap'
         }).addTo(optimizeMap);
     }
 
@@ -1175,16 +1449,16 @@ async function initOptimizeMap(routes) {
     });
 
     stations.forEach(station => {
-        const isDepot = station.name.toLowerCase().includes('umuttepe') || station.name.toLowerCase().includes('koü') || station.name.toLowerCase().includes('kampüs');
+        const isDepot = Boolean(station.is_depot) || station.name.toLowerCase().includes('hub') || station.name.toLowerCase().includes('depo');
         const icon = L.divIcon({
             className: 'custom-marker',
-            html: `<div style="background:${isDepot ? '#e74c3c' : '#3498db'}; width:20px; height:20px; border-radius:50%; border:2px solid white; box-shadow:0 2px 5px rgba(0,0,0,0.3);"></div>`,
+            html: `<div style="background:${isDepot ? '#ef4444' : '#3b82f6'}; width:20px; height:20px; border-radius:50%; border:2px solid white; box-shadow:0 2px 5px rgba(0,0,0,0.3);"></div>`,
             iconSize: [20, 20],
             iconAnchor: [10, 10]
         });
 
         L.marker([station.latitude, station.longitude], { icon })
-            .bindPopup(`<b>${station.name}</b>${isDepot ? '<br><i style="color:#e74c3c">Varış Noktası</i>' : ''}`)
+            .bindPopup(`<b>${station.name}</b>${isDepot ? '<br><i style="color:#ef4444">Ana Lojistik Hub (Merkez Depo)</i>' : ''}`)
             .addTo(optimizeMap);
     });
 
@@ -1589,15 +1863,15 @@ async function initMyRouteMap(routeStations) {
     for (const stationName of routeStations) {
         const station = stations.find(s => s.name === stationName);
         if (station) {
-            const isDepot = station.name.toLowerCase().includes('umuttepe') || station.name.toLowerCase().includes('koü') || station.name.toLowerCase().includes('kampüs');
+            const isDepot = station.is_depot || station.name.toLowerCase().includes('hub') || station.name.toLowerCase().includes('depo') || station.name.toLowerCase().includes('merkez');
             const icon = L.divIcon({
                 className: 'custom-marker',
-                html: `<div style="background:${isDepot ? '#e74c3c' : '#27ae60'}; width:20px; height:20px; border-radius:50%; border:2px solid white;"></div>`,
-                iconSize: [20, 20],
-                iconAnchor: [10, 10]
+                html: `<div style="background:${isDepot ? '#ef4444' : '#10b981'}; width:22px; height:22px; border-radius:50%; border:2px solid white; box-shadow: 0 0 10px rgba(0,0,0,0.3);"></div>`,
+                iconSize: [22, 22],
+                iconAnchor: [11, 11]
             });
             L.marker([station.latitude, station.longitude], { icon })
-                .bindPopup(`<b>${station.name}</b>${isDepot ? '<br><i style="color:#e74c3c">Varış Noktası</i>' : '<br><i style="color:#27ae60">Kargo Alım Noktası</i>'}`)
+                .bindPopup(`<b>${station.name}</b>${isDepot ? '<br><i style="color:#ef4444; font-weight:600;">Ana Lojistik Hub (Merkez)</i>' : '<br><i style="color:#10b981; font-weight:600;">Dağıtım Noktası</i>'}`)
                 .addTo(myRouteMap);
         }
     }
@@ -1617,8 +1891,8 @@ async function initMyRouteMap(routeStations) {
                 <span style="font-size:12px;">Kargo Alım Noktası</span>
             </div>
             <div style="display:flex; align-items:center; gap:5px; margin:3px 0;">
-                <div style="background:#e74c3c; width:12px; height:12px; border-radius:50%;"></div>
-                <span style="font-size:12px;">Varış (Umuttepe KOÜ)</span>
+                <div style="background:#ef4444; width:12px; height:12px; border-radius:50%;"></div>
+                <span style="font-size:12px;">Varış (Ana Lojistik Hub)</span>
             </div>
             <div style="display:flex; align-items:center; gap:5px; margin:3px 0;">
                 <div style="background:#27ae60; width:20px; height:3px;"></div>
@@ -1632,7 +1906,68 @@ async function initMyRouteMap(routeStations) {
     myRouteMap.invalidateSize();
 }
 
-// loadSelectedScenario removed - only compareSelectedScenario is used
+async function loadPresetScenario() {
+    const scenarioNum = document.getElementById('scenarioSelect').value || '1';
+    const scenario = scenarios[scenarioNum];
+    if (!scenario) {
+        alert('Lütfen geçerli bir senaryo seçin.');
+        return;
+    }
+
+    try {
+        const res = await fetch('/api/load-scenario', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                scenario: scenario,
+                scenario_num: parseInt(scenarioNum)
+            })
+        });
+
+        const data = await res.json();
+        if (data.success) {
+            alert(`Senaryo ${scenarioNum} başarıyla yüklendi! (${data.cargo_count} adet bekleyen kargo oluşturuldu)`);
+            loadPendingCargos();
+        } else {
+            alert(data.error || 'Senaryo yüklenemedi');
+        }
+    } catch (err) {
+        alert('Bağlantı hatası oluştu');
+    }
+}
+
+async function generateRandomCargos(count = 15) {
+    if (!stations || stations.length === 0) {
+        await loadStationsData();
+    }
+    const nonDepotStations = stations.filter(s => !s.is_depot);
+    if (nonDepotStations.length === 0) {
+        alert('İstasyon bulunamadı!');
+        return;
+    }
+
+    let added = 0;
+    for (let i = 0; i < count; i++) {
+        const randStation = nonDepotStations[Math.floor(Math.random() * nonDepotStations.length)];
+        const randWeight = Math.floor(Math.random() * 300) + 20; // 20kg - 320kg
+        try {
+            await fetch('/api/cargos', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    station_id: randStation.id,
+                    weight: randWeight
+                })
+            });
+            added++;
+        } catch (e) {
+            console.error('Kargo ekleme hatası:', e);
+        }
+    }
+
+    alert(`${added} adet rastgele Türkiye içi kargo oluşturuldu ve planlama listesine eklendi!`);
+    loadPendingCargos();
+}
 
 async function compareSelectedScenario() {
     const scenarioNum = document.getElementById('scenarioSelect').value || '1';
@@ -1653,13 +1988,13 @@ async function compareSelectedScenario() {
         const data = await res.json();
 
         if (!data.success) {
-            alert(data.error || 'Karsilastirma yapilamadi');
+            alert(data.error || 'Karşılaştırma yapılamadı');
             return;
         }
 
         displayComparisonResults(data.comparison, problemType, `Senaryo ${scenarioNum}`);
     } catch (err) {
-        alert('Baglanti hatasi');
+        alert('Bağlantı hatası');
         console.error(err);
     }
 }
@@ -1857,13 +2192,13 @@ async function showSimulationRouteOnMap(routeStations, color) {
             const stationName = routeStations[i];
             const station = stations.find(s => s.name === stationName);
             if (station) {
-                const isDepot = stationName.toLowerCase().includes('umuttepe') || stationName.toLowerCase().includes('koü');
+                const isDepot = Boolean(station.is_depot) || stationName.toLowerCase().includes('hub') || stationName.toLowerCase().includes('depo');
                 const isStart = i === 0;
                 const isEnd = i === routeStations.length - 1;
 
                 let markerColor = '#3498db';
-                if (isDepot) markerColor = '#e74c3c';
-                else if (isStart) markerColor = '#27ae60';
+                if (isDepot) markerColor = '#ef4444';
+                else if (isStart) markerColor = '#10b981';
 
                 const icon = L.divIcon({
                     className: 'custom-marker',
@@ -1873,7 +2208,7 @@ async function showSimulationRouteOnMap(routeStations, color) {
                 });
 
                 L.marker([station.latitude, station.longitude], { icon })
-                    .bindPopup(`<b>${i + 1}. ${station.name}</b>${isStart ? '<br><i style="color:#27ae60">Başlangıç</i>' : (isDepot ? '<br><i style="color:#e74c3c">Varış (KOÜ)</i>' : '')}`)
+                    .bindPopup(`<b>${i + 1}. ${station.name}</b>${isStart ? '<br><i style="color:#10b981">Başlangıç</i>' : (isDepot ? '<br><i style="color:#ef4444">Varış (Ana Lojistik Hub)</i>' : '')}`)
                     .addTo(routeModalMap);
             }
         }
