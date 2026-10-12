@@ -1536,7 +1536,10 @@ const TURKEY_TRAFFIC_INCIDENTS_DATA = [
         reportNo: 'KGM-2026-TR-81042',
         newsHeadline: 'O-4 Bolu Dağı Tüneli Girişinde Zincirleme Kaza Nedeniyle Ulaşım Durdu',
         newsBody: '12 Ekim 2026 saat 19:35 sularında O-4 Anadolu Otoyolu Bolu Dağı Tüneli yaklaşımında 3 ağır vasıtanın karıştığı maddi hasarlı ve yaralanmalı zincirleme trafik kazası meydana gelmiştir. KGM karla mücadele ve EGM Bölge Trafik ekipleri yolu temizleme çalışmalarını sürdürmektedir. Ulaşım D-100 Kaynaşlı-Abant alternatif güzergahına kontrollü olarak yönlendirilmektedir.',
-        officialLink: 'https://www.kgm.gov.tr/Sayfalar/KGM/SiteTr/YolDanisma/GunlukYolDurumu.aspx'
+        officialLink: 'https://www.kgm.gov.tr',
+        aaLink: 'https://www.aa.com.tr/tr/turkiye',
+        trtLink: 'https://www.trthaber.com',
+        searchQuery: 'Bolu Dağı Tüneli zincirleme kaza yol durumu'
     },
     {
         id: 'inc_susurluk',
@@ -1551,7 +1554,10 @@ const TURKEY_TRAFFIC_INCIDENTS_DATA = [
         reportNo: 'KGM-2026-TR-10294',
         newsHeadline: 'O-5 Balıkesir-Susurluk Otoyolu 48-52. Kilometreler Arası Şerit Kapanması',
         newsBody: 'Karayolları 14. Bölge Müdürlüğü tarafından yürütülen planlı üst yapı ve aşınma tabakası yenileme çalışmaları kapsamında O-5 Otoyolu Susurluk mevkiinde gidiş istikameti tek şeritten kontrollü sağlanmaktadır. Ağır taşıt sürücülerinin alternatif D-565 Bandırma güzergahını tercih etmeleri önemle rica olunur.',
-        officialLink: 'https://www.kgm.gov.tr/Sayfalar/KGM/SiteTr/YolDanisma/GunlukYolDurumu.aspx'
+        officialLink: 'https://www.kgm.gov.tr',
+        aaLink: 'https://www.aa.com.tr/tr/turkiye',
+        trtLink: 'https://www.trthaber.com',
+        searchQuery: 'Susurluk otoyolu yol çalışması şerit kapanması'
     },
     {
         id: 'inc_fsm',
@@ -1566,7 +1572,10 @@ const TURKEY_TRAFFIC_INCIDENTS_DATA = [
         reportNo: 'AKOM-2026-TR-34018',
         newsHeadline: 'Fatih Sultan Mehmet Köprüsü Anadolu-Avrupa Geçişinde Araç Arızası ve Aşırı Yoğunluk',
         newsBody: 'Akşam mesai çıkış saatlerinde köprü orta şeritte meydana gelen araç arızası ve aşırı talep sebebiyle kuyruk Kavacık ayrımına kadar uzamıştır. Transit kargo taşımacılığı yapan araçların Yavuz Sultan Selim Köprüsü ve Kuzey Marmara Otoyolu (KMO) koridorunu kullanmaları tavsiye edilir.',
-        officialLink: 'https://www.kgm.gov.tr/Sayfalar/KGM/SiteTr/YolDanisma/GunlukYolDurumu.aspx'
+        officialLink: 'https://www.kgm.gov.tr',
+        aaLink: 'https://www.aa.com.tr/tr/turkiye',
+        trtLink: 'https://www.trthaber.com',
+        searchQuery: 'FSM Köprüsü trafik yoğunluğu kaza arıza'
     },
     {
         id: 'inc_hereke',
@@ -1581,7 +1590,10 @@ const TURKEY_TRAFFIC_INCIDENTS_DATA = [
         reportNo: 'EGM-2026-TR-41092',
         newsHeadline: 'D-100 Körfez Hereke Viyadüğünde İki Kamyonetin Karıştığı Maddi Hasarlı Kaza',
         newsBody: 'D-100 karayolu Hereke tünelleri öncesi viyadük üzerinde iki dağıtım aracının çarpışması sonucu yol tek şeride düşmüştür. Çekici ekipleri olay yerindedir. Transit kargo araçlarının KMO Sevindikli gişelerinden çevre yoluna bağlanmaları tavsiye edilmektedir.',
-        officialLink: 'https://www.kgm.gov.tr/Sayfalar/KGM/SiteTr/YolDanisma/GunlukYolDurumu.aspx'
+        officialLink: 'https://www.kgm.gov.tr',
+        aaLink: 'https://www.aa.com.tr/tr/turkiye',
+        trtLink: 'https://www.trthaber.com',
+        searchQuery: 'D100 Hereke viyadüğü kaza kilit trafik'
     },
     {
         id: 'inc_pozanti',
@@ -1596,7 +1608,10 @@ const TURKEY_TRAFFIC_INCIDENTS_DATA = [
         reportNo: 'KGM-2026-TR-01844',
         newsHeadline: 'Pozantı-Toroslar Geçidi Tünel Çıkışında Balata Yangını ve Şerit Kapanması',
         newsBody: 'O-21 Tarsus-Ankara Otoyolu Pozantı tünelleri çıkışında ağır tonajlı bir tırın balata tutuşması sonucu itfaiye ekipleri müdahalede bulunmuş, güvenlik amacıyla 2 şerit trafiğe kapatılmıştır. Ağır vasıtalar kontrollü olarak D-750 Pozantı devlet yoluna aktarılmaktadır.',
-        officialLink: 'https://www.kgm.gov.tr/Sayfalar/KGM/SiteTr/YolDanisma/GunlukYolDurumu.aspx'
+        officialLink: 'https://www.kgm.gov.tr',
+        aaLink: 'https://www.aa.com.tr/tr/turkiye',
+        trtLink: 'https://www.trthaber.com',
+        searchQuery: 'Pozantı Toroslar geçidi tır yangını otoyol trafik'
     }
 ];
 
@@ -2459,11 +2474,27 @@ function toggleTrafficIncidentLayer() {
             trafficLayerGroup = null;
         }
         isTrafficLayerActive = false;
-        if (btn) btn.classList.remove('active');
+        if (btn) {
+            btn.classList.remove('active');
+            btn.innerHTML = '<i class="fas fa-traffic-light"></i> Trafik & Olaylar';
+        }
+
+        // İstasyon markerlarını ve ana aktarma merkezlerini haritaya geri yükle!
+        stationMarkers.forEach(m => {
+            if (!mainMap.hasLayer(m)) {
+                mainMap.addLayer(m);
+            }
+        });
         return;
     }
 
-    // Aç
+    // Aç: Haritadaki istasyon ve ana aktarma merkezlerini kaldırarak sadece yolları & trafiği göster!
+    stationMarkers.forEach(m => {
+        if (mainMap.hasLayer(m)) {
+            mainMap.removeLayer(m);
+        }
+    });
+
     trafficLayerGroup = L.layerGroup();
 
     // 1. Karayolu Trafik Akış Çizgileri
@@ -2519,7 +2550,10 @@ function toggleTrafficIncidentLayer() {
 
     trafficLayerGroup.addTo(mainMap);
     isTrafficLayerActive = true;
-    if (btn) btn.classList.add('active');
+    if (btn) {
+        btn.classList.add('active');
+        btn.innerHTML = '<i class="fas fa-traffic-light"></i> Trafik Aktif (İstasyonlar Gizlendi)';
+    }
 }
 
 function openUetdsModal() {
@@ -4033,12 +4067,35 @@ function openIncidentNewsModal(incidentId) {
         timeEl.textContent = `${now.toLocaleDateString('tr-TR')} ${now.toLocaleTimeString('tr-TR', { hour: '2-digit', minute: '2-digit' })} (Resmi Kayıt)`;
     }
 
-    const linkEl = document.getElementById('modalOfficialLink');
-    if (linkEl && inc.officialLink) {
-        linkEl.href = inc.officialLink;
+    // Çoklu Canlı Haber & Resmi Portal Bağlantıları
+    const linkOfficial = document.getElementById('modalOfficialLink');
+    if (linkOfficial) {
+        linkOfficial.href = inc.officialLink || 'https://www.kgm.gov.tr';
+    }
+
+    const linkAa = document.getElementById('modalAaLink');
+    if (linkAa) {
+        linkAa.href = inc.aaLink || 'https://www.aa.com.tr/tr/turkiye';
+    }
+
+    const linkTrt = document.getElementById('modalTrtLink');
+    if (linkTrt) {
+        linkTrt.href = inc.trtLink || 'https://www.trthaber.com';
+    }
+
+    const linkGNews = document.getElementById('modalGoogleNewsLink');
+    if (linkGNews) {
+        const queryTerm = inc.searchQuery || inc.newsHeadline || inc.headline || 'Karayolları kaza yol durumu';
+        linkGNews.href = `https://news.google.com/search?q=${encodeURIComponent(queryTerm)}&hl=tr-TR`;
     }
 
     const modal = document.getElementById('incidentNewsModal');
+    if (modal) modal.classList.add('active');
+}
+
+// Lojistik Göstergeleri (Yakıt, CO2, Zamanında Teslimat) Hesaplama Formülü Modalı
+function openTelemetryFormulaModal(type) {
+    const modal = document.getElementById('telemetryFormulaModal');
     if (modal) modal.classList.add('active');
 }
 

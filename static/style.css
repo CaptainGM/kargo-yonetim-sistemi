@@ -3578,4 +3578,122 @@ body.dark-theme .verification-sources-box li {
 
 .btn-popup-news:hover {
     background: linear-gradient(135deg, #2563eb, #1d4ed8);
-}
+}
+
+/* Çoklu Haber & Medya Teyit Kanalları */
+.news-sources-chips-bar {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-bottom: 14px;
+}
+
+.news-chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    font-size: 11px;
+    font-weight: 700;
+    padding: 4px 10px;
+    border-radius: 20px;
+    border: 1px solid transparent;
+}
+
+.news-chip.chip-gov {
+    background: rgba(59, 130, 246, 0.12);
+    color: #3b82f6;
+    border-color: rgba(59, 130, 246, 0.3);
+}
+
+.news-chip.chip-police {
+    background: rgba(239, 68, 68, 0.12);
+    color: #ef4444;
+    border-color: rgba(239, 68, 68, 0.3);
+}
+
+.news-chip.chip-aa {
+    background: rgba(16, 185, 129, 0.12);
+    color: #10b981;
+    border-color: rgba(16, 185, 129, 0.3);
+}
+
+.news-chip.chip-trt {
+    background: rgba(245, 158, 11, 0.12);
+    color: #f59e0b;
+    border-color: rgba(245, 158, 11, 0.3);
+}
+
+.news-chip.chip-iha {
+    background: rgba(168, 85, 247, 0.12);
+    color: #a855f7;
+    border-color: rgba(168, 85, 247, 0.3);
+}
+
+.btn-source-link {
+    font-size: 11.5px;
+    padding: 6px 12px;
+    border-radius: 6px;
+    font-weight: 600;
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    transition: all 0.2s ease;
+}
+
+.btn-source-link.btn-kgm {
+    background: rgba(59, 130, 246, 0.15);
+    border: 1px solid #3b82f6;
+    color: #3b82f6 !important;
+}
+
+.btn-source-link.btn-kgm:hover {
+    background: #3b82f6;
+    color: #ffffff !important;
+}
+
+.btn-source-link.btn-aa {
+    background: rgba(16, 185, 129, 0.15);
+    border: 1px solid #10b981;
+    color: #10b981 !important;
+}
+
+.btn-source-link.btn-aa:hover {
+    background: #10b981;
+    color: #ffffff !important;
+}
+
+.btn-source-link.btn-trt {
+    background: rgba(239, 68, 68, 0.15);
+    border: 1px solid #ef4444;
+    color: #ef4444 !important;
+}
+
+.btn-source-link.btn-trt:hover {
+    background: #ef4444;
+    color: #ffffff !important;
+}
+
+.btn-source-link.btn-gnews {
+    background: rgba(99, 102, 241, 0.15);
+    border: 1px solid #6366f1;
+    color: #6366f1 !important;
+}
+
+.btn-source-link.btn-gnews:hover {
+    background: #6366f1;
+    color: #ffffff !important;
+}
+
+.btn-info-metric {
+    cursor: pointer;
+    font-size: 11px;
+    color: #94a3b8;
+    margin-left: 4px;
+    transition: color 0.2s;
+}
+
+.btn-info-metric:hover {
+    color: #38bdf8;
+}
+

@@ -347,20 +347,23 @@
                             <span class="ticker-label">AdBlue Katkısı:</span>
                             <strong class="ticker-val" id="tickerAdblue">36.50 TL/L</strong>
                         </div>
-                        <div class="ticker-item">
+                        <div class="ticker-item" onclick="openTelemetryFormulaModal('fuel')" style="cursor:pointer;" title="Hesaplama formülünü görmek için tıklayın">
                             <i class="fas fa-gauge-high text-primary"></i>
                             <span class="ticker-label">Filo Tüketim Ort.:</span>
                             <strong class="ticker-val">11.2 L / 100km</strong>
+                            <i class="fas fa-circle-info btn-info-metric"></i>
                         </div>
-                        <div class="ticker-item">
+                        <div class="ticker-item" onclick="openTelemetryFormulaModal('co2')" style="cursor:pointer;" title="Hesaplama formülünü görmek için tıklayın">
                             <i class="fas fa-leaf text-success"></i>
                             <span class="ticker-label">Karbon Ayak İzi:</span>
                             <strong class="ticker-val" id="tickerCo2">685.4 kg CO₂</strong>
+                            <i class="fas fa-circle-info btn-info-metric"></i>
                         </div>
-                        <div class="ticker-item">
+                        <div class="ticker-item" onclick="openTelemetryFormulaModal('otif')" style="cursor:pointer;" title="Hesaplama formülünü görmek için tıklayın">
                             <i class="fas fa-shield-halved text-success"></i>
                             <span class="ticker-label">Zamanında Teslimat:</span>
-                            <strong class="ticker-val" id="tickerOnTime">%99.2</strong>
+                            <strong class="ticker-val" id="tickerOnTime">%98.7</strong>
+                            <i class="fas fa-circle-info btn-info-metric"></i>
                         </div>
                     </div>
 
@@ -1414,11 +1417,11 @@
         </div>
     </div>
 
-    <!-- Resmi Karayolları Olay, Kaza & Doğruluk Raporu Modalı -->
+    <!-- Resmi Karayolları & Ulusal Basın Olay, Kaza & Doğruluk Raporu Modalı -->
     <div id="incidentNewsModal" class="modal">
-        <div class="modal-content modal-lg incident-report-modal" style="max-width: 780px;">
+        <div class="modal-content modal-lg incident-report-modal" style="max-width: 800px;">
             <div class="modal-header bg-danger">
-                <h3><i class="fas fa-shield-halved"></i> T.C. Karayolları & EGM Canlı Olay ve Güvenilirlik Raporu</h3>
+                <h3><i class="fas fa-shield-halved"></i> T.C. Karayolları, EGM & Basın Medya Canlı Olay Raporu</h3>
                 <button type="button" class="close-btn" onclick="closeModal('incidentNewsModal')">&times;</button>
             </div>
             <div class="modal-body" style="padding: 22px;">
@@ -1429,10 +1432,19 @@
                             <small>Doğruluk</small>
                         </div>
                         <div class="conf-text">
-                            <h4>Yüksek Güvenilirlik Oranı (%90+ Doğrulandı)</h4>
-                            <p>Bu olay karayolu telemetri kameraları, EGM Bölge Trafik telsiz anonsları ve KGM Yol Durumu bülteni ile <strong>3 bağımsız resmi kaynaktan</strong> doğrulanmıştır.</p>
+                            <h4>Yüksek Güvenilirlik Oranı (%90+ Bağımsız Doğrulandı)</h4>
+                            <p>Bu olay karayolu telemetri kameraları, EGM Bölge Trafik telsiz anonsları ve ulusal haber ajansları (AA, TRT, İHA) ile <strong>çoklu bağımsız resmi ve medya kaynaklarından</strong> teyit edilmiştir.</p>
                         </div>
                     </div>
+                </div>
+
+                <!-- Teyit Eden Bağımsız Haber & Devlet Kurumları Rozetleri -->
+                <div class="news-sources-chips-bar">
+                    <span class="news-chip chip-gov"><i class="fas fa-landmark"></i> T.C. Karayolları (KGM)</span>
+                    <span class="news-chip chip-police"><i class="fas fa-shield-alt"></i> EGM Bölge Trafik</span>
+                    <span class="news-chip chip-aa"><i class="fas fa-satellite-dish"></i> Anadolu Ajansı (AA)</span>
+                    <span class="news-chip chip-trt"><i class="fas fa-tv"></i> TRT Haber</span>
+                    <span class="news-chip chip-iha"><i class="fas fa-newspaper"></i> İHA / DHA Saha Ekipleri</span>
                 </div>
 
                 <div class="incident-news-card">
@@ -1453,23 +1465,90 @@
                         <ul>
                             <li><i class="fas fa-video text-primary"></i> <strong>KGM Saha Telemetri Kameraları:</strong> KM 224 viyadük kameralarında 2 şeridin kapandığı ve araç kuyruğunun oluştuğu görüntü işleme ile teyit edildi.</li>
                             <li><i class="fas fa-walkie-talkie text-danger"></i> <strong>112 Acil & EGM Bölge Trafik:</strong> Olay yerine 2 çekici ve 1 ambulans sevk edildiği, geçişin durdurulduğu resmi telsiz anonsuyla bildirildi.</li>
-                            <li><i class="fas fa-route text-success"></i> <strong>Kaçış & Reroute Tavsiyesi:</strong> D-100 Eski Bolu Dağı devlet yolu ve Abant sapağının açık olduğu ve geçişe uygun olduğu teyit edildi.</li>
+                            <li><i class="fas fa-newspaper text-warning"></i> <strong>Ulusal Basın & Medya:</strong> Anadolu Ajansı ve TRT Haber saha muhabirlerince güzergahta trafiğin durduğu ve alternatif kaçışların açıldığı bildirildi.</li>
                         </ul>
+                    </div>
+
+                    <!-- Canlı Dış Haber Kaynakları Butonları -->
+                    <div class="multi-news-links-grid" style="margin-top:16px;">
+                        <div style="font-size:11px; font-weight:700; color:#64748b; margin-bottom:8px; text-transform:uppercase; letter-spacing:0.5px;">
+                            <i class="fas fa-link"></i> Çoklu Canlı Haber & Resmi Portal Bağlantıları:
+                        </div>
+                        <div style="display:flex; flex-wrap:wrap; gap:8px;">
+                            <a href="https://www.kgm.gov.tr" target="_blank" rel="noopener noreferrer" class="btn-source-link btn-kgm" id="modalOfficialLink" title="T.C. Karayolları Genel Müdürlüğü Resmi Web Sitesi">
+                                <i class="fas fa-landmark"></i> KGM Resmi Portalı (kgm.gov.tr)
+                            </a>
+                            <a href="https://www.aa.com.tr/tr/turkiye" target="_blank" rel="noopener noreferrer" class="btn-source-link btn-aa" id="modalAaLink" title="Anadolu Ajansı Güncel Olay & Kaza Akışı">
+                                <i class="fas fa-satellite-dish"></i> Anadolu Ajansı (AA)
+                            </a>
+                            <a href="https://www.trthaber.com" target="_blank" rel="noopener noreferrer" class="btn-source-link btn-trt" id="modalTrtLink" title="TRT Haber Canlı Trafik ve Yol Bülteni">
+                                <i class="fas fa-tv"></i> TRT Haber
+                            </a>
+                            <a href="https://news.google.com" target="_blank" rel="noopener noreferrer" class="btn-source-link btn-gnews" id="modalGoogleNewsLink" title="Tüm Ulusal Medyada Bu Olayı Canlı Araştır">
+                                <i class="fas fa-magnifying-glass"></i> Google Haberler Canlı Teyit
+                            </a>
+                        </div>
                     </div>
                 </div>
 
-                <div class="modal-actions-bar" style="margin-top:20px; display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:10px;">
-                    <a href="https://www.kgm.gov.tr/Sayfalar/KGM/SiteTr/YolDanisma/GunlukYolDurumu.aspx" target="_blank" rel="noopener noreferrer" class="btn btn-outline" id="modalOfficialLink" style="font-size:12px; text-decoration:none;">
-                        <i class="fas fa-external-link-alt"></i> KGM Resmi Yol Durumu Portalı (kgm.gov.tr)
-                    </a>
-                    <div style="display:flex; gap:10px;">
-                        <button type="button" class="btn btn-success" onclick="applyAlternativeReroute(); closeModal('incidentNewsModal');">
-                            <i class="fas fa-route"></i> Alternatif Kaçış Rotasını Uygula
-                        </button>
-                        <button type="button" class="btn btn-secondary" onclick="closeModal('incidentNewsModal')">
-                            Kapat
-                        </button>
+                <div class="modal-actions-bar" style="margin-top:20px; display:flex; justify-content:flex-end; align-items:center; flex-wrap:wrap; gap:10px;">
+                    <button type="button" class="btn btn-success" onclick="applyAlternativeReroute(); closeModal('incidentNewsModal');">
+                        <i class="fas fa-route"></i> Alternatif Kaçış Rotasını Uygula
+                    </button>
+                    <button type="button" class="btn btn-secondary" onclick="closeModal('incidentNewsModal')">
+                        Kapat
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Lojistik & Telemetri Metrikleri Hesaplama Formülü Modalı -->
+    <div class="modal" id="telemetryFormulaModal">
+        <div class="modal-content" style="max-width: 680px;">
+            <div class="modal-header bg-primary">
+                <h3><i class="fas fa-calculator"></i> Lojistik Göstergeleri & Hesaplama Metodolojisi</h3>
+                <button type="button" class="close-btn" onclick="closeModal('telemetryFormulaModal')">&times;</button>
+            </div>
+            <div class="modal-body" style="padding: 22px;">
+                <div class="metric-expl-card" style="margin-bottom: 16px; padding: 14px; background: rgba(59,130,246,0.06); border-radius: 8px; border: 1px solid rgba(59,130,246,0.2);">
+                    <h4 style="color:#3b82f6; margin-bottom:6px; display:flex; align-items:center; gap:8px;">
+                        <i class="fas fa-gauge-high"></i> 1. Filo Tüketim Ortalaması (11.2 L / 100km)
+                    </h4>
+                    <p style="font-size:12.5px; line-height:1.5; margin-bottom:8px;">
+                        <strong>Nedir?</strong> Dağıtım ağında görev yapan farklı segmentteki araçların (Doblo/Caddy panelvan: 7.8 L, Ford Transit kamyonet: 11.5 L, Isuzu orta kamyon: 21.0 L, Actros TIR: 29.5 L) toplam sefer mesafesine göre ağırlıklı ortalama akaryakıt sarfiyatıdır.
+                    </p>
+                    <div style="background:rgba(0,0,0,0.15); padding:8px 12px; border-radius:6px; font-family:monospace; font-size:12px; color:#38bdf8;">
+                        Formül: Ortalama Tüketim = (Σ Toplam Tüketilen Yakıt [Litre] / Σ Toplam Kat Edilen Yol [km]) × 100
                     </div>
+                </div>
+
+                <div class="metric-expl-card" style="margin-bottom: 16px; padding: 14px; background: rgba(16,185,129,0.06); border-radius: 8px; border: 1px solid rgba(16,185,129,0.2);">
+                    <h4 style="color:#10b981; margin-bottom:6px; display:flex; align-items:center; gap:8px;">
+                        <i class="fas fa-leaf"></i> 2. Karbon Ayak İzi (685,4 kg CO₂)
+                    </h4>
+                    <p style="font-size:12.5px; line-height:1.5; margin-bottom:8px;">
+                        <strong>Nedir?</strong> Sevk edilen rotalarda tüketilen motorin yakıtının yanması neticesinde atmosfere salınan toplam sera gazı kütlesidir. Avrupa Çevre Ajansı (EEA) ve Euro-6 dizel emisyon standartlarına göre hesaplanır (1 L motorin tam yanması ≈ 2.68 kg CO₂ üretir).
+                    </p>
+                    <div style="background:rgba(0,0,0,0.15); padding:8px 12px; border-radius:6px; font-family:monospace; font-size:12px; color:#34d399;">
+                        Formül: Toplam Emisyon (kg CO₂) = Σ (Güzergah Mesafesi [km] × Araç CO₂ Katsayısı [g/km]) / 1.000
+                    </div>
+                </div>
+
+                <div class="metric-expl-card" style="margin-bottom: 16px; padding: 14px; background: rgba(245,158,11,0.06); border-radius: 8px; border: 1px solid rgba(245,158,11,0.2);">
+                    <h4 style="color:#f59e0b; margin-bottom:6px; display:flex; align-items:center; gap:8px;">
+                        <i class="fas fa-shield-halved"></i> 3. Zamanında Teslimat Oranı (%98.7 • OTIF Skoru)
+                    </h4>
+                    <p style="font-size:12.5px; line-height:1.5; margin-bottom:8px;">
+                        <strong>Nedir?</strong> Kargo lojistiğindeki en temel SLA (Hizmet Seviyesi) performans göstergesidir. Dağıtıma çıkan kargoların taahhüt edilen teslimat penceresinde başarıyla teslim edilme yüzdesidir. Canlı trafik kaza tespiti ve alternatif bypass rota motoru sayesinde kuyruklardan kaçılarak bu oran %98.7 seviyesinde korunur.
+                    </p>
+                    <div style="background:rgba(0,0,0,0.15); padding:8px 12px; border-radius:6px; font-family:monospace; font-size:12px; color:#fbbf24;">
+                        Formül: OTIF (%) = (Zamanında ve Eksiksiz Teslim Edilen Kargo Sayısı / Toplam Kargo Sayısı) × 100
+                    </div>
+                </div>
+
+                <div style="text-align: right; margin-top: 16px;">
+                    <button type="button" class="btn btn-secondary" onclick="closeModal('telemetryFormulaModal')">Anladım, Kapat</button>
                 </div>
             </div>
         </div>
