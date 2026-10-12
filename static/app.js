@@ -825,11 +825,11 @@ function toggleDarkMapMode() {
     if (isDarkMap) {
         if (mainEl) mainEl.classList.add('dark-map-tiles');
         if (optEl) optEl.classList.add('dark-map-tiles');
-        if (btn) btn.innerHTML = '<i class="fas fa-sun"></i>';
+        if (btn) btn.innerHTML = '<i class="fas fa-sun theme-sun-icon" id="themeIcon"></i>';
     } else {
         if (mainEl) mainEl.classList.remove('dark-map-tiles');
         if (optEl) optEl.classList.remove('dark-map-tiles');
-        if (btn) btn.innerHTML = '<i class="fas fa-moon"></i>';
+        if (btn) btn.innerHTML = '<i class="fas fa-moon theme-moon-icon" id="themeIcon"></i>';
     }
 }
 
@@ -839,15 +839,15 @@ function toggleDarkMapMode() {
 let fuelMarketCheckIntervalId = null;
 
 async function triggerMarketFuelCheck() {
-    const btn = document.getElementById('btnMarketScan');
+    const btn = document.getElementById('btnCheckFuel') || document.getElementById('btnMarketScan');
     if (btn) {
         btn.classList.add('scanning');
         btn.disabled = true;
     }
 
     try {
-        const intervalSelect = document.getElementById('marketFuelInterval');
-        const intervalHours = intervalSelect ? parseInt(intervalSelect.value) : 8;
+        const intervalSelect = document.getElementById('fuelCheckInterval') || document.getElementById('marketFuelInterval');
+        const intervalHours = intervalSelect ? parseInt(intervalSelect.value) : 12;
 
         const res = await fetch('/api/market-fuel-check', {
             method: 'POST',
@@ -878,20 +878,23 @@ async function triggerMarketFuelCheck() {
 
 function updateMarketUI(market) {
     if (!market) return;
-    const brentVal = document.getElementById('hudBrentVal');
-    const brentChange = document.getElementById('hudBrentChange');
-    const lastCheckTime = document.getElementById('lastFuelCheckTime');
+    const brentVal = document.getElementById('brentPriceVal') || document.getElementById('hudBrentVal');
+    const brentChange = document.getElementById('brentTrendVal') || document.getElementById('hudBrentChange');
+    const lastCheckDateTime = document.getElementById('lastFuelCheckDateTime');
 
     if (brentVal && market.brent_barrel_usd) {
         brentVal.textContent = `$${market.brent_barrel_usd}`;
     }
     if (brentChange && market.brent_change_pct !== undefined) {
         const isPos = market.brent_change_pct >= 0;
-        brentChange.textContent = `${isPos ? '+' : ''}${market.brent_change_pct}%`;
+        brentChange.textContent = `${isPos ? '▲ +' : '▼ '}${market.brent_change_pct}%`;
         brentChange.className = `trend-badge ${isPos ? 'trend-up' : 'trend-down'}`;
     }
-    if (lastCheckTime && market.last_updated) {
-        lastCheckTime.textContent = market.last_updated.substring(0, 5);
+    if (lastCheckDateTime) {
+        const now = new Date();
+        const dateStr = now.toLocaleDateString('tr-TR');
+        const timeStr = market.last_updated ? market.last_updated.substring(0, 5) : now.toLocaleTimeString('tr-TR', { hour: '2-digit', minute: '2-digit' });
+        lastCheckDateTime.textContent = `${dateStr} ${timeStr}`;
     }
 }
 
@@ -900,110 +903,437 @@ function setFuelInterval(hours) {
         clearInterval(fuelMarketCheckIntervalId);
         fuelMarketCheckIntervalId = null;
     }
-    const h = parseInt(hours) || 8;
-    console.log(`[Akaryakıt Masası] Otomatik tarama aralığı: ${h} saat.`);
-    // Gerçek periyodik tarama arka plan saati
+    const h = parseInt(hours) || 12;
+    console.log(`[Akaryakıt Masası] Otomatik tarama periyodu: ${h} saat.`);
     fuelMarketCheckIntervalId = setInterval(() => {
         triggerMarketFuelCheck();
     }, h * 60 * 60 * 1000);
 }
 
-// ==========================================
-// GERÇEKÇİ KOKPİT HUD VE HAZIR SİMÜLASYONLAR
-// ==========================================
+// =========================================================================
+// 14 TÜRKİYE LOJİSTİK KORİDORU & GERÇEKÇİ OTOYOL SİMÜLASYONU ENGINE
+// =========================================================================
 const CURATED_SCENARIOS = {
-    marmara_express: {
-        title: 'Marmara Express Dağıtım Hattı',
-        vehicle: 'Ford Transit Panelvan',
-        plate: '41 KRG 018',
+    marmara_d100: {
+        title: 'Marmara Bölgesel Ring (D-100 & D-130 Sahil)',
+        vehicle: 'Fiat Doblo Maxi Panelvan',
+        plate: '34 KRG 102',
+        fleetText: '1x Doblo Maxi Panelvan',
+        costText: '₺1.420 TL',
+        etaText: '03 sa 15 dk',
+        etaMinutes: 195,
+        totalDistance: 178,
+        cargoText: '380 kg / 24 Koli',
+        tollText: '0 TL (Ücretsiz D-100)',
+        fuelText: '7.8 L/100km (~14 L)',
         roadType: 'devlet_yolu',
-        roadBadge: 'D-100 / E-5 (Ücretsiz)',
+        roadBadge: 'D-100 / E-5 (Ücretsiz Sahil)',
         speedRange: [65, 82],
         rpmRange: [2100, 2400],
-        fuelBurn: '8.4 L/100km',
-        totalDistance: 178,
-        etaMinutes: 145,
-        path: [
-            [40.8027, 29.4307], // Gebze Lojistik Hub
-            [40.7890, 29.5400], // Dilovası D-100
-            [40.7654, 29.9408], // Kocaeli / İzmit Dağıtım Şubesi
-            [40.7180, 29.8000], // Gölcük D-130
-            [40.6552, 29.2769], // Yalova Merkez Depo
-            [40.4200, 29.2900], // Orhangazi
-            [40.3200, 29.2200], // Gemlik Sanayi
-            [40.1885, 29.0610]  // Bursa Nilüfer Bölge Hub
-        ]
-    },
-    baskent_d100: {
-        title: 'Başkent D-100 Devlet Yolu Seferi',
-        vehicle: 'Isuzu NPR Kamyonet',
-        plate: '06 TR 1923',
-        roadType: 'devlet_yolu',
-        roadBadge: 'D-100 Devlet Yolu (0 TL Geçiş)',
-        speedRange: [62, 75],
-        rpmRange: [1950, 2250],
-        fuelBurn: '14.2 L/100km',
-        totalDistance: 452,
-        etaMinutes: 380,
         path: [
             [40.9927, 29.0277], // İstanbul Kadıköy Transfer
             [40.8767, 29.2344], // Pendik D-100
-            [40.8027, 29.4307], // Gebze
-            [40.7654, 29.9408], // Kocaeli
-            [40.7731, 30.4028], // Sakarya / Adapazarı
-            [40.7500, 30.9000], // Hendek D-100
-            [40.8438, 31.1565], // Düzce Merkez
-            [40.7350, 31.6080], // Bolu Dağı Geçidi (D-100)
-            [40.7600, 32.2000], // Gerede Kavşağı
-            [40.4000, 32.5500], // Kızılcahamam
-            [40.0300, 32.7000], // Kahramankazan
-            [39.9334, 32.8597]  // Ankara Ana Lojistik Hub
+            [40.8167, 29.3000], // Tuzla D-100
+            [40.8027, 29.4307], // Gebze Lojistik Hub
+            [40.7890, 29.5400], // Dilovası D-100
+            [40.7750, 29.7500], // Körfez Sahil Yolu
+            [40.7654, 29.9408], // Kocaeli / İzmit Dağıtım Hub
+            [40.7100, 29.9300], // Başiskele D-130
+            [40.7180, 29.8200], // Gölcük D-130
+            [40.6900, 29.6150], // Karamürsel Sahil
+            [40.6700, 29.5000], // Altınova D-575
+            [40.6552, 29.2769], // Yalova Merkez Depo
+            [40.5000, 29.3000], // Süpürgelik Geçidi
+            [40.4200, 29.3000], // Orhangazi
+            [40.3200, 29.2200], // Gemlik Sanayi
+            [40.2400, 29.1300], // Ovaakça
+            [40.1885, 29.0610]  // Bursa Nilüfer Hub
         ]
     },
     ege_osmangazi: {
-        title: 'Ege Otoyol Ekspres (Osmangazi Köprüsü)',
-        vehicle: 'Mercedes-Benz Actros 1845 Çekici',
+        title: 'Ege Otoyol Ekspres (Osmangazi Köprüsü & O-5)',
+        vehicle: 'Mercedes-Benz Actros 1845 Çekici TIR',
         plate: '35 LOG 770',
+        fleetText: '1x Actros 1845 Çekici TIR',
+        costText: '₺7.850 TL',
+        etaText: '04 sa 45 dk',
+        etaMinutes: 285,
+        totalDistance: 480,
+        cargoText: '14.500 kg / 12 Palet',
+        tollText: '₺1.150 TL (Osmangazi & O-5)',
+        fuelText: '29.5 L/100km (~142 L)',
         roadType: 'otoyol',
-        roadBadge: 'O-5 Otoyolu (Köprü & HGS)',
+        roadBadge: 'O-5 Otoyolu & Osmangazi Köprüsü',
         speedRange: [88, 98],
         rpmRange: [1300, 1500],
-        fuelBurn: '27.5 L/100km',
-        totalDistance: 480,
-        etaMinutes: 295,
         path: [
             [41.0082, 28.9784], // İstanbul Avrupa Hub
-            [40.7700, 29.5100], // Osmangazi Köprüsü Girişi
-            [40.6552, 29.2769], // Yalova O-5 Otoyolu
-            [40.1885, 29.0610], // Bursa Otoyol Hattı
-            [39.6484, 27.8826], // Balıkesir Merkez
-            [39.1200, 27.5000], // Akhisar Çevre Yolu
+            [40.9927, 29.0277], // Kadıköy
+            [40.8027, 29.4307], // Gebze Otoyol
+            [40.7600, 29.5130], // Osmangazi Köprüsü Kuzey Gişeleri
+            [40.7450, 29.5150], // Osmangazi Köprüsü Asma Kuleler
+            [40.7300, 29.5180], // Osmangazi Köprüsü Güney Gişeleri
+            [40.6552, 29.2769], // Yalova Otoyol Bağlantısı
+            [40.1885, 29.0610], // Bursa Batı Çevre Otoyolu
+            [40.0000, 28.7000], // Karacabey Kavşağı
+            [39.6484, 27.8826], // Balıkesir O-5
+            [39.3000, 27.7000], // Soma Kavşağı
+            [39.1200, 27.5000], // Akhisar Çevre Otoyolu
             [38.6191, 27.4289], // Manisa Hub
+            [38.5000, 27.2500], // Sabuncubeli Tüneli
             [38.4192, 27.1287]  // İzmir Bornova Ana Dağıtım Merkezi
         ]
     },
-    anadolu_mega: {
-        title: 'Anadolu Mega Sevkiyat (İç Anadolu & Akdeniz)',
-        vehicle: 'Scania R500 V8 Tır',
-        plate: '34 MEGA 500',
+    baskent_anadolu: {
+        title: 'Başkent D-100 Anadolu Koridoru (Bolu Dağı Geçidi)',
+        vehicle: 'Isuzu NPR Long Kamyon',
+        plate: '06 TR 1923',
+        fleetText: '1x Isuzu NPR Kamyon',
+        costText: '₺4.280 TL',
+        etaText: '06 sa 20 dk',
+        etaMinutes: 380,
+        totalDistance: 452,
+        cargoText: '2.400 kg / 85 Koli',
+        tollText: '0 TL (Ücretsiz D-100)',
+        fuelText: '21.0 L/100km (~95 L)',
+        roadType: 'devlet_yolu',
+        roadBadge: 'D-100 Devlet Yolu (0 TL Geçiş)',
+        speedRange: [62, 76],
+        rpmRange: [1950, 2250],
+        path: [
+            [41.0082, 28.9784], // İstanbul
+            [40.8027, 29.4307], // Gebze D-100
+            [40.7654, 29.9408], // Kocaeli Hub
+            [40.7731, 30.4028], // Sakarya / Adapazarı
+            [40.7500, 30.7500], // Hendek D-100
+            [40.8438, 31.1565], // Düzce Merkez
+            [40.7400, 31.4500], // Kaynaşlı - Bolu Dağı Eteği
+            [40.7350, 31.5500], // Bolu Dağı Geçidi D-100 Zirve
+            [40.7350, 31.6080], // Bolu Merkez
+            [40.7600, 32.2000], // Gerede Kavşağı
+            [40.4000, 32.5500], // Kızılcahamam D-750
+            [40.1000, 32.6500], // Kahramankazan
+            [39.9334, 32.8597]  // Ankara Ana Lojistik Hub
+        ]
+    },
+    akdeniz_afyon_antalya: {
+        title: 'Akdeniz Sevkiyat Koridoru (D-650 & D-685 Göller)',
+        vehicle: 'Ford Transit Kamyonet (2 Araç Konvoy)',
+        plate: '41 KRG 045 • 41 KRG 046',
+        fleetText: '2x Ford Transit (Konvoy)',
+        costText: '₺5.650 TL (Toplam)',
+        etaText: '07 sa 30 dk',
+        etaMinutes: 450,
+        totalDistance: 560,
+        cargoText: '1.950 kg / 60 Koli',
+        tollText: '0 TL (Devlet Yolu)',
+        fuelText: '11.5 L/100km (~64 L/araç)',
+        roadType: 'devlet_yolu',
+        roadBadge: 'D-650 & D-685 Göller Hattı',
+        speedRange: [65, 80],
+        rpmRange: [2000, 2300],
+        path: [
+            [40.7654, 29.9408], // Kocaeli Hub
+            [40.5000, 30.1500], // Pamukova
+            [40.1400, 29.9800], // Bilecik Merkez
+            [39.9000, 30.0300], // Bozüyük
+            [39.4200, 29.9800], // Kütahya
+            [38.7507, 30.5567], // Afyonkarahisar Hub
+            [38.4700, 30.2700], // Sandıklı
+            [37.9500, 30.2200], // Keçiborlu
+            [37.7200, 30.2800], // Burdur Merkez
+            [37.2000, 30.5000], // Çubuk Boğazı
+            [36.8969, 30.7133]  // Antalya Kepez Dağıtım Hub
+        ]
+    },
+    trakya_sanayi: {
+        title: 'Trakya Sanayi & İhracat Koridoru (O-3 & D-100)',
+        vehicle: 'Scania R450 Streamline TIR',
+        plate: '34 IHR 88',
+        fleetText: '1x Scania R450 TIR',
+        costText: '₺3.450 TL',
+        etaText: '03 sa 10 dk',
+        etaMinutes: 190,
+        totalDistance: 245,
+        cargoText: '12.000 kg / 18 Palet',
+        tollText: '₺180 TL (O-3 Otoyolu)',
+        fuelText: '31.5 L/100km (~77 L)',
         roadType: 'otoyol',
-        roadBadge: 'O-4 & O-21 Anadolu Otoyolu',
-        speedRange: [82, 94],
+        roadBadge: 'O-3 & D-100 Avrupa Hattı',
+        speedRange: [85, 95],
+        rpmRange: [1200, 1400],
+        path: [
+            [41.0082, 28.9784], // İstanbul
+            [41.0800, 28.7800], // İkitelli OSB
+            [41.1400, 28.4600], // Çatalca
+            [41.2800, 27.9900], // Çerkezköy OSB
+            [41.1600, 27.8000], // Çorlu
+            [40.9833, 27.5167], // Tekirdağ Merkez
+            [41.4000, 27.3500], // Lüleburgaz
+            [41.4300, 27.0900], // Babaeski
+            [41.6772, 26.5557]  // Edirne Kapıkule Lojistik Hub
+        ]
+    },
+    cukurova_toroslar: {
+        title: 'Çukurova - Toroslar Ağır Vasıta Hattı (Pozantı Boğazı)',
+        vehicle: 'Mercedes Axor 1840 TIR (2 Araç Konvoy)',
+        plate: '06 LOG 01 • 06 LOG 02',
+        fleetText: '2x Axor 1840 TIR (Konvoy)',
+        costText: '₺9.200 TL (2 TIR Toplam)',
+        etaText: '06 sa 50 dk',
+        etaMinutes: 410,
+        totalDistance: 530,
+        cargoText: '22.000 kg (Konteyner Yükü)',
+        tollText: '₺320 TL (O-21 Otoyolu)',
+        fuelText: '33.0 L/100km (~175 L/TIR)',
+        roadType: 'otoyol',
+        roadBadge: 'D-750 & O-21 Anadolu Otoyolu',
+        speedRange: [80, 92],
+        rpmRange: [1350, 1550],
+        path: [
+            [39.9334, 32.8597], // Ankara Hub
+            [39.7800, 32.8000], // Gölbaşı
+            [39.4000, 33.1000], // Kulu Kavşağı
+            [38.8600, 33.5300], // Şereflikoçhisar
+            [38.4025, 33.4147], // Aksaray - Eskil Dağıtım Şubesi (Düzeltilen Konum!)
+            [38.3687, 34.0370], // Aksaray OSB
+            [37.9667, 34.6833], // Niğde
+            [37.5400, 34.4800], // Ulukışla
+            [37.2500, 34.8700], // Pozantı Boğazı Geçidi
+            [36.9167, 34.8950], // Tarsus
+            [36.8000, 34.6300], // Mersin Liman Hub
+            [37.0000, 35.3213]  // Adana Seyhan Hub
+        ]
+    },
+    karadeniz_sahil: {
+        title: 'Karadeniz Sahil Yolu Ekspresi (D-010 Koridoru)',
+        vehicle: 'Isuzu NPR Long Kamyon',
+        plate: '55 SAMSUN 01',
+        fleetText: '1x Isuzu NPR Kamyon',
+        costText: '₺4.800 TL',
+        etaText: '05 sa 40 dk',
+        etaMinutes: 340,
+        totalDistance: 390,
+        cargoText: '2.200 kg / 72 Koli',
+        tollText: '0 TL (Devlet Yolu)',
+        fuelText: '20.5 L/100km (~80 L)',
+        roadType: 'devlet_yolu',
+        roadBadge: 'D-010 Sahil Yolu (0 TL Geçiş)',
+        speedRange: [68, 82],
+        rpmRange: [1900, 2200],
+        path: [
+            [41.2867, 36.33],   // Samsun Liman Hub
+            [41.1300, 36.7200], // Çarşamba
+            [41.0900, 37.0400], // Terme
+            [41.1300, 37.2800], // Ünye
+            [41.0300, 37.5000], // Fatsa
+            [40.9839, 37.8764], // Ordu Merkez
+            [40.9128, 38.3895], // Giresun
+            [41.0000, 38.8200], // Tirebolu
+            [41.0027, 39.7168], // Trabzon Liman Hub
+            [41.0201, 40.5234], // Rize
+            [41.4000, 41.4300]  // Hopa Sınır Terminali
+        ]
+    },
+    guneydogu_sanayi: {
+        title: 'Güneydoğu Sanayi & Lojistik Arter Koridoru',
+        vehicle: 'Scania R500 V8 TIR',
+        plate: '27 ANTEP 99',
+        fleetText: '1x Scania R500 V8 TIR',
+        costText: '₺6.900 TL',
+        etaText: '06 sa 15 dk',
+        etaMinutes: 375,
+        totalDistance: 495,
+        cargoText: '15.000 kg (Sanayi Mamulü)',
+        tollText: '₺160 TL (O-52 Otoyolu)',
+        fuelText: '33.5 L/100km (~165 L)',
+        roadType: 'otoyol',
+        roadBadge: 'O-52 & D-400 İpekyolu Hattı',
+        speedRange: [82, 95],
         rpmRange: [1250, 1450],
-        fuelBurn: '29.8 L/100km',
-        totalDistance: 740,
-        etaMinutes: 510,
+        path: [
+            [37.0000, 35.3213], // Adana
+            [37.0300, 35.8100], // Ceyhan
+            [37.0742, 36.2478], // Osmaniye
+            [37.1800, 36.7300], // Nurdağı
+            [37.0662, 37.3833], // Gaziantep OSB Hub
+            [37.0300, 37.9900], // Birecik
+            [37.1591, 38.7969], // Şanlıurfa Hub
+            [37.2300, 39.7600], // Viranşehir
+            [37.1900, 40.5800], // Kızıltepe
+            [37.3212, 40.7245]  // Mardin Lojistik Hub
+        ]
+    },
+    dogu_anadolu_arter: {
+        title: 'Doğu Anadolu Ana Arter Koridoru (D-200 & D-100)',
+        vehicle: 'Mercedes Axor 1840 Ağır Vasıta',
+        plate: '25 DADAŞ 01',
+        fleetText: '1x Axor 1840 Ağır Vasıta',
+        costText: '₺11.400 TL',
+        etaText: '10 sa 30 dk',
+        etaMinutes: 630,
+        totalDistance: 875,
+        cargoText: '11.500 kg / 10 Palet',
+        tollText: '0 TL (Devlet Yolu)',
+        fuelText: '30.0 L/100km (~260 L)',
+        roadType: 'devlet_yolu',
+        roadBadge: 'D-200 & D-100 Doğu Arter',
+        speedRange: [65, 80],
+        rpmRange: [1400, 1600],
+        path: [
+            [39.9334, 32.8597], // Ankara Hub
+            [39.8600, 33.5100], // Kırıkkale
+            [39.8181, 34.8147], // Yozgat
+            [39.7100, 35.1800], // Sorgun
+            [39.7477, 37.0179], // Sivas Hub
+            [39.8900, 37.7500], // Zara
+            [39.7500, 38.7700], // Refahiye
+            [39.7500, 39.5000], // Erzincan Merkez
+            [39.9200, 40.7000], // Aşkale
+            [39.9000, 41.2700]  // Erzurum Palandöken Hub
+        ]
+    },
+    guney_ege_bodrum: {
+        title: 'Güney Ege Turizm & Dağıtım Ringi',
+        vehicle: 'Ford Transit 350L Kamyonet',
+        plate: '48 BDR 007',
+        fleetText: '1x Ford Transit 350L',
+        costText: '₺3.600 TL',
+        etaText: '04 sa 50 dk',
+        etaMinutes: 290,
+        totalDistance: 365,
+        cargoText: '950 kg / 40 Koli',
+        tollText: '₺45 TL (Aydın Otoyolu)',
+        fuelText: '11.2 L/100km (~41 L)',
+        roadType: 'devlet_yolu',
+        roadBadge: 'D-550 & D-330 Ege Turizm',
+        speedRange: [70, 85],
+        rpmRange: [2050, 2350],
+        path: [
+            [38.4192, 27.1287], // İzmir Bornova Hub
+            [38.1500, 27.3600], // Torbalı
+            [37.9500, 27.3700], // Selçuk
+            [37.8560, 27.8416], // Aydın Merkez
+            [37.9100, 28.3200], // Nazilli
+            [37.7765, 29.0864], // Denizli Hub
+            [37.2153, 28.3636], // Muğla Merkez
+            [37.3400, 28.1400], // Yatağan
+            [37.3100, 27.7800], // Milas
+            [37.0344, 27.4305]  // Bodrum Yalıkavak Dağıtım Şubesi
+        ]
+    },
+    icanadolu_sanayi_ring: {
+        title: 'İç Anadolu Sanayi & Tahıl Ringi',
+        vehicle: 'Isuzu NPR Long Kamyon',
+        plate: '42 KNY 100',
+        fleetText: '1x Isuzu NPR Kamyon',
+        costText: '₺5.100 TL',
+        etaText: '06 sa 45 dk',
+        etaMinutes: 405,
+        totalDistance: 510,
+        cargoText: '2.450 kg (Sanayi & Tahıl)',
+        tollText: '0 TL (Devlet Yolu)',
+        fuelText: '20.5 L/100km (~104 L)',
+        roadType: 'devlet_yolu',
+        roadBadge: 'D-715 & D-350 Ova Hattı',
+        speedRange: [65, 78],
+        rpmRange: [1950, 2200],
+        path: [
+            [39.9334, 32.8597], // Ankara Hub
+            [39.5500, 33.1200], // Bala
+            [39.0900, 33.0800], // Kulu
+            [38.6500, 32.9200], // Cihanbeyli
+            [37.8667, 32.4833], // Konya Selçuklu OSB Hub
+            [37.1759, 33.2287], // Karaman OSB
+            [37.5100, 34.0500], // Ereğli
+            [37.9667, 34.6833], // Niğde
+            [38.6244, 34.7144]  // Nevşehir Kapadokya Hub
+        ]
+    },
+    bati_karadeniz_maden: {
+        title: 'Batı Karadeniz Maden & Demir-Çelik Hattı',
+        vehicle: 'Mercedes Axor 1840 Ağır Vasıta',
+        plate: '67 ZNG 067',
+        fleetText: '1x Axor 1840 Ağır Vasıta',
+        costText: '₺4.400 TL',
+        etaText: '05 sa 20 dk',
+        etaMinutes: 320,
+        totalDistance: 380,
+        cargoText: '8.500 kg (Ağır Sanayi)',
+        tollText: '0 TL (Devlet Yolu)',
+        fuelText: '29.5 L/100km (~112 L)',
+        roadType: 'devlet_yolu',
+        roadBadge: 'D-010 & D-750 Dağ Koridoru',
+        speedRange: [60, 75],
+        rpmRange: [1450, 1650],
         path: [
             [40.7654, 29.9408], // Kocaeli Hub
             [40.7731, 30.4028], // Sakarya
+            [40.8438, 31.1565], // Düzce
             [40.7350, 31.6080], // Bolu
-            [39.9334, 32.8597], // Ankara Ana Hub
-            [39.4000, 33.1000], // Kulu Kavşağı
-            [38.4025, 33.4147], // Aksaray - Eskil Dağıtım Şubesi (Düzeltilen Konum)
-            [38.3687, 34.0370], // Aksaray Merkez Depo
-            [37.9667, 34.6833], // Niğde
-            [37.2000, 34.9000], // Pozantı Boğazı
-            [37.0000, 35.3213]  // Adana Ana Dağıtım Merkezi
+            [40.9800, 32.0500], // Mengen
+            [41.2200, 31.9500], // Devrek
+            [41.4564, 31.7987], // Zonguldak Liman Hub
+            [41.6344, 32.3375], // Bartın
+            [41.2061, 32.6276]  // Karabük KARDEMİR Hub
+        ]
+    },
+    ipekyolu_zigana: {
+        title: 'Tarihi İpek Yolu & Yeni Zigana Tüneli Koridoru',
+        vehicle: 'Isuzu NPR Long Kamyon',
+        plate: '61 TRB 061',
+        fleetText: '1x Isuzu NPR Kamyon',
+        costText: '₺3.250 TL',
+        etaText: '03 sa 45 dk',
+        etaMinutes: 225,
+        totalDistance: 260,
+        cargoText: '2.100 kg (Deniz Kargo & Transit)',
+        tollText: '0 TL (Devlet Yolu)',
+        fuelText: '22.0 L/100km (~57 L)',
+        roadType: 'devlet_yolu',
+        roadBadge: 'D-885 Dağ Geçidi & Yeni Tünel',
+        speedRange: [60, 74],
+        rpmRange: [2000, 2300],
+        path: [
+            [41.0027, 39.7168], // Trabzon Liman Hub
+            [40.8100, 39.6000], // Maçka
+            [40.6300, 39.4000], // Yeni Zigana Tüneli Girişi (14.5 km)
+            [40.5600, 39.2900], // Torul
+            [40.4600, 39.4700], // Gümüşhane Merkez
+            [40.3500, 39.7500], // Kale
+            [40.2552, 40.2249], // Bayburt Hub
+            [40.0200, 40.5000], // Kop Geçidi (2.409m)
+            [39.9200, 40.7000], // Aşkale
+            [39.9000, 41.2700]  // Erzurum Palandöken Hub
+        ]
+    },
+    vangolu_sinir: {
+        title: 'Van Gölü & Doğu Sınır Ticaret Koridoru',
+        vehicle: 'Scania R450 Highline TIR',
+        plate: '65 VAN 65',
+        fleetText: '1x Scania R450 TIR',
+        costText: '₺5.950 TL',
+        etaText: '05 sa 15 dk',
+        etaMinutes: 315,
+        totalDistance: 385,
+        cargoText: '13.000 kg (Sınır Ticareti)',
+        tollText: '0 TL (Devlet Yolu)',
+        fuelText: '32.0 L/100km (~123 L)',
+        roadType: 'devlet_yolu',
+        roadBadge: 'D-100 & D-975 Sınır Hattı',
+        speedRange: [72, 86],
+        rpmRange: [1250, 1450],
+        path: [
+            [39.9000, 41.2700], // Erzurum Hub
+            [39.9800, 41.6700], // Pasinler
+            [40.0400, 42.1700], // Horasan
+            [39.8100, 42.5800], // Eleşkirt
+            [39.7191, 43.0503], // Ağrı Merkez
+            [39.5300, 43.5500], // Taşlıçay
+            [39.5500, 44.0800], // Doğubayazıt (Gürbulak Sınır Kapısı Yakını)
+            [39.1400, 43.9100], // Çaldıran
+            [38.9800, 43.7500], // Muradiye
+            [38.4891, 43.4089]  // Van İpekyolu Merkez Hub
         ]
     }
 };
@@ -1011,15 +1341,17 @@ const CURATED_SCENARIOS = {
 let curatedSimState = {
     key: null,
     scenario: null,
+    polylineCasing: null,
     polyline: null,
     marker: null,
     interpolatedPoints: [],
     step: 0,
     intervalId: null,
+    isPaused: false,
     speedMultiplier: 1
 };
 
-function interpolatePath(points, segmentsPerLeg = 12) {
+function interpolatePath(points, segmentsPerLeg = 14) {
     const result = [];
     for (let i = 0; i < points.length - 1; i++) {
         const p1 = points[i];
@@ -1045,47 +1377,69 @@ function startCuratedSimulation(scenarioKey) {
 
     curatedSimState.key = scenarioKey;
     curatedSimState.scenario = scenario;
-    curatedSimState.interpolatedPoints = interpolatePath(scenario.path, 15);
+    curatedSimState.interpolatedPoints = interpolatePath(scenario.path, 16);
     curatedSimState.step = 0;
+    curatedSimState.isPaused = false;
 
-    // Harita çizgisini çiz
-    curatedSimState.polyline = L.polyline(scenario.path, {
-        color: scenario.roadType === 'devlet_yolu' ? '#10b981' : '#6366f1',
-        weight: 6,
-        opacity: 0.9,
-        dashArray: scenario.roadType === 'devlet_yolu' ? '8, 6' : null
+    // Yüksek kontrastlı çift katmanlı neon otoyol çizgisi (Yeşil değil; her zeminde parlayan elektrik mavisi/cyan)
+    curatedSimState.polylineCasing = L.polyline(scenario.path, {
+        color: '#0f172a',
+        weight: 9,
+        opacity: 0.85
     }).addTo(mainMap);
 
-    mainMap.fitBounds(curatedSimState.polyline.getBounds(), { padding: [50, 50], maxZoom: 9 });
+    curatedSimState.polyline = L.polyline(scenario.path, {
+        color: '#06b6d4',
+        weight: 5,
+        opacity: 1.0,
+        dashArray: scenario.roadType === 'devlet_yolu' ? '10, 8' : '14, 6'
+    }).addTo(mainMap);
 
-    // Kokpit HUD Panelini Doldur ve Aç
+    // Otomatik odaklanma / Zoom: Harita koridor sınırlarına tam sığacak şekilde pürüzsüz kaydırılır
+    mainMap.flyToBounds(curatedSimState.polyline.getBounds(), {
+        padding: [60, 60],
+        maxZoom: 10,
+        duration: 1.5
+    });
+
+    // Kokpit HUD Panelini Aç ve Tüm Verileri Yerleştir
     const hud = document.getElementById('simTelemetryHud');
-    if (hud) hud.classList.add('active');
+    if (hud) {
+        hud.style.display = 'block';
+        hud.classList.add('active');
+    }
 
-    const setHud = (id, val) => { const el = document.getElementById(id); if (el) el.textContent = val; };
-    setHud('hudVehicleBadge', `${scenario.vehicle} • ${scenario.plate}`);
-    setHud('hudScenarioTitle', scenario.title);
-    setHud('hudRoadTypeBadge', scenario.roadBadge);
-    setHud('hudFuelBurn', scenario.fuelBurn);
-    setHud('hudDistanceLeft', `${scenario.totalDistance} km`);
-    setHud('hudPlateVal', scenario.plate);
-    setHud('hudEtaValue', `${Math.floor(scenario.etaMinutes / 60)} sa ${scenario.etaMinutes % 60} dk`);
+    const setEl = (id, val) => { const el = document.getElementById(id); if (el) el.textContent = val; };
+    setEl('hudRoadTypeBadge', scenario.roadBadge);
+    setEl('hudRouteName', scenario.title);
+    setEl('hudFleetVal', scenario.fleetText);
+    setEl('hudCostVal', scenario.costText);
+    setEl('hudEtaVal', scenario.etaText);
+    setEl('hudCargoVal', scenario.cargoText);
+    setEl('hudTollVal', scenario.tollText);
+    setEl('hudDistLeftVal', `${scenario.totalDistance} km`);
+    setEl('hudFuelVal', scenario.fuelText);
 
-    // Araç Marker'ı
+    const banner = document.getElementById('simCompleteBanner');
+    if (banner) banner.style.display = 'none';
+
+    // Büyük ve Dikkat Çekici Canlı Araç Göstergesi
+    const isDevlet = scenario.roadType === 'devlet_yolu';
     const truckIcon = L.divIcon({
         className: 'sim-truck-marker',
         html: `
-            <div style="position:relative; display:flex; flex-direction:column; align-items:center;">
-                <div style="background:linear-gradient(135deg, ${scenario.roadType === 'devlet_yolu' ? '#10b981, #047857' : '#6366f1, #4338ca'}); color:white; width:40px; height:40px; border-radius:50%; border:3px solid white; box-shadow:0 0 22px rgba(99,102,241,0.9); display:flex; align-items:center; justify-content:center; font-size:18px;">
+            <div class="sim-truck-beacon">
+                <div class="sim-truck-circle ${isDevlet ? 'road-devlet' : 'road-otoyol'}">
                     <i class="fas fa-truck-moving"></i>
                 </div>
-                <div style="background:rgba(15,23,42,0.95); color:#38bdf8; font-family:'Outfit',sans-serif; font-size:11px; font-weight:800; padding:2px 8px; border-radius:6px; margin-top:4px; white-space:nowrap; border:1px solid rgba(56,189,248,0.7); box-shadow:0 4px 12px rgba(0,0,0,0.5);">
-                    <span id="markerLiveSpeed">${scenario.speedRange[0]}</span> km/s
+                <div class="sim-truck-badge-bar">
+                    <span class="sim-truck-plate-tag">${scenario.plate.split('•')[0].trim()}</span>
+                    <span class="sim-truck-speed-tag" id="markerLiveSpeed">⚡ ${scenario.speedRange[0]} km/s</span>
                 </div>
             </div>
         `,
-        iconSize: [90, 60],
-        iconAnchor: [45, 22]
+        iconSize: [110, 80],
+        iconAnchor: [55, 30]
     });
 
     curatedSimState.marker = L.marker(curatedSimState.interpolatedPoints[0], { icon: truckIcon }).addTo(mainMap);
@@ -1105,13 +1459,31 @@ function startCuratedSimulation(scenarioKey) {
 function startSimTimer() {
     if (curatedSimState.intervalId) clearInterval(curatedSimState.intervalId);
 
-    const baseDelay = Math.max(30, Math.floor(180 / curatedSimState.speedMultiplier));
+    const baseDelay = Math.max(25, Math.floor(160 / curatedSimState.speedMultiplier));
 
     curatedSimState.intervalId = setInterval(() => {
+        if (curatedSimState.isPaused) return;
+
         const pts = curatedSimState.interpolatedPoints;
         if (!pts || pts.length === 0) return;
 
-        curatedSimState.step = (curatedSimState.step + 1) % pts.length;
+        curatedSimState.step++;
+
+        // Rota sonuna ulaşıldığında
+        if (curatedSimState.step >= pts.length) {
+            const banner = document.getElementById('simCompleteBanner');
+            if (banner) banner.style.display = 'block';
+
+            const speedDig = document.getElementById('hudSpeedDigital');
+            if (speedDig) speedDig.textContent = '0';
+            const markerSpeed = document.getElementById('markerLiveSpeed');
+            if (markerSpeed) markerSpeed.textContent = '⚡ 0 km/s (Varış)';
+
+            clearInterval(curatedSimState.intervalId);
+            curatedSimState.intervalId = null;
+            return;
+        }
+
         const currentCoord = pts[curatedSimState.step];
         curatedSimState.marker.setLatLng(currentCoord);
 
@@ -1124,25 +1496,49 @@ function startSimTimer() {
         // İlerledikçe kalan mesafe ve süreyi dinamik eksilt
         const progressFrac = curatedSimState.step / pts.length;
         const distLeft = Math.max(0, Math.round(scenario.totalDistance * (1 - progressFrac)));
-        const minsLeft = Math.max(1, Math.round(scenario.etaMinutes * (1 - progressFrac)));
+        const minsLeft = Math.max(0, Math.round(scenario.etaMinutes * (1 - progressFrac)));
         const hoursLeft = Math.floor(minsLeft / 60);
         const remMins = minsLeft % 60;
 
-        const setHud = (id, val) => { const el = document.getElementById(id); if (el) el.textContent = val; };
-        setHud('hudSpeedValue', curSpeed);
-        setHud('hudRpmValue', curRpm);
-        setHud('hudDistanceLeft', `${distLeft} km`);
-        setHud('hudEtaValue', `${hoursLeft > 0 ? hoursLeft + ' sa ' : ''}${remMins} dk`);
+        const setEl = (id, val) => { const el = document.getElementById(id); if (el) el.textContent = val; };
+        setEl('hudSpeedDigital', curSpeed);
+        setEl('hudRpmVal', `${curRpm.toLocaleString('tr-TR')} RPM`);
+        setEl('hudDistLeftVal', `${distLeft} km`);
+        setEl('hudEtaVal', `${hoursLeft > 0 ? hoursLeft + ' sa ' : ''}${remMins} dk`);
 
         const markerSpeed = document.getElementById('markerLiveSpeed');
-        if (markerSpeed) markerSpeed.textContent = curSpeed;
+        if (markerSpeed) markerSpeed.textContent = `⚡ ${curSpeed} km/s`;
     }, baseDelay);
+}
+
+function toggleSimPause() {
+    curatedSimState.isPaused = !curatedSimState.isPaused;
+    const btn = document.getElementById('btnSimPause');
+    if (btn) {
+        btn.innerHTML = curatedSimState.isPaused ? '<i class="fas fa-play"></i>' : '<i class="fas fa-pause"></i>';
+        btn.title = curatedSimState.isPaused ? 'Devam Et' : 'Duraklat';
+    }
+}
+
+function restartSim() {
+    curatedSimState.step = 0;
+    curatedSimState.isPaused = false;
+    const banner = document.getElementById('simCompleteBanner');
+    if (banner) banner.style.display = 'none';
+
+    const btnPause = document.getElementById('btnSimPause');
+    if (btnPause) btnPause.innerHTML = '<i class="fas fa-pause"></i>';
+
+    if (curatedSimState.marker && curatedSimState.interpolatedPoints.length > 0) {
+        curatedSimState.marker.setLatLng(curatedSimState.interpolatedPoints[0]);
+    }
+    startSimTimer();
 }
 
 function setSimSpeed(multiplier) {
     curatedSimState.speedMultiplier = multiplier;
     document.querySelectorAll('.btn-sim-speed').forEach(btn => {
-        btn.classList.toggle('active', btn.getAttribute('data-speed') == multiplier);
+        btn.classList.toggle('active', btn.getAttribute('id') === `btnSim${multiplier}x`);
     });
     if (curatedSimState.intervalId) {
         startSimTimer();
@@ -1162,9 +1558,16 @@ function stopVehicleSimulation() {
         mainMap.removeLayer(curatedSimState.polyline);
         curatedSimState.polyline = null;
     }
+    if (curatedSimState.polylineCasing && mainMap) {
+        mainMap.removeLayer(curatedSimState.polylineCasing);
+        curatedSimState.polylineCasing = null;
+    }
 
     const hud = document.getElementById('simTelemetryHud');
-    if (hud) hud.classList.remove('active');
+    if (hud) {
+        hud.classList.remove('active');
+        hud.style.display = 'none';
+    }
 
     const btnSim = document.getElementById('btnSimulate');
     if (btnSim) {
@@ -1179,10 +1582,10 @@ function stopVehicleSimulation() {
 }
 
 function toggleVehicleSimulation() {
-    if (curatedSimState.intervalId) {
+    if (curatedSimState.intervalId || curatedSimState.key) {
         stopVehicleSimulation();
     } else {
-        startCuratedSimulation('marmara_express');
+        startCuratedSimulation('marmara_d100');
     }
 }
 

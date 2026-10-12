@@ -1294,19 +1294,157 @@ body {
 
 /* Canlı Telemetri & Kokpit HUD Paneli */
 .sim-telemetry-hud {
+    display: none;
     position: absolute;
     top: 18px;
     right: 18px;
-    width: 330px;
+    width: 360px;
+    max-width: 90vw;
     background: rgba(15, 23, 42, 0.96);
     backdrop-filter: blur(16px);
-    border: 1px solid rgba(99, 102, 241, 0.35);
+    border: 1px solid rgba(56, 189, 248, 0.4);
     border-radius: 14px;
     padding: 16px;
     z-index: 1000;
-    box-shadow: 0 18px 45px rgba(0, 0, 0, 0.55);
+    box-shadow: 0 18px 45px rgba(0, 0, 0, 0.65);
     color: #f8fafc;
+}
+
+.sim-telemetry-hud.active {
+    display: block !important;
     animation: hudSlideIn 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* Gerçekçi Güneş ve Ay İkonları */
+.theme-sun-icon {
+    color: #f59e0b !important;
+    filter: drop-shadow(0 0 6px rgba(245, 158, 11, 0.95)) !important;
+    font-size: 16px !important;
+    display: inline-block;
+    animation: sunSpin 25s linear infinite;
+}
+
+@keyframes sunSpin {
+    from { transform: rotate(0deg); }
+    to { transform: rotate(360deg); }
+}
+
+.theme-moon-icon {
+    color: #38bdf8 !important;
+    filter: drop-shadow(0 0 6px rgba(56, 189, 248, 0.8)) !important;
+    font-size: 15px !important;
+    display: inline-block;
+}
+
+/* Büyük ve Dikkat Çekici Canlı Araç Göstergesi */
+.sim-truck-marker {
+    z-index: 9999 !important;
+    pointer-events: none;
+}
+
+.sim-truck-beacon {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.sim-truck-circle {
+    width: 52px;
+    height: 52px;
+    border-radius: 50%;
+    border: 3.5px solid #ffffff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 24px;
+    color: #ffffff;
+    box-shadow: 0 0 25px rgba(6, 182, 212, 0.95), 0 4px 15px rgba(0, 0, 0, 0.5);
+    transition: transform 0.2s;
+}
+
+.sim-truck-circle.road-devlet {
+    background: linear-gradient(135deg, #0284c7, #0369a1);
+    box-shadow: 0 0 25px rgba(2, 132, 199, 0.95);
+}
+
+.sim-truck-circle.road-otoyol {
+    background: linear-gradient(135deg, #6366f1, #4338ca);
+    box-shadow: 0 0 25px rgba(99, 102, 241, 0.95);
+}
+
+.sim-truck-badge-bar {
+    display: flex;
+    gap: 4px;
+    margin-top: 5px;
+}
+
+.sim-truck-speed-tag {
+    background: rgba(15, 23, 42, 0.95);
+    color: #38bdf8;
+    font-family: 'Outfit', sans-serif;
+    font-size: 11px;
+    font-weight: 800;
+    padding: 2px 7px;
+    border-radius: 6px;
+    white-space: nowrap;
+    border: 1px solid rgba(56, 189, 248, 0.7);
+    box-shadow: 0 3px 10px rgba(0, 0, 0, 0.5);
+}
+
+.sim-truck-plate-tag {
+    background: rgba(15, 23, 42, 0.95);
+    color: #f8fafc;
+    font-family: 'Outfit', monospace;
+    font-size: 10px;
+    font-weight: 700;
+    padding: 2px 6px;
+    border-radius: 6px;
+    white-space: nowrap;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    box-shadow: 0 3px 10px rgba(0, 0, 0, 0.5);
+}
+
+/* HUD Satır Vurguları & Aksiyon Butonları */
+.highlight-row {
+    background: rgba(30, 41, 59, 0.6);
+    border-radius: 8px;
+    padding: 6px 10px !important;
+    border-bottom: none !important;
+}
+
+.font-bold {
+    font-weight: 800 !important;
+}
+
+.hud-action-btns {
+    display: flex;
+    gap: 6px;
+}
+
+.sim-complete-banner {
+    background: rgba(6, 95, 70, 0.9);
+    border: 1px solid #10b981;
+    color: #a7f3d0;
+    font-size: 12px;
+    font-weight: 700;
+    padding: 8px 12px;
+    border-radius: 8px;
+    text-align: center;
+    margin-bottom: 10px;
+    animation: fadeIn 0.3s ease;
+}
+
+.market-last-check-pill {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    background: #1e293b;
+    border: 1px solid #334155;
+    padding: 6px 12px;
+    border-radius: 8px;
+    font-size: 12px;
+    color: #f8fafc;
 }
 
 @keyframes hudSlideIn {

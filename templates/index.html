@@ -303,6 +303,11 @@
                                 <option value="24">24 Saatte Bir (Günlük)</option>
                             </select>
                         </div>
+                        <div class="market-last-check-pill" title="Son Piyasa Taraması Tarih ve Saati">
+                            <i class="fas fa-calendar-check text-success"></i>
+                            <span style="font-size:11px; color:#94a3b8;">Son Tarama:</span>
+                            <strong id="lastFuelCheckDateTime" style="font-size:12px; color:#f8fafc;">12.10.2026 19:30</strong>
+                        </div>
                         <button onclick="triggerMarketFuelCheck()" class="btn btn-warning btn-sm btn-pulse" id="btnCheckFuel" title="Jeopolitik petrol dalgalanmasına göre pompa fiyatlarını şimdi tara">
                             <i class="fas fa-bolt"></i> Piyasayı Tara
                         </button>
@@ -505,15 +510,25 @@
                         </div>
                     </div>
                     <div class="map-bar-right">
-                        <!-- Hazır Senaryolar Menüsü -->
+                        <!-- Hazır Senaryolar Menüsü (14 Türkiye Koridoru) -->
                         <div class="scenario-select-wrapper">
-                            <i class="fas fa-clapperboard text-warning"></i>
-                            <select id="curatedScenarioSelect" onchange="startCuratedSimulation(this.value)" class="map-select scenario-select">
-                                <option value="" disabled selected>🎬 Hazır Simülasyon Seç...</option>
-                                <option value="1">🚚 Senaryo 1: Marmara Ekspres (Doblo • 78 km/s)</option>
-                                <option value="2">🚛 Senaryo 2: Başkent Hattı (D-100 Devlet Yolu • 0 TL HGS)</option>
-                                <option value="3">🛣️ Senaryo 3: Ege Ekspres (Osmangazi Köprüsü • Isuzu)</option>
-                                <option value="4">🚛 Senaryo 4: Anadolu Linehaul Mega TIR (Scania R450)</option>
+                            <i class="fas fa-route text-warning"></i>
+                            <select id="curatedScenarioSelect" onchange="if(this.value) startCuratedSimulation(this.value)" class="map-select scenario-select">
+                                <option value="" disabled selected>🎬 Türkiye Lojistik Koridoru Seç (14 Hat)...</option>
+                                <option value="marmara_d100">🚚 1. Marmara Bölgesel Ring (D-100 & D-130 Sahil • 1 Doblo • ₺1.420 TL)</option>
+                                <option value="ege_osmangazi">🛣️ 2. Ege Otoyol Ekspres (Osmangazi Köprüsü & O-5 • 1 Actros TIR • ₺7.850 TL)</option>
+                                <option value="baskent_anadolu">🚛 3. Başkent D-100 Anadolu Koridoru (Bolu Dağı Geçidi • 1 Isuzu • ₺4.280 TL)</option>
+                                <option value="akdeniz_afyon_antalya">🏖️ 4. Akdeniz Sevkiyat Koridoru (D-650 Göller • 2 Araç Konvoy • ₺5.650 TL)</option>
+                                <option value="trakya_sanayi">🏭 5. Trakya Sanayi & İhracat (Kapıkule • 1 Scania TIR • ₺3.450 TL)</option>
+                                <option value="cukurova_toroslar">⛰️ 6. Çukurova - Toroslar Ağır Vasıta (Pozantı Boğazı • 2 TIR • ₺9.200 TL)</option>
+                                <option value="karadeniz_sahil">🌊 7. Karadeniz Sahil Yolu Ekspresi (D-010 Sahil • 1 Isuzu • ₺4.800 TL)</option>
+                                <option value="guneydogu_sanayi">🏺 8. Güneydoğu Sanayi & Lojistik (İpekyolu • 1 Scania TIR • ₺6.900 TL)</option>
+                                <option value="dogu_anadolu_arter">❄️ 9. Doğu Anadolu Ana Arter (Sivas-Erzincan-Erzurum • 1 Axor • ₺11.400 TL)</option>
+                                <option value="guney_ege_bodrum">☀️ 10. Güney Ege Turizm & Dağıtım Ringi (Bodrum-Milas • 1 Transit • ₺3.600 TL)</option>
+                                <option value="icanadolu_sanayi_ring">🌾 11. İç Anadolu Sanayi & Tahıl Ringi (Konya-Karaman • 1 Isuzu • ₺5.100 TL)</option>
+                                <option value="bati_karadeniz_maden">⛏️ 12. Batı Karadeniz Maden & Sanayi (Zonguldak-Karabük • 1 Axor • ₺4.400 TL)</option>
+                                <option value="ipekyolu_zigana">🏔️ 13. Tarihi İpek Yolu & Zigana Tüneli (Trabzon-Bayburt • 1 Isuzu • ₺3.250 TL)</option>
+                                <option value="vangolu_sinir">🚢 14. Van Gölü & Doğu Sınır Ticaret (Ağrı-Van • 1 Scania • ₺5.950 TL)</option>
                             </select>
                         </div>
 
@@ -523,11 +538,11 @@
                         <button onclick="toggleMapRoutes()" id="btnToggleRoutes" class="btn-map-control active" title="Rotaları Göster/Gizle">
                             <i class="fas fa-route"></i> Rotalar
                         </button>
-                        <button onclick="toggleVehicleSimulation()" id="btnSimulate" class="btn-map-control" title="Dağıtım Simülasyonunu Başlat">
+                        <button onclick="toggleVehicleSimulation()" id="btnSimulate" class="btn-map-control" title="Dağıtım Simülasyonunu Başlat/Durdur">
                             <i class="fas fa-play"></i> Simülasyon
                         </button>
-                        <button onclick="toggleDarkMapMode()" id="btnMapTheme" class="btn-map-control" title="Karanlık / Aydınlık Mod">
-                            <i class="fas fa-moon"></i>
+                        <button onclick="toggleDarkMapMode()" id="btnMapTheme" class="btn-map-control" title="Karanlık / Aydınlık Modu Değiştir">
+                            <i class="fas fa-moon theme-moon-icon" id="themeIcon"></i>
                         </button>
                         <button onclick="refreshMap()" class="btn-map-control" title="Yenile">
                             <i class="fas fa-sync"></i>
@@ -539,9 +554,11 @@
                     <div id="mainMap"></div>
 
                     <!-- Canlı Telemetri & Kokpit HUD Paneli (Sağ Panel) -->
-                    <div id="simTelemetryHud" class="sim-telemetry-hud" style="display:none;">
+                    <div id="simTelemetryHud" class="sim-telemetry-hud">
                         <div class="hud-panel-header">
-                            <div class="hud-live-tag"><span class="live-dot"></span> CANLI SEVKİYAT TELEMETRİSİ</div>
+                            <div class="hud-live-tag">
+                                <span class="live-dot"></span> CANLI SEVKİYAT TELEMETRİSİ
+                            </div>
                             <button onclick="stopVehicleSimulation()" class="btn-close-hud" title="Kapat"><i class="fas fa-times"></i></button>
                         </div>
 
@@ -561,58 +578,67 @@
                         <!-- Takometre & Sayısal Göstergeler -->
                         <div class="hud-gauge-section">
                             <div class="speedo-box">
-                                <div class="speedo-val" id="hudSpeedDigital">84</div>
+                                <div class="speedo-val" id="hudSpeedDigital">82</div>
                                 <div class="speedo-unit">KM/S</div>
                             </div>
                             <div class="speedo-meta">
-                                <div class="speedo-row"><span>Vites:</span> <strong>12 (Eco-Drive)</strong></div>
                                 <div class="speedo-row"><span>Motor Devri:</span> <strong id="hudRpmVal">1.450 RPM</strong></div>
-                                <div class="speedo-row"><span>Güzergah:</span> <strong id="hudRoadModeVal">Ücretsiz Yol</strong></div>
+                                <div class="speedo-row"><span>Geçiş Ücreti:</span> <strong id="hudTollVal" style="color:#38bdf8;">0 TL (Ücretsiz)</strong></div>
+                                <div class="speedo-row"><span>Kalan Mesafe:</span> <strong id="hudDistLeftVal" style="color:#f59e0b;">178 km</strong></div>
                             </div>
                         </div>
 
-                        <!-- Operasyonel Veriler -->
+                        <!-- Sefer & Operasyonel Bilgiler (Maliyet, Süre, Araç Sayısı) -->
                         <div class="hud-stats-list">
-                            <div class="hud-row">
-                                <span class="hud-label"><i class="fas fa-truck text-primary"></i> Araç:</span>
-                                <span class="hud-val" id="hudVehicleName">Scania R450 Highline</span>
+                            <div class="hud-row highlight-row">
+                                <span class="hud-label"><i class="fas fa-clock text-warning"></i> Tahmini Süre (ETA):</span>
+                                <span class="hud-val text-warning font-bold" id="hudEtaVal">03 sa 15 dk</span>
+                            </div>
+                            <div class="hud-row highlight-row">
+                                <span class="hud-label"><i class="fas fa-money-bill-wave text-success"></i> Sefer Maliyeti:</span>
+                                <span class="hud-val text-success font-bold" id="hudCostVal">₺1.420 TL</span>
                             </div>
                             <div class="hud-row">
-                                <span class="hud-label"><i class="fas fa-id-card text-info"></i> Plaka:</span>
-                                <span class="hud-val" id="hudVehiclePlate">41 TIR 606</span>
+                                <span class="hud-label"><i class="fas fa-truck-moving text-primary"></i> Filo & Araç:</span>
+                                <span class="hud-val" id="hudFleetVal">1x Doblo Maxi Panelvan</span>
                             </div>
                             <div class="hud-row">
-                                <span class="hud-label"><i class="fas fa-map-pin text-danger"></i> Güzergah:</span>
-                                <span class="hud-val" id="hudRouteName">Kocaeli Hub ➔ Ankara OSTİM</span>
+                                <span class="hud-label"><i class="fas fa-boxes-stacked text-info"></i> Yük & Hacim:</span>
+                                <span class="hud-val" id="hudCargoVal">380 kg / 24 Koli</span>
                             </div>
                             <div class="hud-row">
-                                <span class="hud-label"><i class="fas fa-hourglass-half text-warning"></i> Tahmini Süre (ETA):</span>
-                                <span class="hud-val text-warning" id="hudEtaVal">03 sa 45 dk</span>
+                                <span class="hud-label"><i class="fas fa-gas-pump text-danger"></i> Yakıt Tüketimi:</span>
+                                <span class="hud-val" id="hudFuelVal">7.8 L/100km (~14 L)</span>
                             </div>
                             <div class="hud-row">
-                                <span class="hud-label"><i class="fas fa-gas-pump text-warning"></i> Anlık Tüketim:</span>
-                                <span class="hud-val" id="hudFuelVal">14.6 L (31.5 L/100km)</span>
+                                <span class="hud-label"><i class="fas fa-map-location-dot text-indigo"></i> Koridor:</span>
+                                <span class="hud-val text-truncate" id="hudRouteName" style="max-width:180px;">İstanbul ➔ Bursa Ring</span>
                             </div>
-                            <div class="hud-row">
-                                <span class="hud-label"><i class="fas fa-receipt text-danger"></i> Sefer Maliyeti:</span>
-                                <span class="hud-val text-success" id="hudCostVal">3.550 TL</span>
-                            </div>
-                            <div class="hud-row">
-                                <span class="hud-label"><i class="fas fa-leaf text-success"></i> Karbon Salınımı:</span>
-                                <span class="hud-val" id="hudCo2Val">38.8 kg CO₂</span>
-                            </div>
+                        </div>
+
+                        <!-- Tamamlama Bildirimi -->
+                        <div id="simCompleteBanner" class="sim-complete-banner" style="display:none;">
+                            <i class="fas fa-check-circle text-success"></i> Varış Noktasına Ulaşıldı • Sevkiyat Tamamlandı!
                         </div>
 
                         <!-- Simülasyon Hızı ve Kontroller -->
                         <div class="hud-controls-bar">
                             <div class="sim-speed-btn-group">
-                                <button onclick="setSimSpeed(1)" class="btn-sim-speed active" id="btnSim1x">1x</button>
-                                <button onclick="setSimSpeed(2)" class="btn-sim-speed" id="btnSim2x">2x</button>
-                                <button onclick="setSimSpeed(5)" class="btn-sim-speed" id="btnSim5x">5x</button>
+                                <button onclick="setSimSpeed(1)" class="btn-sim-speed active" id="btnSim1x" title="Normal Hız (1x)">1x</button>
+                                <button onclick="setSimSpeed(2)" class="btn-sim-speed" id="btnSim2x" title="2 Kat Hızlı">2x</button>
+                                <button onclick="setSimSpeed(5)" class="btn-sim-speed" id="btnSim5x" title="5 Kat Hızlı">5x</button>
                             </div>
-                            <button onclick="stopVehicleSimulation()" class="btn btn-danger btn-sm">
-                                <i class="fas fa-stop"></i> Bitir
-                            </button>
+                            <div class="hud-action-btns">
+                                <button onclick="toggleSimPause()" class="btn btn-secondary btn-sm" id="btnSimPause" title="Duraklat / Devam Et">
+                                    <i class="fas fa-pause"></i>
+                                </button>
+                                <button onclick="restartSim()" class="btn btn-secondary btn-sm" title="Başa Sar">
+                                    <i class="fas fa-arrow-rotate-left"></i>
+                                </button>
+                                <button onclick="stopVehicleSimulation()" class="btn btn-danger btn-sm" title="Durdur">
+                                    <i class="fas fa-stop"></i> Durdur
+                                </button>
+                            </div>
                         </div>
                     </div>
 

@@ -21,7 +21,7 @@ Harici ağır web çatıları (Django/Flask) yerine saf Python standart kütüph
 - **350+ Lojistik İstasyon:** 81 il merkezi ve tüm kritik ilçe, liman ve organize sanayi bölgeleri (OSB) gerçek GPS koordinatlarıyla tanımlıdır (Tuz Gölü Eskil şubesi gerçek ilçe merkezine konumlandırılmıştır).
 - **D-100 / E-5 Devlet Yolları vs Otoyol (Saat & Ücret Hesabı):** Ücretli otoyollar yerine devlet yollarını tercih eden rotalar için 0 TL HGS geçiş ücreti ve gerçekçi ortalama hızlarla saat/dakika cinsinden net seyahat süresi hesaplanır.
 - **Canlı Brent Petrol & Akaryakıt Kontrol Masası:** Jeopolitik hareketlilik ve döviz kurlarını baz alarak 8/12/24 saatte bir veya anlık olarak brent petrolü ($/varil) tarayıp pompa fiyatlarını (Motorin, Benzin, AdBlue) otomatik güncelleyen piyasa paneli.
-- **3D Kokpit HUD Simülasyonu:** 4 gerçek Türkiye güzergahında (Marmara Transit, Başkent D-100, Ege Otoyol Ekspres, Anadolu Mega Linehaul) hareketli 3D yol perspektifi, dijital takometre, RPM, anlık yakıt tüketimi ve 1x/2x/5x hız çarpanı sunan canlı telemetri kokpiti.
+- **3D Kokpit HUD ve 14 Gerçek Türkiye Koridoru:** Türkiye'nin en işlek 14 lojistik güzergahında (Marmara D-100, Ege Osmangazi, Başkent, Akdeniz, Trakya, Çukurova, Karadeniz Sahil vb.) denizi ve dağları kesmeyen gerçek karayolu koordinatları; sefer maliyeti (TL), tahmini süre, filo araç sayısı, kargo yükü, dijital takometre ve 1x/2x/5x hız kontrollü canlı kokpit HUD paneli.
 - **API Anahtarsız Karanlık Mod:** Harici lisans/API key istemeyen, sıfır filigranlı yerel CSS filtreli gece modu.
 - **6 Farklı Araç Sınıfı:** Moto kuryeden Scania Mega TIR'a kadar farklı kapasite, hacim ve tüketim değerlerine sahip filo.
 - **Optimizasyon Algoritmaları:**
