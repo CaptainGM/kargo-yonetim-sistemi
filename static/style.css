@@ -3196,4 +3196,386 @@ body.is-admin .user-dashboard-info {
     border-radius: 4px;
     font-size: 10px;
     font-weight: 700;
+}
+
+/* ==========================================================================
+   GLOBAL KOYU TEMA (DARK THEME) SİSTEMİ - GÖZ YORMAYAN OLED & NAVY
+   ========================================================================== */
+body.dark-theme {
+    background: #090d16;
+    color: #e2e8f0;
+}
+
+body.dark-theme .main-content {
+    background: #0b0f19;
+    color: #e2e8f0;
+}
+
+body.dark-theme .page-header h1 {
+    color: #f8fafc;
+}
+
+body.dark-theme .market-control-panel .brent-pill,
+body.dark-theme .market-control-panel .market-interval-box,
+body.dark-theme .market-control-panel .market-last-check-pill {
+    background: #111827;
+    border-color: #1e293b;
+    color: #f8fafc;
+}
+
+body.dark-theme .market-ticker-bar {
+    background: #111827;
+    border-color: #1e293b;
+}
+
+body.dark-theme .ticker-item {
+    border-right-color: rgba(255, 255, 255, 0.08);
+}
+
+body.dark-theme .stat-card {
+    background: #111827;
+    border-color: #1e293b;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.35);
+}
+
+body.dark-theme .stat-card:hover {
+    border-color: #6366f1;
+    box-shadow: 0 8px 25px rgba(99, 102, 241, 0.25);
+}
+
+body.dark-theme .stat-info h3 {
+    color: #f8fafc;
+}
+
+body.dark-theme .stat-info p {
+    color: #94a3b8;
+}
+
+body.dark-theme .chart-card {
+    background: #111827;
+    border: 1px solid #1e293b;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.35);
+}
+
+body.dark-theme .chart-header h3 {
+    color: #f8fafc;
+}
+
+body.dark-theme .chart-badge {
+    background: rgba(99, 102, 241, 0.18);
+    border-color: rgba(99, 102, 241, 0.35);
+    color: #a5b4fc;
+}
+
+body.dark-theme .card {
+    background: #111827;
+    border: 1px solid #1e293b;
+    color: #f8fafc;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.35);
+}
+
+body.dark-theme .card-header h3 {
+    color: #f8fafc !important;
+}
+
+body.dark-theme .card-header p {
+    color: #94a3b8 !important;
+}
+
+body.dark-theme .data-table {
+    background: #111827;
+    color: #e2e8f0;
+}
+
+body.dark-theme .data-table thead th {
+    background: #1e293b;
+    color: #cbd5e1;
+    border-bottom: 1px solid #334155;
+}
+
+body.dark-theme .data-table tbody td {
+    border-bottom: 1px solid #1e293b;
+    color: #e2e8f0;
+}
+
+body.dark-theme .data-table tbody tr:hover {
+    background: rgba(99, 102, 241, 0.08);
+}
+
+body.dark-theme .form-control {
+    background: #1e293b;
+    color: #f8fafc;
+    border-color: #334155;
+}
+
+body.dark-theme .modal-content {
+    background: #111827;
+    color: #f8fafc;
+    border: 1px solid #334155;
+}
+
+body.dark-theme .modal-header {
+    border-bottom-color: #334155;
+}
+
+body.dark-theme .map-control-bar {
+    background: #111827;
+    border-color: #1e293b;
+}
+
+body.dark-theme .map-select,
+body.dark-theme .scenario-select,
+body.dark-theme .map-search-group input {
+    background: #1e293b;
+    color: #f8fafc;
+    border-color: #334155;
+}
+
+body.dark-theme .btn-map-control {
+    background: #1e293b;
+    color: #cbd5e1;
+    border-color: #334155;
+}
+
+body.dark-theme .btn-map-control:hover {
+    background: #334155;
+    color: #ffffff;
+}
+
+body.dark-theme .btn-theme-toggle,
+body.dark-theme .btn-sidebar-theme {
+    background: #1e293b;
+    color: #fbbf24;
+    border-color: #475569;
+}
+
+/* Tema Butonları Stili */
+.btn-theme-toggle {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    background: #f1f5f9;
+    border: 1px solid #cbd5e1;
+    color: #334155;
+    padding: 7px 14px;
+    border-radius: 20px;
+    font-size: 12px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.25s ease;
+}
+
+.btn-theme-toggle:hover {
+    background: #e2e8f0;
+    transform: translateY(-1px);
+}
+
+.btn-sidebar-theme {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    background: rgba(255, 255, 255, 0.08);
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    color: #e2e8f0;
+    padding: 8px 12px;
+    border-radius: 8px;
+    font-size: 12px;
+    font-weight: 600;
+    cursor: pointer;
+    margin-bottom: 12px;
+    transition: all 0.2s ease;
+}
+
+.btn-sidebar-theme:hover {
+    background: rgba(255, 255, 255, 0.16);
+    color: #ffffff;
+}
+
+/* ==========================================================================
+   RESMİ GÜVENİLİRLİK RAPORU & HABER MODALI
+   ========================================================================= */
+.confidence-big-badge {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    background: rgba(16, 185, 129, 0.12);
+    border: 1px solid rgba(16, 185, 129, 0.35);
+    border-radius: 12px;
+    padding: 14px 18px;
+    margin-bottom: 18px;
+}
+
+.conf-circle {
+    width: 60px;
+    height: 60px;
+    min-width: 60px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #10b981, #059669);
+    color: #ffffff;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 4px 14px rgba(16, 185, 129, 0.35);
+}
+
+.conf-circle .conf-percent {
+    font-size: 15px;
+    font-weight: 800;
+    line-height: 1;
+}
+
+.conf-circle small {
+    font-size: 9px;
+    opacity: 0.9;
+    text-transform: uppercase;
+}
+
+.conf-text h4 {
+    margin: 0 0 4px 0;
+    font-size: 14px;
+    font-weight: 800;
+    color: #10b981;
+}
+
+.conf-text p {
+    margin: 0;
+    font-size: 12px;
+    color: #64748b;
+    line-height: 1.4;
+}
+
+body.dark-theme .conf-text p {
+    color: #94a3b8;
+}
+
+.incident-news-card {
+    background: rgba(15, 23, 42, 0.03);
+    border: 1px solid #e2e8f0;
+    border-radius: 10px;
+    padding: 16px 18px;
+}
+
+body.dark-theme .incident-news-card {
+    background: rgba(15, 23, 42, 0.6);
+    border-color: #334155;
+}
+
+.news-meta-row {
+    display: flex;
+    gap: 18px;
+    font-size: 11.5px;
+    color: #64748b;
+    margin-bottom: 12px;
+    flex-wrap: wrap;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.06);
+    padding-bottom: 10px;
+}
+
+body.dark-theme .news-meta-row {
+    color: #94a3b8;
+    border-bottom-color: rgba(255, 255, 255, 0.08);
+}
+
+.news-title {
+    font-size: 16px;
+    font-weight: 800;
+    color: #ef4444;
+    margin-bottom: 10px;
+}
+
+.news-body-content {
+    font-size: 13px;
+    line-height: 1.6;
+    color: #334155;
+    margin-bottom: 16px;
+}
+
+body.dark-theme .news-body-content {
+    color: #cbd5e1;
+}
+
+.verification-sources-box {
+    background: rgba(99, 102, 241, 0.06);
+    border: 1px solid rgba(99, 102, 241, 0.2);
+    border-radius: 8px;
+    padding: 12px 14px;
+}
+
+.verification-sources-box h5 {
+    font-size: 12px;
+    font-weight: 700;
+    color: #4f46e5;
+    margin-bottom: 8px;
+}
+
+body.dark-theme .verification-sources-box h5 {
+    color: #a5b4fc;
+}
+
+.verification-sources-box ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.verification-sources-box li {
+    font-size: 11.5px;
+    line-height: 1.5;
+    color: #475569;
+    margin-bottom: 6px;
+    display: flex;
+    align-items: flex-start;
+    gap: 8px;
+}
+
+body.dark-theme .verification-sources-box li {
+    color: #94a3b8;
+}
+
+/* Pop-up Güvenilirlik & Rapor Butonları */
+.badge-confidence {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    background: rgba(16, 185, 129, 0.15);
+    border: 1px solid rgba(16, 185, 129, 0.35);
+    color: #10b981;
+    font-size: 10px;
+    font-weight: 700;
+    padding: 2px 7px;
+    border-radius: 12px;
+}
+
+.badge-source {
+    display: block;
+    font-size: 9.5px;
+    color: #64748b;
+    margin-top: 4px;
+    font-weight: 600;
+}
+
+.btn-popup-news {
+    margin-top: 8px;
+    width: 100%;
+    background: linear-gradient(135deg, #3b82f6, #2563eb);
+    color: #ffffff !important;
+    border: none;
+    border-radius: 6px;
+    padding: 6px 10px;
+    font-size: 11px;
+    font-weight: 700;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    text-decoration: none;
+    box-shadow: 0 2px 6px rgba(37, 99, 235, 0.3);
+}
+
+.btn-popup-news:hover {
+    background: linear-gradient(135deg, #2563eb, #1d4ed8);
 }

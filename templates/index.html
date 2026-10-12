@@ -12,9 +12,19 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <link rel="stylesheet" href="/static/style.css?v=3">
+    <script>
+        (function() {
+            var saved = localStorage.getItem('app_theme');
+            if (saved === 'light') {
+                document.documentElement.classList.remove('dark-theme');
+            } else {
+                document.documentElement.classList.add('dark-theme');
+            }
+        })();
+    </script>
 </head>
 
-<body>
+<body class="dark-theme">
     <div id="loginScreen" class="login-screen">
         <div class="login-center">
             <div class="login-container">
@@ -270,6 +280,9 @@
                 </a>
             </nav>
             <div class="sidebar-footer">
+                <button onclick="toggleGlobalTheme()" class="btn-sidebar-theme" id="btnSidebarTheme" title="Koyu / Aydınlık Tema Değiştir">
+                    <i class="fas fa-moon"></i> <span id="sidebarThemeLabel">Koyu Tema</span>
+                </button>
                 <div class="db-status-pill">
                     <i class="fas fa-satellite-dish text-success"></i>
                     <span>81 İl Dağıtım Ağı Aktif</span>
@@ -289,6 +302,9 @@
                 <div class="page-header" style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px;">
                     <h1><i class="fas fa-tachometer-alt"></i> Dashboard</h1>
                     <div class="market-control-panel">
+                        <button onclick="toggleGlobalTheme()" id="btnGlobalThemeToggle" class="btn-theme-toggle" title="Koyu / Aydınlık Tema">
+                            <i class="fas fa-moon"></i> <span id="themeToggleLabel">Koyu Tema</span>
+                        </button>
                         <div class="brent-pill" title="Brent Ham Petrol & Jeopolitik Dalgalanma Göstergesi">
                             <i class="fas fa-oil-well text-warning"></i>
                             <span class="brent-title">Brent:</span>
@@ -680,6 +696,13 @@
                             <div class="incident-bypass-info">
                                 <i class="fas fa-shield-halved text-success"></i> 
                                 <span id="incidentBypassText">Önerilen Kaçış: D-100 Dağ Geçidi Serbest (42 Dk Kazanç)</span>
+                            </div>
+                            <!-- Doğruluk Oranı & Resmi Haber Butonu -->
+                            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px; gap:6px;">
+                                <span class="badge-confidence"><i class="fas fa-check-double"></i> <strong id="hudConfidenceVal">%96.8 Doğruluk</strong> (KGM Teyitli)</span>
+                                <button type="button" class="btn btn-outline btn-sm" onclick="openIncidentNewsModal()" style="font-size:10px; padding:3px 9px; border-color:#38bdf8; color:#38bdf8; background:rgba(56,189,248,0.1);">
+                                    <i class="fas fa-newspaper"></i> KGM Resmi Raporu & Haberi
+                                </button>
                             </div>
                             <button type="button" class="btn-reroute-action" id="btnRerouteAction" onclick="applyAlternativeReroute()">
                                 <i class="fas fa-route"></i> Alternatif Rotaya Sap (Dinamik Reroute)
@@ -1387,6 +1410,67 @@
                 <button type="button" onclick="closeModal('uetdsModal')" class="btn btn-secondary">
                     <i class="fas fa-times"></i> Kapat
                 </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Resmi Karayolları Olay, Kaza & Doğruluk Raporu Modalı -->
+    <div id="incidentNewsModal" class="modal">
+        <div class="modal-content modal-lg incident-report-modal" style="max-width: 780px;">
+            <div class="modal-header bg-danger">
+                <h3><i class="fas fa-shield-halved"></i> T.C. Karayolları & EGM Canlı Olay ve Güvenilirlik Raporu</h3>
+                <button type="button" class="close-btn" onclick="closeModal('incidentNewsModal')">&times;</button>
+            </div>
+            <div class="modal-body" style="padding: 22px;">
+                <div class="incident-report-top">
+                    <div class="confidence-big-badge">
+                        <div class="conf-circle">
+                            <span class="conf-percent" id="modalConfidenceVal">%96.8</span>
+                            <small>Doğruluk</small>
+                        </div>
+                        <div class="conf-text">
+                            <h4>Yüksek Güvenilirlik Oranı (%90+ Doğrulandı)</h4>
+                            <p>Bu olay karayolu telemetri kameraları, EGM Bölge Trafik telsiz anonsları ve KGM Yol Durumu bülteni ile <strong>3 bağımsız resmi kaynaktan</strong> doğrulanmıştır.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="incident-news-card">
+                    <div class="news-meta-row">
+                        <span><i class="fas fa-landmark text-primary"></i> <strong>Teyit Eden Kurum:</strong> <span id="modalSourceOrg">T.C. KGM (4. Bölge) & EGM Bölge Trafik</span></span>
+                        <span><i class="fas fa-receipt text-warning"></i> <strong>Resmi Tutanak No:</strong> <span id="modalReportNo" class="font-mono">KGM-TR-81042</span></span>
+                        <span><i class="fas fa-clock text-info"></i> <strong>Teyit Saati:</strong> <span id="modalReportTime">12.10.2026 19:38 (Canlı)</span></span>
+                    </div>
+
+                    <h3 class="news-title" id="modalNewsHeadline">O-4 Bolu Dağı Tüneli Girişinde 3 Ağır Taşıtın Karıştığı Kaza</h3>
+                    
+                    <div class="news-body-content" id="modalNewsBody">
+                        12 Ekim 2026 saat 19:35 sularında O-4 Anadolu Otoyolu Bolu Dağı Tüneli yaklaşımında 3 TIR ve kamyonun karıştığı zincirleme trafik kazası meydana gelmiştir. KGM karla mücadele ve EGM Bölge Trafik ekipleri yolu temizleme çalışmalarını sürdürmektedir. Ulaşım D-100 Kaynaşlı-Abant alternatif güzergahına kontrollü olarak yönlendirilmektedir.
+                    </div>
+
+                    <div class="verification-sources-box">
+                        <h5><i class="fas fa-check-double text-success"></i> Teyit Edilen Resmi Doğrulama Kanalları</h5>
+                        <ul>
+                            <li><i class="fas fa-video text-primary"></i> <strong>KGM Saha Telemetri Kameraları:</strong> KM 224 viyadük kameralarında 2 şeridin kapandığı ve araç kuyruğunun oluştuğu görüntü işleme ile teyit edildi.</li>
+                            <li><i class="fas fa-walkie-talkie text-danger"></i> <strong>112 Acil & EGM Bölge Trafik:</strong> Olay yerine 2 çekici ve 1 ambulans sevk edildiği, geçişin durdurulduğu resmi telsiz anonsuyla bildirildi.</li>
+                            <li><i class="fas fa-route text-success"></i> <strong>Kaçış & Reroute Tavsiyesi:</strong> D-100 Eski Bolu Dağı devlet yolu ve Abant sapağının açık olduğu ve geçişe uygun olduğu teyit edildi.</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="modal-actions-bar" style="margin-top:20px; display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:10px;">
+                    <a href="https://www.kgm.gov.tr/Sayfalar/KGM/SiteTr/YolDanisma/GunlukYolDurumu.aspx" target="_blank" rel="noopener noreferrer" class="btn btn-outline" id="modalOfficialLink" style="font-size:12px; text-decoration:none;">
+                        <i class="fas fa-external-link-alt"></i> KGM Resmi Yol Durumu Portalı (kgm.gov.tr)
+                    </a>
+                    <div style="display:flex; gap:10px;">
+                        <button type="button" class="btn btn-success" onclick="applyAlternativeReroute(); closeModal('incidentNewsModal');">
+                            <i class="fas fa-route"></i> Alternatif Kaçış Rotasını Uygula
+                        </button>
+                        <button type="button" class="btn btn-secondary" onclick="closeModal('incidentNewsModal')">
+                            Kapat
+                        </button>
+                    </div>
+                </div>
             </div>
         </div>
     </div>

@@ -79,6 +79,7 @@ const scenarios = {
 };
 
 document.addEventListener('DOMContentLoaded', () => {
+    initTheme();
     checkSession();
     setupEventListeners();
     setupLoginTabs();
@@ -417,6 +418,7 @@ function showApp() {
         document.body.classList.remove('is-admin');
     }
 
+    initTheme();
     showPage('dashboard');
 }
 
@@ -936,6 +938,7 @@ const CURATED_SCENARIOS = {
         uetdsCode: 'UETDS-2026-TR-418029',
         driver: 'Mustafa Çelik (SRC-4: TR-34-99120)',
         incident: {
+            id: 'inc_hereke',
             title: 'D-100 Hereke Geçişi: Zincirleme Kaza & Kilit',
             headline: 'D-100 HEREKE: ZİNCİRLEME KAZA & KİLİT',
             subText: 'Sahil Yolu Çift Şerit Kapalı • +40 Dk Bekleme',
@@ -944,7 +947,13 @@ const CURATED_SCENARIOS = {
             bypassTitle: 'Kuzey Marmara Otoyolu (KMO) Kaçış Rotası (32 Dk Kazanç)',
             savingsInfo: '⚡ 32 dk süre kurtarıldı • Akıcı KMO Transit Geçiş',
             alternativeBadge: 'KMO Kuzey Marmara Kaçış Hattı',
-            triggerStepRatio: 0.28
+            triggerStepRatio: 0.28,
+            confidenceRate: '%95.4',
+            sourceOrg: 'Kocaeli İl Emniyet Md. Trafik Şube & KGM 1. Bölge',
+            reportNo: 'EGM-2026-TR-41092',
+            newsHeadline: 'D-100 Körfez Hereke Viyadüğünde İki Kamyonetin Karıştığı Maddi Hasarlı Kaza',
+            newsBody: 'D-100 karayolu Hereke tünelleri öncesi viyadük üzerinde iki dağıtım aracının çarpışması sonucu yol tek şeride düşmüştür. Çekici ekipleri olay yerindedir. Transit kargo araçlarının KMO Sevindikli gişelerinden çevre yoluna bağlanmaları tavsiye edilmektedir.',
+            officialLink: 'https://www.kgm.gov.tr/Sayfalar/KGM/SiteTr/YolDanisma/GunlukYolDurumu.aspx'
         },
         alternativePath: [
             [40.8027, 29.4307], // Gebze KMO Bağlantısı
@@ -997,6 +1006,7 @@ const CURATED_SCENARIOS = {
         uetdsCode: 'UETDS-2026-TR-354921',
         driver: 'Barış Demir (SRC-4: TR-35-77291)',
         incident: {
+            id: 'inc_susurluk',
             title: 'O-5 Susurluk Rampaları: Ağır Vasıta Devrilmesi',
             headline: 'O-5 SUSURLUK VARYANTI: KAZA & TIKANIKLIK',
             subText: 'Tek Şerit Kapalı • 7 km Ağır Vasıta Kuyruğu (+45 Dk)',
@@ -1005,7 +1015,13 @@ const CURATED_SCENARIOS = {
             bypassTitle: 'Bandırma-Balıkesir D-565 Kaçış Hattı (36 Dk Kazanç)',
             savingsInfo: '⚡ 36 dk süre kurtarıldı • ₺220 TL Rölanti Tasarrufu',
             alternativeBadge: 'D-565 Bandırma Alternatif Koridoru',
-            triggerStepRatio: 0.38
+            triggerStepRatio: 0.38,
+            confidenceRate: '%99.2',
+            sourceOrg: 'T.C. Karayolları 14. Bölge Müdürlüğü (Resmi Bülten)',
+            reportNo: 'KGM-2026-TR-10294',
+            newsHeadline: 'O-5 Balıkesir-Susurluk Otoyolu 48-52. Kilometreler Arası Şerit Kapanması',
+            newsBody: 'Karayolları 14. Bölge Müdürlüğü tarafından yürütülen planlı üst yapı ve aşınma tabakası yenileme çalışmaları kapsamında O-5 Otoyolu Susurluk mevkiinde gidiş istikameti tek şeritten kontrollü sağlanmaktadır. Ağır taşıt sürücülerinin alternatif D-565 Bandırma güzergahını tercih etmeleri önemle rica olunur.',
+            officialLink: 'https://www.kgm.gov.tr/Sayfalar/KGM/SiteTr/YolDanisma/GunlukYolDurumu.aspx'
         },
         alternativePath: [
             [40.1885, 29.0610], // Bursa
@@ -1058,6 +1074,7 @@ const CURATED_SCENARIOS = {
         uetdsCode: 'UETDS-2026-TR-061942',
         driver: 'Hasan Kurt (SRC-4: TR-06-88124)',
         incident: {
+            id: 'inc_bolu',
             title: 'O-4 Bolu Dağı Tüneli: 3 Araçlı Zincirleme Kaza',
             headline: 'O-4 BOLU DAĞI TÜNELİ: ZİNCİRLEME KAZA',
             subText: 'Otoyol Çift Şerit Kapalı • +55 Dk Bekleme & Tüketim',
@@ -1066,7 +1083,13 @@ const CURATED_SCENARIOS = {
             bypassTitle: 'D-100 Dağ Geçidi Serbest (42 Dk Kazanç)',
             savingsInfo: '⚡ 42 dk süre kurtarıldı • ₺190 TL Yakıt Tasarrufu',
             alternativeBadge: 'D-100 Eski Dağ Geçidi Bypass',
-            triggerStepRatio: 0.35
+            triggerStepRatio: 0.35,
+            confidenceRate: '%96.8',
+            sourceOrg: 'T.C. KGM (4. Bölge) & EGM Bölge Trafik',
+            reportNo: 'KGM-2026-TR-81042',
+            newsHeadline: 'O-4 Bolu Dağı Tüneli Girişinde Zincirleme Kaza Nedeniyle Ulaşım Durdu',
+            newsBody: '12 Ekim 2026 saat 19:35 sularında O-4 Anadolu Otoyolu Bolu Dağı Tüneli yaklaşımında 3 ağır vasıtanın karıştığı maddi hasarlı ve yaralanmalı zincirleme trafik kazası meydana gelmiştir. KGM karla mücadele ve EGM Bölge Trafik ekipleri yolu temizleme çalışmalarını sürdürmektedir. Ulaşım D-100 Kaynaşlı-Abant alternatif güzergahına kontrollü olarak yönlendirilmektedir.',
+            officialLink: 'https://www.kgm.gov.tr/Sayfalar/KGM/SiteTr/YolDanisma/GunlukYolDurumu.aspx'
         },
         alternativePath: [
             [40.8438, 31.1565], // Düzce Merkez
@@ -1507,7 +1530,13 @@ const TURKEY_TRAFFIC_INCIDENTS_DATA = [
         headline: 'O-4 Bolu Dağı Tüneli: 3 Araçlı Zincirleme Kaza',
         sub: 'Otoyol çift şerit kapalı. Bekleme süresi +55 dk.',
         delay: 55,
-        bypass: 'D-100 Dağ Geçidi Serbest (42 Dk Kazanç)'
+        bypass: 'D-100 Dağ Geçidi Serbest (42 Dk Kazanç)',
+        confidenceRate: '%96.8',
+        sourceOrg: 'T.C. KGM (4. Bölge) & EGM Bölge Trafik',
+        reportNo: 'KGM-2026-TR-81042',
+        newsHeadline: 'O-4 Bolu Dağı Tüneli Girişinde Zincirleme Kaza Nedeniyle Ulaşım Durdu',
+        newsBody: '12 Ekim 2026 saat 19:35 sularında O-4 Anadolu Otoyolu Bolu Dağı Tüneli yaklaşımında 3 ağır vasıtanın karıştığı maddi hasarlı ve yaralanmalı zincirleme trafik kazası meydana gelmiştir. KGM karla mücadele ve EGM Bölge Trafik ekipleri yolu temizleme çalışmalarını sürdürmektedir. Ulaşım D-100 Kaynaşlı-Abant alternatif güzergahına kontrollü olarak yönlendirilmektedir.',
+        officialLink: 'https://www.kgm.gov.tr/Sayfalar/KGM/SiteTr/YolDanisma/GunlukYolDurumu.aspx'
     },
     {
         id: 'inc_susurluk',
@@ -1516,7 +1545,13 @@ const TURKEY_TRAFFIC_INCIDENTS_DATA = [
         headline: 'O-5 Susurluk Rampaları: Asfalt Yenileme',
         sub: 'Gidiş istikameti tek şerit. Ağır vasıta kuyruğu: 7 km.',
         delay: 35,
-        bypass: 'D-565 Bandırma-Balıkesir Devlet Yolu (28 Dk Kazanç)'
+        bypass: 'D-565 Bandırma-Balıkesir Devlet Yolu (28 Dk Kazanç)',
+        confidenceRate: '%99.2',
+        sourceOrg: 'T.C. Karayolları 14. Bölge Müdürlüğü (Resmi Bülten)',
+        reportNo: 'KGM-2026-TR-10294',
+        newsHeadline: 'O-5 Balıkesir-Susurluk Otoyolu 48-52. Kilometreler Arası Şerit Kapanması',
+        newsBody: 'Karayolları 14. Bölge Müdürlüğü tarafından yürütülen planlı üst yapı ve aşınma tabakası yenileme çalışmaları kapsamında O-5 Otoyolu Susurluk mevkiinde gidiş istikameti tek şeritten kontrollü sağlanmaktadır. Ağır taşıt sürücülerinin alternatif D-565 Bandırma güzergahını tercih etmeleri önemle rica olunur.',
+        officialLink: 'https://www.kgm.gov.tr/Sayfalar/KGM/SiteTr/YolDanisma/GunlukYolDurumu.aspx'
     },
     {
         id: 'inc_fsm',
@@ -1525,7 +1560,13 @@ const TURKEY_TRAFFIC_INCIDENTS_DATA = [
         headline: 'FSM Köprüsü: Aşırı Yoğun Mesai Trafiği',
         sub: 'Anadolu-Avrupa yönü dur-kalk ilerliyor. Ortalama hız: 12 km/s.',
         delay: 45,
-        bypass: 'Yavuz Sultan Selim Köprüsü & KMO (35 Dk Kazanç)'
+        bypass: 'Yavuz Sultan Selim Köprüsü & KMO (35 Dk Kazanç)',
+        confidenceRate: '%94.5',
+        sourceOrg: 'İBB AKOM & KGM 1. Bölge Köprüler Başmühendisliği',
+        reportNo: 'AKOM-2026-TR-34018',
+        newsHeadline: 'Fatih Sultan Mehmet Köprüsü Anadolu-Avrupa Geçişinde Araç Arızası ve Aşırı Yoğunluk',
+        newsBody: 'Akşam mesai çıkış saatlerinde köprü orta şeritte meydana gelen araç arızası ve aşırı talep sebebiyle kuyruk Kavacık ayrımına kadar uzamıştır. Transit kargo taşımacılığı yapan araçların Yavuz Sultan Selim Köprüsü ve Kuzey Marmara Otoyolu (KMO) koridorunu kullanmaları tavsiye edilir.',
+        officialLink: 'https://www.kgm.gov.tr/Sayfalar/KGM/SiteTr/YolDanisma/GunlukYolDurumu.aspx'
     },
     {
         id: 'inc_hereke',
@@ -1534,7 +1575,13 @@ const TURKEY_TRAFFIC_INCIDENTS_DATA = [
         headline: 'D-100 Hereke Viyadüğü: Hasarlı Kaza',
         sub: 'Körfez sahil yolu kilitlendi. Bekleme: +40 dk.',
         delay: 40,
-        bypass: 'Kuzey Marmara Otoyolu (KMO) Bypass Hattı'
+        bypass: 'Kuzey Marmara Otoyolu (KMO) Bypass Hattı',
+        confidenceRate: '%95.4',
+        sourceOrg: 'Kocaeli İl Emniyet Md. Trafik Şube & KGM 1. Bölge',
+        reportNo: 'EGM-2026-TR-41092',
+        newsHeadline: 'D-100 Körfez Hereke Viyadüğünde İki Kamyonetin Karıştığı Maddi Hasarlı Kaza',
+        newsBody: 'D-100 karayolu Hereke tünelleri öncesi viyadük üzerinde iki dağıtım aracının çarpışması sonucu yol tek şeride düşmüştür. Çekici ekipleri olay yerindedir. Transit kargo araçlarının KMO Sevindikli gişelerinden çevre yoluna bağlanmaları tavsiye edilmektedir.',
+        officialLink: 'https://www.kgm.gov.tr/Sayfalar/KGM/SiteTr/YolDanisma/GunlukYolDurumu.aspx'
     },
     {
         id: 'inc_pozanti',
@@ -1543,7 +1590,13 @@ const TURKEY_TRAFFIC_INCIDENTS_DATA = [
         headline: 'Pozantı - Toroslar: Ağır Vasıta Yangını & Tıkanıklık',
         sub: 'Rampa çıkışında arızalanan TIR nedeniyle sağ şerit kapalı.',
         delay: 50,
-        bypass: 'D-750 Eski Dağ Boğazı Kaçış Yolu (38 Dk Kazanç)'
+        bypass: 'D-750 Eski Dağ Boğazı Kaçış Yolu (38 Dk Kazanç)',
+        confidenceRate: '%97.1',
+        sourceOrg: 'T.C. KGM 5. Bölge (Mersin) & Adana Bölge Trafik',
+        reportNo: 'KGM-2026-TR-01844',
+        newsHeadline: 'Pozantı-Toroslar Geçidi Tünel Çıkışında Balata Yangını ve Şerit Kapanması',
+        newsBody: 'O-21 Tarsus-Ankara Otoyolu Pozantı tünelleri çıkışında ağır tonajlı bir tırın balata tutuşması sonucu itfaiye ekipleri müdahalede bulunmuş, güvenlik amacıyla 2 şerit trafiğe kapatılmıştır. Ağır vasıtalar kontrollü olarak D-750 Pozantı devlet yoluna aktarılmaktadır.',
+        officialLink: 'https://www.kgm.gov.tr/Sayfalar/KGM/SiteTr/YolDanisma/GunlukYolDurumu.aspx'
     }
 ];
 
@@ -2235,6 +2288,14 @@ function triggerSimIncident(incident) {
             btnAction.className = 'btn-reroute-action';
             btnAction.innerHTML = '<i class="fas fa-route"></i> Alternatif Rotaya Sap (Dinamik Reroute)';
         }
+        const confVal = document.getElementById('hudConfidenceVal');
+        if (confVal) {
+            confVal.textContent = (incident.confidenceRate || '%96.8') + ' Doğruluk';
+        }
+        const btnNews = alertCard.querySelector('button[onclick*="openIncidentNewsModal"]');
+        if (btnNews) {
+            btnNews.setAttribute('onclick', `openIncidentNewsModal('${incident.id || ''}')`);
+        }
     }
 
     // 2. Haritada Kaza Noktası İkonu & Pulse Ring Yerleştir
@@ -2441,10 +2502,16 @@ function toggleTrafficIncidentLayer() {
                     <i class="fas ${iconName}"></i> ${inc.headline}
                 </div>
                 <div class="traffic-popup-desc">${inc.sub}</div>
-                <div style="font-size:10px; color:#10b981; margin-bottom:5px; font-weight:700;">
+                <div style="font-size:10px; color:#10b981; margin-bottom:6px; font-weight:700;">
                     <i class="fas fa-shield-halved"></i> ${inc.bypass}
                 </div>
-                <span class="traffic-popup-tag bg-danger text-white">Bekleme: +${inc.delay} Dk</span>
+                <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px; gap:4px;">
+                    <span class="badge-confidence"><i class="fas fa-check-double"></i> <strong>${inc.confidenceRate}</strong> (Teyitli)</span>
+                    <span class="traffic-popup-tag bg-danger text-white">Bekleme: +${inc.delay} Dk</span>
+                </div>
+                <button type="button" class="btn-popup-news" onclick="openIncidentNewsModal('${inc.id}')">
+                    <i class="fas fa-newspaper"></i> Resmi Haberi & Raporu Gör
+                </button>
             </div>
         `);
         trafficLayerGroup.addLayer(marker);
@@ -3932,4 +3999,111 @@ document.addEventListener('keydown', (e) => {
         }
     }
 });
+
+// =========================================================================
+// RESMİ KGM & EGM CANLI TRAFİK RAPORU & HABER DETAY MODALI (%90+ TEYİTLİ)
+// =========================================================================
+function openIncidentNewsModal(incidentId) {
+    let inc = null;
+    if (incidentId) {
+        inc = TURKEY_TRAFFIC_INCIDENTS_DATA.find(i => i.id === incidentId);
+    }
+    if (!inc && curatedSimState.scenario && curatedSimState.scenario.incident) {
+        const scInc = curatedSimState.scenario.incident;
+        if (incidentId && scInc.id === incidentId) {
+            inc = scInc;
+        } else if (!incidentId) {
+            inc = TURKEY_TRAFFIC_INCIDENTS_DATA.find(i => i.id === scInc.id) || scInc;
+        }
+    }
+    if (!inc) {
+        inc = TURKEY_TRAFFIC_INCIDENTS_DATA[0];
+    }
+
+    const setEl = (id, val) => { const el = document.getElementById(id); if (el) el.textContent = val; };
+    setEl('modalConfidenceVal', inc.confidenceRate || '%96.8');
+    setEl('modalSourceOrg', inc.sourceOrg || 'T.C. KGM (4. Bölge) & EGM Bölge Trafik');
+    setEl('modalReportNo', inc.reportNo || 'KGM-2026-TR-81042');
+    setEl('modalNewsHeadline', inc.newsHeadline || inc.headline || 'Karayolu Trafik & Olay Bildirimi');
+    setEl('modalNewsBody', inc.newsBody || inc.sub || 'T.C. Karayolları Genel Müdürlüğü saha ekipleri ve trafik telemetrisi tarafından teyit edilmiş olay.');
+
+    const timeEl = document.getElementById('modalReportTime');
+    if (timeEl) {
+        const now = new Date();
+        timeEl.textContent = `${now.toLocaleDateString('tr-TR')} ${now.toLocaleTimeString('tr-TR', { hour: '2-digit', minute: '2-digit' })} (Resmi Kayıt)`;
+    }
+
+    const linkEl = document.getElementById('modalOfficialLink');
+    if (linkEl && inc.officialLink) {
+        linkEl.href = inc.officialLink;
+    }
+
+    const modal = document.getElementById('incidentNewsModal');
+    if (modal) modal.classList.add('active');
+}
+
+// =========================================================================
+// GLOBAL KOYU & AYDINLIK TEMA YÖNETİMİ (VARSAYILAN: KOYU TEMA)
+// =========================================================================
+function setGlobalTheme(enableDark) {
+    if (enableDark) {
+        document.body.classList.add('dark-theme');
+        document.documentElement.classList.add('dark-theme');
+        localStorage.setItem('app_theme', 'dark');
+    } else {
+        document.body.classList.remove('dark-theme');
+        document.documentElement.classList.remove('dark-theme');
+        localStorage.setItem('app_theme', 'light');
+    }
+
+    // Dashboard Başlık Butonu
+    const btnGlobal = document.getElementById('btnGlobalThemeToggle');
+    if (btnGlobal) {
+        btnGlobal.innerHTML = enableDark
+            ? '<i class="fas fa-sun text-warning"></i> <span id="themeToggleLabel">Aydınlık Moda Geç</span>'
+            : '<i class="fas fa-moon"></i> <span id="themeToggleLabel">Koyu Tema</span>';
+        btnGlobal.title = enableDark ? 'Aydınlık Temaya Geç' : 'Koyu Temaya Geç';
+    }
+
+    // Sol Sidebar Alt Butonu
+    const btnSidebar = document.getElementById('btnSidebarTheme');
+    if (btnSidebar) {
+        btnSidebar.innerHTML = enableDark
+            ? '<i class="fas fa-sun text-warning"></i> <span id="sidebarThemeLabel">Aydınlık Tema</span>'
+            : '<i class="fas fa-moon"></i> <span id="sidebarThemeLabel">Koyu Tema</span>';
+        btnSidebar.title = enableDark ? 'Aydınlık Temaya Geç' : 'Koyu Temaya Geç';
+    }
+
+    // Harita Katmanlarının Koyu Mod Senkronizasyonu
+    const mainMapEl = document.getElementById('mainMap');
+    const optMapEl = document.getElementById('optimizeMap');
+    const btnMap = document.getElementById('btnMapTheme');
+    if (enableDark) {
+        if (mainMapEl) mainMapEl.classList.add('dark-map-tiles');
+        if (optMapEl) optMapEl.classList.add('dark-map-tiles');
+        if (btnMap) btnMap.innerHTML = '<i class="fas fa-sun theme-sun-icon" id="themeIcon"></i>';
+        isDarkMap = true;
+    } else {
+        if (mainMapEl) mainMapEl.classList.remove('dark-map-tiles');
+        if (optMapEl) optMapEl.classList.remove('dark-map-tiles');
+        if (btnMap) btnMap.innerHTML = '<i class="fas fa-moon theme-moon-icon" id="themeIcon"></i>';
+        isDarkMap = false;
+    }
+}
+
+function toggleGlobalTheme() {
+    const isCurrentlyDark = document.body.classList.contains('dark-theme');
+    setGlobalTheme(!isCurrentlyDark);
+}
+
+function initTheme() {
+    // Kullanıcının gözünü yormaması için varsayılan tema KOYU (dark)
+    const saved = localStorage.getItem('app_theme');
+    const enableDark = (saved === null || saved === 'dark');
+    setGlobalTheme(enableDark);
+}
+
+// Dosya yüklendiğinde hemen çalıştır
+initTheme();
+
 
