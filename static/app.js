@@ -930,6 +930,11 @@ const CURATED_SCENARIOS = {
         roadBadge: 'D-100 / E-5 (Ücretsiz Sahil)',
         speedRange: [65, 82],
         rpmRange: [2100, 2400],
+        weather: {"text": "D-100 Körfez: Yağmurlu (14°C)", "icon": "fa-cloud-rain", "rain": true},
+        savingsText: '🌱 38 kg CO₂ • ₺550 Köprü Gişe Tasarrufu',
+        tachoRemain: '02 sa 45 dk',
+        uetdsCode: 'UETDS-2026-TR-418029',
+        driver: 'Mustafa Çelik (SRC-4: TR-34-99120)',
         path: [
             [40.9927, 29.0277], // İstanbul Kadıköy Transfer
             [40.8767, 29.2344], // Pendik D-100
@@ -966,6 +971,11 @@ const CURATED_SCENARIOS = {
         roadBadge: 'O-5 Otoyolu & Osmangazi Köprüsü',
         speedRange: [88, 98],
         rpmRange: [1300, 1500],
+        weather: {"text": "Osmangazi & Susurluk: Rüzgarlı (17°C)", "icon": "fa-wind", "rain": false},
+        savingsText: '⚡ Otoyol Ekspres: 2 sa 15 dk Zaman Kazanımı',
+        tachoRemain: '03 sa 10 dk',
+        uetdsCode: 'UETDS-2026-TR-354921',
+        driver: 'Barış Demir (SRC-4: TR-35-77291)',
         path: [
             [41.0082, 28.9784], // İstanbul Avrupa Hub
             [40.9927, 29.0277], // Kadıköy
@@ -1000,6 +1010,11 @@ const CURATED_SCENARIOS = {
         roadBadge: 'D-100 Devlet Yolu (0 TL Geçiş)',
         speedRange: [62, 76],
         rpmRange: [1950, 2250],
+        weather: {"text": "Bolu Dağı: -2°C Kar & Yoğun Sis", "icon": "fa-snowflake", "rain": true},
+        savingsText: '🌱 45 kg CO₂ • ₺420 Otoyol Gişe Tasarrufu',
+        tachoRemain: '01 sa 50 dk (Mola Yaklaşıyor)',
+        uetdsCode: 'UETDS-2026-TR-061942',
+        driver: 'Hasan Kurt (SRC-4: TR-06-88124)',
         path: [
             [41.0082, 28.9784], // İstanbul
             [40.8027, 29.4307], // Gebze D-100
@@ -1032,6 +1047,11 @@ const CURATED_SCENARIOS = {
         roadBadge: 'D-650 & D-685 Göller Hattı',
         speedRange: [65, 80],
         rpmRange: [2000, 2300],
+        weather: {"text": "Çubuk Boğazı: Açık & Güneşli (24°C)", "icon": "fa-sun", "rain": false},
+        savingsText: '🌱 52 kg CO₂ • 2 Araç Filo Optimizasyonu',
+        tachoRemain: '02 sa 15 dk',
+        uetdsCode: 'UETDS-2026-TR-074128',
+        driver: 'Emre Koç & Murat Ak (SRC-4 Konvoy)',
         path: [
             [40.7654, 29.9408], // Kocaeli Hub
             [40.5000, 30.1500], // Pamukova
@@ -1062,6 +1082,11 @@ const CURATED_SCENARIOS = {
         roadBadge: 'O-3 & D-100 Avrupa Hattı',
         speedRange: [85, 95],
         rpmRange: [1200, 1400],
+        weather: {"text": "Çorlu & Kapıkule: Sisli (11°C)", "icon": "fa-smog", "rain": false},
+        savingsText: '⚡ Uluslararası İhracat Gümrük Koridoru',
+        tachoRemain: '03 sa 30 dk',
+        uetdsCode: 'UETDS-2026-TR-220194',
+        driver: 'Kemal Güneş (SRC-3 & SRC-4 Uluslararası)',
         path: [
             [41.0082, 28.9784], // İstanbul
             [41.0800, 28.7800], // İkitelli OSB
@@ -1090,6 +1115,11 @@ const CURATED_SCENARIOS = {
         roadBadge: 'D-750 & O-21 Anadolu Otoyolu',
         speedRange: [80, 92],
         rpmRange: [1350, 1550],
+        weather: {"text": "Pozantı Boğazı: Serin Rüzgar (16°C)", "icon": "fa-wind", "rain": false},
+        savingsText: '🌱 Ağır Vasıta Konvoy Optimizasyonu',
+        tachoRemain: '02 sa 05 dk',
+        uetdsCode: 'UETDS-2026-TR-018247',
+        driver: 'Ahmet Şahin & Ali Kaya (SRC-4 Konvoy)',
         path: [
             [39.9334, 32.8597], // Ankara Hub
             [39.7800, 32.8000], // Gölbaşı
@@ -1121,6 +1151,11 @@ const CURATED_SCENARIOS = {
         roadBadge: 'D-010 Sahil Yolu (0 TL Geçiş)',
         speedRange: [68, 82],
         rpmRange: [1900, 2200],
+        weather: {"text": "Karadeniz Sahil: Sağanak Yağış (13°C)", "icon": "fa-cloud-showers-heavy", "rain": true},
+        savingsText: '🌱 48 kg CO₂ • 0 TL Devlet Sahil Yolu',
+        tachoRemain: '02 sa 50 dk',
+        uetdsCode: 'UETDS-2026-TR-554109',
+        driver: 'Zafer Aydın (SRC-4: TR-55-12048)',
         path: [
             [41.2867, 36.33],   // Samsun Liman Hub
             [41.1300, 36.7200], // Çarşamba
@@ -1151,6 +1186,11 @@ const CURATED_SCENARIOS = {
         roadBadge: 'O-52 & D-400 İpekyolu Hattı',
         speedRange: [82, 95],
         rpmRange: [1250, 1450],
+        weather: {"text": "Gaziantep OSB: Açık & Kuru Zemin (26°C)", "icon": "fa-sun", "rain": false},
+        savingsText: '🌱 60 kg CO₂ • Sanayi Ağır Transit',
+        tachoRemain: '03 sa 45 dk',
+        uetdsCode: 'UETDS-2026-TR-270381',
+        driver: 'Mehmet Polat (SRC-4: TR-27-99412)',
         path: [
             [37.0000, 35.3213], // Adana
             [37.0300, 35.8100], // Ceyhan
@@ -1180,6 +1220,11 @@ const CURATED_SCENARIOS = {
         roadBadge: 'D-200 & D-100 Doğu Arter',
         speedRange: [65, 80],
         rpmRange: [1400, 1600],
+        weather: {"text": "Refahiye & Kızıldağ: 3°C Sis & Kırağı", "icon": "fa-snowflake", "rain": true},
+        savingsText: '🌱 75 kg CO₂ • D-100 Ana Doğu Transit',
+        tachoRemain: '01 sa 30 dk (Mola Önerilir)',
+        uetdsCode: 'UETDS-2026-TR-250819',
+        driver: 'İsmail Dadaş (SRC-4: TR-25-33418)',
         path: [
             [39.9334, 32.8597], // Ankara Hub
             [39.8600, 33.5100], // Kırıkkale
@@ -1209,6 +1254,11 @@ const CURATED_SCENARIOS = {
         roadBadge: 'D-550 & D-330 Ege Turizm',
         speedRange: [70, 85],
         rpmRange: [2050, 2350],
+        weather: {"text": "Bodrum & Yatağan: Güneşli (25°C)", "icon": "fa-sun", "rain": false},
+        savingsText: '🌱 32 kg CO₂ • Ege Bölgesel Dağıtım',
+        tachoRemain: '03 sa 15 dk',
+        uetdsCode: 'UETDS-2026-TR-480921',
+        driver: 'Caner Öz (SRC-4: TR-48-55291)',
         path: [
             [38.4192, 27.1287], // İzmir Bornova Hub
             [38.1500, 27.3600], // Torbalı
@@ -1238,6 +1288,11 @@ const CURATED_SCENARIOS = {
         roadBadge: 'D-715 & D-350 Ova Hattı',
         speedRange: [65, 78],
         rpmRange: [1950, 2200],
+        weather: {"text": "Konya Ovası: Rüzgarlı & Kuru (19°C)", "icon": "fa-wind", "rain": false},
+        savingsText: '🌱 44 kg CO₂ • 0 TL Ova Devlet Yolu',
+        tachoRemain: '02 sa 20 dk',
+        uetdsCode: 'UETDS-2026-TR-420194',
+        driver: 'Süleyman Çelik (SRC-4: TR-42-88192)',
         path: [
             [39.9334, 32.8597], // Ankara Hub
             [39.5500, 33.1200], // Bala
@@ -1266,6 +1321,11 @@ const CURATED_SCENARIOS = {
         roadBadge: 'D-010 & D-750 Dağ Koridoru',
         speedRange: [60, 75],
         rpmRange: [1450, 1650],
+        weather: {"text": "Mengen & Devrek: Yağmurlu (12°C)", "icon": "fa-cloud-rain", "rain": true},
+        savingsText: '🌱 40 kg CO₂ • Maden & KARDEMİR Hattı',
+        tachoRemain: '02 sa 35 dk',
+        uetdsCode: 'UETDS-2026-TR-670412',
+        driver: 'Recep Maden (SRC-4: TR-67-11029)',
         path: [
             [40.7654, 29.9408], // Kocaeli Hub
             [40.7731, 30.4028], // Sakarya
@@ -1294,6 +1354,11 @@ const CURATED_SCENARIOS = {
         roadBadge: 'D-885 Dağ Geçidi & Yeni Tünel',
         speedRange: [60, 74],
         rpmRange: [2000, 2300],
+        weather: {"text": "Yeni Zigana Tüneli: Tünel İçi Kuru (15°C)", "icon": "fa-road", "rain": false},
+        savingsText: '🌱 35 kg CO₂ • 14.5 km Çift Tüp Tünel',
+        tachoRemain: '03 sa 00 dk',
+        uetdsCode: 'UETDS-2026-TR-610992',
+        driver: 'Turgut Karadeniz (SRC-4: TR-61-44019)',
         path: [
             [41.0027, 39.7168], // Trabzon Liman Hub
             [40.8100, 39.6000], // Maçka
@@ -1323,6 +1388,11 @@ const CURATED_SCENARIOS = {
         roadBadge: 'D-100 & D-975 Sınır Hattı',
         speedRange: [72, 86],
         rpmRange: [1250, 1450],
+        weather: {"text": "Doğubayazıt & Tendürek: 4°C Rüzgarlı", "icon": "fa-wind", "rain": false},
+        savingsText: '🌱 Sınır Ticareti Transit Avantajı',
+        tachoRemain: '02 sa 10 dk',
+        uetdsCode: 'UETDS-2026-TR-650331',
+        driver: 'Diyar Yıldız (SRC-4: TR-65-88219)',
         path: [
             [39.9000, 41.2700], // Erzurum Hub
             [39.9800, 41.6700], // Pasinler
@@ -1348,7 +1418,9 @@ let curatedSimState = {
     step: 0,
     intervalId: null,
     isPaused: false,
-    speedMultiplier: 1
+    speedMultiplier: 1,
+    laneState: 'center',
+    laneStepCount: 0
 };
 
 function interpolatePath(points, segmentsPerLeg = 14) {
@@ -1380,6 +1452,8 @@ function startCuratedSimulation(scenarioKey) {
     curatedSimState.interpolatedPoints = interpolatePath(scenario.path, 16);
     curatedSimState.step = 0;
     curatedSimState.isPaused = false;
+    curatedSimState.laneState = 'center';
+    curatedSimState.laneStepCount = 0;
 
     // Yüksek kontrastlı çift katmanlı neon otoyol çizgisi (Yeşil değil; her zeminde parlayan elektrik mavisi/cyan)
     curatedSimState.polylineCasing = L.polyline(scenario.path, {
@@ -1407,7 +1481,24 @@ function startCuratedSimulation(scenarioKey) {
     if (hud) {
         hud.style.display = 'block';
         hud.classList.add('active');
+        hud.classList.remove('sim-paused');
     }
+
+    const hudView = document.getElementById('hudCockpitView');
+    if (hudView) {
+        hudView.classList.remove('is-paused');
+        hudView.classList.remove('speed-1x', 'speed-2x', 'speed-5x');
+        hudView.classList.add(`speed-${curatedSimState.speedMultiplier}x`);
+    }
+
+    const carChassis = document.getElementById('cockpitCarChassis');
+    if (carChassis) {
+        carChassis.className = 'cockpit-car-chassis';
+    }
+    const blLeft = document.getElementById('cockpitBlinkerLeft');
+    const blRight = document.getElementById('cockpitBlinkerRight');
+    if (blLeft) blLeft.classList.remove('blinking');
+    if (blRight) blRight.classList.remove('blinking');
 
     const setEl = (id, val) => { const el = document.getElementById(id); if (el) el.textContent = val; };
     setEl('hudRoadTypeBadge', scenario.roadBadge);
@@ -1419,6 +1510,25 @@ function startCuratedSimulation(scenarioKey) {
     setEl('hudTollVal', scenario.tollText);
     setEl('hudDistLeftVal', `${scenario.totalDistance} km`);
     setEl('hudFuelVal', scenario.fuelText);
+
+    // Plaka & Takograf & Tasarruf
+    const cleanPlate = scenario.plate ? scenario.plate.split('•')[0].trim() : '34 LOG 92';
+    setEl('cockpitPlateTag', cleanPlate);
+    setEl('hudTachoRemain', scenario.tachoRemain || '02 sa 45 dk');
+    setEl('hudSavingsText', scenario.savingsText || '🌱 38 kg CO₂ • ₺550 Köprü Tasarrufu');
+    const tachoFill = document.getElementById('hudTachoFill');
+    if (tachoFill) tachoFill.style.width = '35%';
+
+    // Canlı Hava Durumu & Silecek
+    const weather = scenario.weather || { text: 'Açık & Kuru Zemin (22°C)', icon: 'fa-sun', rain: false };
+    const weatherBadge = document.getElementById('hudWeatherBadge');
+    if (weatherBadge) {
+        weatherBadge.innerHTML = `<i class="fas ${weather.icon}"></i> <span id="hudWeatherText">${weather.text}</span>`;
+    }
+    const wiper = document.getElementById('cockpitWiper');
+    if (wiper) {
+        wiper.classList.toggle('active', !!weather.rain);
+    }
 
     const banner = document.getElementById('simCompleteBanner');
     if (banner) banner.style.display = 'none';
@@ -1433,7 +1543,7 @@ function startCuratedSimulation(scenarioKey) {
                     <i class="fas fa-truck-moving"></i>
                 </div>
                 <div class="sim-truck-badge-bar">
-                    <span class="sim-truck-plate-tag">${scenario.plate.split('•')[0].trim()}</span>
+                    <span class="sim-truck-plate-tag">${cleanPlate}</span>
                     <span class="sim-truck-speed-tag" id="markerLiveSpeed">⚡ ${scenario.speedRange[0]} km/s</span>
                 </div>
             </div>
@@ -1468,6 +1578,37 @@ function startSimTimer() {
         if (!pts || pts.length === 0) return;
 
         curatedSimState.step++;
+        curatedSimState.laneStepCount++;
+
+        // Şerit Değiştirme Telemetrisi: Her 15 adımda bir sol şeride sollama ve geri dönüş
+        if (curatedSimState.laneStepCount >= 15) {
+            curatedSimState.laneStepCount = 0;
+            const carChassis = document.getElementById('cockpitCarChassis');
+            const blLeft = document.getElementById('cockpitBlinkerLeft');
+            const blRight = document.getElementById('cockpitBlinkerRight');
+
+            if (curatedSimState.laneState === 'center') {
+                if (blLeft) blLeft.classList.add('blinking');
+                setTimeout(() => {
+                    if (curatedSimState.isPaused) return;
+                    if (carChassis) carChassis.classList.add('lane-left');
+                    setTimeout(() => {
+                        if (blLeft) blLeft.classList.remove('blinking');
+                        curatedSimState.laneState = 'left';
+                    }, 1100);
+                }, 350);
+            } else {
+                if (blRight) blRight.classList.add('blinking');
+                setTimeout(() => {
+                    if (curatedSimState.isPaused) return;
+                    if (carChassis) carChassis.classList.remove('lane-left');
+                    setTimeout(() => {
+                        if (blRight) blRight.classList.remove('blinking');
+                        curatedSimState.laneState = 'center';
+                    }, 1100);
+                }, 350);
+            }
+        }
 
         // Rota sonuna ulaşıldığında
         if (curatedSimState.step >= pts.length) {
@@ -1478,6 +1619,14 @@ function startSimTimer() {
             if (speedDig) speedDig.textContent = '0';
             const markerSpeed = document.getElementById('markerLiveSpeed');
             if (markerSpeed) markerSpeed.textContent = '⚡ 0 km/s (Varış)';
+
+            // Yol ve araç animasyonlarını DONDUR
+            const hudView = document.getElementById('hudCockpitView');
+            if (hudView) hudView.classList.add('is-paused');
+            const hud = document.getElementById('simTelemetryHud');
+            if (hud) hud.classList.add('sim-paused');
+            const carChassis = document.getElementById('cockpitCarChassis');
+            if (carChassis) carChassis.classList.add('brake-active');
 
             clearInterval(curatedSimState.intervalId);
             curatedSimState.intervalId = null;
@@ -1506,6 +1655,11 @@ function startSimTimer() {
         setEl('hudDistLeftVal', `${distLeft} km`);
         setEl('hudEtaVal', `${hoursLeft > 0 ? hoursLeft + ' sa ' : ''}${remMins} dk`);
 
+        const tachoFill = document.getElementById('hudTachoFill');
+        if (tachoFill) {
+            tachoFill.style.width = `${Math.min(95, Math.round(35 + progressFrac * 60))}%`;
+        }
+
         const markerSpeed = document.getElementById('markerLiveSpeed');
         if (markerSpeed) markerSpeed.textContent = `⚡ ${curSpeed} km/s`;
     }, baseDelay);
@@ -1518,16 +1672,40 @@ function toggleSimPause() {
         btn.innerHTML = curatedSimState.isPaused ? '<i class="fas fa-play"></i>' : '<i class="fas fa-pause"></i>';
         btn.title = curatedSimState.isPaused ? 'Devam Et' : 'Duraklat';
     }
+
+    const hudView = document.getElementById('hudCockpitView');
+    const hud = document.getElementById('simTelemetryHud');
+    const carChassis = document.getElementById('cockpitCarChassis');
+
+    // Durdurulduğunda yol animasyonunu DONDUR ve Fren Lambalarını yak
+    if (curatedSimState.isPaused) {
+        if (hudView) hudView.classList.add('is-paused');
+        if (hud) hud.classList.add('sim-paused');
+        if (carChassis) carChassis.classList.add('brake-active');
+    } else {
+        if (hudView) hudView.classList.remove('is-paused');
+        if (hud) hud.classList.remove('sim-paused');
+        if (carChassis) carChassis.classList.remove('brake-active');
+    }
 }
 
 function restartSim() {
     curatedSimState.step = 0;
     curatedSimState.isPaused = false;
+    curatedSimState.laneState = 'center';
+    curatedSimState.laneStepCount = 0;
     const banner = document.getElementById('simCompleteBanner');
     if (banner) banner.style.display = 'none';
 
     const btnPause = document.getElementById('btnSimPause');
     if (btnPause) btnPause.innerHTML = '<i class="fas fa-pause"></i>';
+
+    const hudView = document.getElementById('hudCockpitView');
+    if (hudView) hudView.classList.remove('is-paused');
+    const hud = document.getElementById('simTelemetryHud');
+    if (hud) hud.classList.remove('sim-paused');
+    const carChassis = document.getElementById('cockpitCarChassis');
+    if (carChassis) carChassis.classList.remove('brake-active', 'lane-left');
 
     if (curatedSimState.marker && curatedSimState.interpolatedPoints.length > 0) {
         curatedSimState.marker.setLatLng(curatedSimState.interpolatedPoints[0]);
@@ -1540,6 +1718,13 @@ function setSimSpeed(multiplier) {
     document.querySelectorAll('.btn-sim-speed').forEach(btn => {
         btn.classList.toggle('active', btn.getAttribute('id') === `btnSim${multiplier}x`);
     });
+
+    const hudView = document.getElementById('hudCockpitView');
+    if (hudView) {
+        hudView.classList.remove('speed-1x', 'speed-2x', 'speed-5x');
+        hudView.classList.add(`speed-${multiplier}x`);
+    }
+
     if (curatedSimState.intervalId) {
         startSimTimer();
     }
@@ -1565,8 +1750,18 @@ function stopVehicleSimulation() {
 
     const hud = document.getElementById('simTelemetryHud');
     if (hud) {
-        hud.classList.remove('active');
+        hud.classList.remove('active', 'sim-paused');
         hud.style.display = 'none';
+    }
+
+    const hudView = document.getElementById('hudCockpitView');
+    if (hudView) {
+        hudView.classList.remove('is-paused');
+    }
+
+    const carChassis = document.getElementById('cockpitCarChassis');
+    if (carChassis) {
+        carChassis.className = 'cockpit-car-chassis';
     }
 
     const btnSim = document.getElementById('btnSimulate');
@@ -1588,6 +1783,28 @@ function toggleVehicleSimulation() {
         startCuratedSimulation('marmara_d100');
     }
 }
+
+function openUetdsModal() {
+    const scenario = curatedSimState.scenario || CURATED_SCENARIOS['marmara_d100'];
+    if (!scenario) return;
+
+    const setEl = (id, val) => { const el = document.getElementById(id); if (el) el.textContent = val; };
+    setEl('uetdsDocCode', scenario.uetdsCode || 'UETDS-2026-TR-418029');
+    setEl('uetdsDocPlate', scenario.plate ? scenario.plate.split('•')[0].trim() : '34 LOG 92');
+    setEl('uetdsDocDriver', scenario.driver || 'Mustafa Çelik (SRC-4 Belgesi Onaylı)');
+    setEl('uetdsDocRoute', scenario.title);
+    setEl('uetdsDocDistEta', `${scenario.totalDistance} km • ${scenario.etaText}`);
+    setEl('uetdsDocRoadType', scenario.roadBadge);
+    setEl('uetdsDocCargo', scenario.cargoText);
+
+    const now = new Date();
+    const dateStr = now.toLocaleDateString('tr-TR') + ' ' + now.toLocaleTimeString('tr-TR');
+    setEl('uetdsDocDateTime', dateStr);
+
+    const modal = document.getElementById('uetdsModal');
+    if (modal) modal.classList.add('active');
+}
+
 
 async function showRoutesOnMap(map) {
     try {

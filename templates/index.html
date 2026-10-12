@@ -563,14 +563,52 @@
                         </div>
 
                         <!-- 3D Otoyol Perspektif Kokpit Efekti -->
-                        <div class="hud-cockpit-view">
+                        <div class="hud-cockpit-view" id="hudCockpitView">
                             <div class="cockpit-horizon"></div>
                             <div class="cockpit-road">
                                 <div class="road-lane-lines"></div>
                             </div>
+
+                            <!-- Şerit Değiştiren Karizmatik 3D Ticari Araç Modeli (Crosshair Yerine) -->
+                            <div class="cockpit-car-container" id="cockpitCarContainer">
+                                <div class="cockpit-car-chassis" id="cockpitCarChassis">
+                                    <div class="car-roof-lights">
+                                        <span class="roof-dot"></span>
+                                        <span class="roof-dot"></span>
+                                        <span class="roof-dot"></span>
+                                    </div>
+                                    <div class="car-windshield-back"></div>
+                                    <div class="car-mirrors">
+                                        <span class="mirror left"></span>
+                                        <span class="mirror right"></span>
+                                    </div>
+                                    <div class="car-body-panel">
+                                        <div class="car-plate-tag" id="cockpitPlateTag">34 LOG 92</div>
+                                    </div>
+                                    <div class="car-taillights">
+                                        <div class="light-group left">
+                                            <span class="blinker-lamp" id="cockpitBlinkerLeft"></span>
+                                            <span class="brake-lamp" id="cockpitBrakeLeft"></span>
+                                        </div>
+                                        <div class="high-mount-stop-lamp" id="cockpitHighStop"></div>
+                                        <div class="light-group right">
+                                            <span class="brake-lamp" id="cockpitBrakeRight"></span>
+                                            <span class="blinker-lamp" id="cockpitBlinkerRight"></span>
+                                        </div>
+                                    </div>
+                                    <div class="car-diffuser">
+                                        <span class="exhaust left"></span>
+                                        <span class="exhaust right"></span>
+                                    </div>
+                                </div>
+                            </div>
+
                             <div class="truck-windshield-overlay">
                                 <div class="hud-glass-glare"></div>
-                                <div class="hud-radar-crosshair"><i class="fas fa-crosshairs"></i></div>
+                                <div class="cockpit-weather-badge" id="hudWeatherBadge">
+                                    <i class="fas fa-sun text-warning"></i> <span id="hudWeatherText">Açık & Kuru Zemin (22°C)</span>
+                                </div>
+                                <div class="cockpit-wiper" id="cockpitWiper"></div>
                             </div>
                             <div class="cockpit-badge" id="hudRoadTypeBadge">D-100 DEVLET YOLU</div>
                         </div>
@@ -614,6 +652,28 @@
                                 <span class="hud-label"><i class="fas fa-map-location-dot text-indigo"></i> Koridor:</span>
                                 <span class="hud-val text-truncate" id="hudRouteName" style="max-width:180px;">İstanbul ➔ Bursa Ring</span>
                             </div>
+
+                            <!-- Dijital Takograf Kartı (SRC-4 & AB Yönetmeliği) -->
+                            <div class="hud-tachograph-card">
+                                <div class="tacho-header">
+                                    <span><i class="fas fa-id-card-clip text-indigo"></i> Dijital Takograf (SRC):</span>
+                                    <strong id="hudTachoRemain">02 sa 45 dk</strong>
+                                </div>
+                                <div class="tacho-progress-bar">
+                                    <div class="tacho-fill" id="hudTachoFill" style="width: 58%;"></div>
+                                </div>
+                                <div class="tacho-sub">Yasal Mola: 4.5 Saatte Bir 45 Dk Zorunlu Dinlenme</div>
+                            </div>
+
+                            <!-- Yeşil Lojistik & Tasarruf Rozeti -->
+                            <div class="hud-savings-badge" id="hudSavingsBadge">
+                                <i class="fas fa-leaf text-success"></i> <span id="hudSavingsText">🌱 42 kg CO₂ & ₺550 Köprü Tasarrufu</span>
+                            </div>
+
+                            <!-- Resmi U-ETDS Sefer Bildirimi Butonu -->
+                            <button type="button" onclick="openUetdsModal()" class="btn-uetds-action">
+                                <i class="fas fa-file-invoice-dollar"></i> Resmi U-ETDS Sefer Bildirimi & e-İrsaliye
+                            </button>
                         </div>
 
                         <!-- Tamamlama Bildirimi -->
@@ -1157,6 +1217,114 @@
             </div>
             <div id="routeModalContent" style="padding: 15px; font-size: 16px;"></div>
             <div id="routeModalMap" style="height: 550px; margin: 10px;"></div>
+        </div>
+    </div>
+
+    <!-- T.C. Ulaştırma ve Altyapı Bakanlığı U-ETDS Resmi Sefer Bildirim & e-İrsaliye Modalı -->
+    <div id="uetdsModal" class="modal">
+        <div class="modal-content modal-lg uetds-modal-card">
+            <div class="uetds-paper-header">
+                <div class="uetds-gov-seal">
+                    <i class="fas fa-landmark"></i>
+                </div>
+                <div class="uetds-gov-titles">
+                    <div class="gov-sub">T.C. ULAŞTIRMA VE ALTYAPI BAKANLIĞI</div>
+                    <div class="gov-main">U-ETDS ELEKTRONİK TAKİP VE DENETİM SİSTEMİ</div>
+                    <div class="gov-doc-name">RESMİ SEFER BİLDİRİM RAPORU & E-TAŞIMA İRSALİYESİ</div>
+                </div>
+                <button onclick="closeModal('uetdsModal')" class="close-btn" title="Kapat">&times;</button>
+            </div>
+
+            <div class="uetds-paper-body">
+                <!-- Üst Doğrulama Şeridi -->
+                <div class="uetds-meta-strip">
+                    <div class="uetds-qr-box">
+                        <div class="qr-code-visual">
+                            <i class="fas fa-qrcode"></i>
+                        </div>
+                        <div class="qr-text">
+                            <strong>GİB & U-ETDS DOĞRULAMA</strong>
+                            <small>Karekod ile Anlık Sorgulama</small>
+                        </div>
+                    </div>
+                    <div class="uetds-ref-box">
+                        <div class="ref-row"><span>U-ETDS Sefer Kodu:</span> <strong id="uetdsDocCode">UETDS-2026-TR-418029</strong></div>
+                        <div class="ref-row"><span>e-İrsaliye Seri/Sıra:</span> <strong id="uetdsDocInvoice">IRS2026-00008419</strong></div>
+                        <div class="ref-row"><span>Bildirim Zamanı:</span> <strong id="uetdsDocDateTime">12.10.2026 19:48:00</strong></div>
+                        <div class="ref-row"><span>Sistem Durumu:</span> <span class="uetds-status-pill"><i class="fas fa-check-circle"></i> BAKANLIK ONAYLI SEFER</span></div>
+                    </div>
+                </div>
+
+                <!-- 2 Sütunlu Bilgi Izgarası -->
+                <div class="uetds-grid">
+                    <!-- Taşıyıcı Firma -->
+                    <div class="uetds-card-box">
+                        <h4><i class="fas fa-building text-primary"></i> Yetkili Taşıyıcı Firma</h4>
+                        <div class="uetds-field"><span>Firma Unvanı:</span> <strong>LogiRoute Akıllı Dağıtım ve Filo A.Ş.</strong></div>
+                        <div class="uetds-field"><span>K1 Yetki Belgesi:</span> <strong>K1.34.2024-8841-İST</strong></div>
+                        <div class="uetds-field"><span>Vergi Dairesi / No:</span> <strong>Kadıköy V.D. • 6081294819</strong></div>
+                        <div class="uetds-field"><span>Merkez İstasyon:</span> <strong>Kocaeli - Gebze Lojistik Hub</strong></div>
+                    </div>
+
+                    <!-- Araç & Sürücü Bilgisi -->
+                    <div class="uetds-card-box">
+                        <h4><i class="fas fa-id-badge text-indigo"></i> Görevli Personel & Araç</h4>
+                        <div class="uetds-field"><span>Taşıt Plakası:</span> <strong id="uetdsDocPlate" class="text-primary font-mono">34 LOG 92</strong></div>
+                        <div class="uetds-field"><span>Sürücü Ad-Soyad:</span> <strong id="uetdsDocDriver">Ahmet Yılmaz (T.C. 391*****42)</strong></div>
+                        <div class="uetds-field"><span>SRC & Psikoteknik:</span> <strong>SRC-4 Belgesi Onaylı (TR-34-99120)</strong></div>
+                        <div class="uetds-field"><span>Dijital Takograf Çipi:</span> <strong>TK-2026-TR-8419 • Aktif Sürüş Modu</strong></div>
+                    </div>
+                </div>
+
+                <!-- Güzergah & Yük Manifestosu Tablosu -->
+                <div class="uetds-manifest-section">
+                    <h4><i class="fas fa-boxes-stacked text-success"></i> Taşınan Eşya & Güzergah Manifestosu</h4>
+                    <table class="uetds-table">
+                        <thead>
+                            <tr>
+                                <th>Koridor / Rota Adı</th>
+                                <th>Mesafe & Süre</th>
+                                <th>Yol ve Geçiş Statüsü</th>
+                                <th>Yük / Hacim Detayı</th>
+                                <th>ADR Sınıfı</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td id="uetdsDocRoute"><strong>Marmara Ring (D-100 Sahil)</strong></td>
+                                <td id="uetdsDocDistEta">185 km • 02 sa 37 dk</td>
+                                <td id="uetdsDocRoadType"><span class="badge-toll-free">Ücretsiz Devlet Yolu (0 TL)</span></td>
+                                <td id="uetdsDocCargo">380 kg / 24 Koli (Karma Dağıtım)</td>
+                                <td><span class="text-success"><i class="fas fa-shield"></i> Muaf (Güvenli)</span></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <!-- Barkod Görseli ve Bakanlık Onay Mührü -->
+                <div class="uetds-barcode-footer">
+                    <div class="barcode-graphic">
+                        <div class="barcode-lines"></div>
+                        <div class="barcode-digits">*UETDS-2026-TR-8841-K1-LOGIROUTE*</div>
+                    </div>
+                    <div class="uetds-official-stamp">
+                        <div class="stamp-circle">
+                            <span>T.C. UAB</span>
+                            <small>U-ETDS</small>
+                            <strong>ONAYLANDI</strong>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="uetds-modal-actions">
+                <button type="button" onclick="window.print()" class="btn btn-primary">
+                    <i class="fas fa-print"></i> Resmi Belgeyi Yazdır / PDF İndir
+                </button>
+                <button type="button" onclick="closeModal('uetdsModal')" class="btn btn-secondary">
+                    <i class="fas fa-times"></i> Kapat
+                </button>
+            </div>
         </div>
     </div>
 
