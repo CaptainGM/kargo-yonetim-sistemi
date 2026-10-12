@@ -1,10 +1,9 @@
 # -*- coding: utf-8 -*-
 """
-Türkiye Geneli 81 İl ve Stratejik 260+ Lojistik İstasyonu, Çeşitlendirilmiş Araç Filosu
-ve Gerçekçi Akaryakıt/Operasyonel Maliyet Veri Modeli
+Türkiye Geneli 81 İl ve Stratejik 350+ Lojistik İstasyonu, Çeşitlendirilmiş Araç Filosu
+ve Gerçekçi Güncel Akaryakıt/Operasyonel Maliyet Veri Modeli
 """
 
-# Türkiye 81 İl Merkezi, Kritik Limanlar, OSB'ler ve Serbest Bölgeler (260+ İstasyon)
 TURKEY_STATIONS = [
     {
         "name": "Marmara Lojistik Ana Hub (Kocaeli)",
@@ -2635,10 +2634,909 @@ TURKEY_STATIONS = [
         "station_type": "branch",
         "daily_capacity": 5000,
         "is_depot": False
+    },
+    {
+        "name": "Konya - Beyşehir Hub",
+        "city": "Konya",
+        "district": "Beyşehir",
+        "latitude": 37.68,
+        "longitude": 31.72,
+        "station_type": "hub",
+        "daily_capacity": 14000,
+        "is_depot": False
+    },
+    {
+        "name": "Konya - Seydişehir Alüminyum Hub",
+        "city": "Konya",
+        "district": "Seydişehir",
+        "latitude": 37.42,
+        "longitude": 31.84,
+        "station_type": "hub",
+        "daily_capacity": 12000,
+        "is_depot": False
+    },
+    {
+        "name": "Konya - Cihanbeyli Tuz & Lojistik",
+        "city": "Konya",
+        "district": "Cihanbeyli",
+        "latitude": 38.65,
+        "longitude": 32.92,
+        "station_type": "branch",
+        "daily_capacity": 8000,
+        "is_depot": False
+    },
+    {
+        "name": "Konya - Kulu Ankara Yolu Hub",
+        "city": "Konya",
+        "district": "Kulu",
+        "latitude": 39.09,
+        "longitude": 33.08,
+        "station_type": "hub",
+        "daily_capacity": 10000,
+        "is_depot": False
+    },
+    {
+        "name": "Konya - Karapınar Güneş Enerjisi & Tarım",
+        "city": "Konya",
+        "district": "Karapınar",
+        "latitude": 37.71,
+        "longitude": 33.55,
+        "station_type": "branch",
+        "daily_capacity": 9000,
+        "is_depot": False
+    },
+    {
+        "name": "Konya - Çumra Şeker & Tarım Hub",
+        "city": "Konya",
+        "district": "Çumra",
+        "latitude": 37.57,
+        "longitude": 32.77,
+        "station_type": "hub",
+        "daily_capacity": 11000,
+        "is_depot": False
+    },
+    {
+        "name": "Konya - Ilgın Termal & Dağıtım",
+        "city": "Konya",
+        "district": "Ilgın",
+        "latitude": 38.28,
+        "longitude": 31.91,
+        "station_type": "branch",
+        "daily_capacity": 7000,
+        "is_depot": False
+    },
+    {
+        "name": "Konya - Kadınhanı Hub",
+        "city": "Konya",
+        "district": "Kadınhanı",
+        "latitude": 38.24,
+        "longitude": 32.21,
+        "station_type": "branch",
+        "daily_capacity": 6000,
+        "is_depot": False
+    },
+    {
+        "name": "Konya - Çeltik Dağıtım",
+        "city": "Konya",
+        "district": "Çeltik",
+        "latitude": 39.03,
+        "longitude": 31.78,
+        "station_type": "branch",
+        "daily_capacity": 5000,
+        "is_depot": False
+    },
+    {
+        "name": "Sivas - Şarkışla Canlı Hayvan & Tarım Hub",
+        "city": "Sivas",
+        "district": "Şarkışla",
+        "latitude": 39.42,
+        "longitude": 36.41,
+        "station_type": "hub",
+        "daily_capacity": 12000,
+        "is_depot": False
+    },
+    {
+        "name": "Sivas - Divriği Maden Hub",
+        "city": "Sivas",
+        "district": "Divriği",
+        "latitude": 39.37,
+        "longitude": 38.12,
+        "station_type": "branch",
+        "daily_capacity": 7000,
+        "is_depot": False
+    },
+    {
+        "name": "Sivas - Suşehri Doğu Karadeniz Geçişi",
+        "city": "Sivas",
+        "district": "Suşehri",
+        "latitude": 40.16,
+        "longitude": 38.08,
+        "station_type": "hub",
+        "daily_capacity": 9000,
+        "is_depot": False
+    },
+    {
+        "name": "Sivas - Kangal Termik & Lojistik",
+        "city": "Sivas",
+        "district": "Kangal",
+        "latitude": 39.23,
+        "longitude": 37.39,
+        "station_type": "branch",
+        "daily_capacity": 8000,
+        "is_depot": False
+    },
+    {
+        "name": "Sivas - Zara Bal & Dağıtım",
+        "city": "Sivas",
+        "district": "Zara",
+        "latitude": 39.89,
+        "longitude": 37.76,
+        "station_type": "branch",
+        "daily_capacity": 6000,
+        "is_depot": False
+    },
+    {
+        "name": "Sivas - Gemerek OSB",
+        "city": "Sivas",
+        "district": "Gemerek",
+        "latitude": 39.18,
+        "longitude": 36.07,
+        "station_type": "branch",
+        "daily_capacity": 6500,
+        "is_depot": False
+    },
+    {
+        "name": "Yozgat - Sorgun OSB & Dağıtım Hub",
+        "city": "Yozgat",
+        "district": "Sorgun",
+        "latitude": 39.81,
+        "longitude": 35.18,
+        "station_type": "hub",
+        "daily_capacity": 13000,
+        "is_depot": False
+    },
+    {
+        "name": "Yozgat - Yerköy Hızlı Tren Lojistik",
+        "city": "Yozgat",
+        "district": "Yerköy",
+        "latitude": 39.64,
+        "longitude": 34.47,
+        "station_type": "hub",
+        "daily_capacity": 10000,
+        "is_depot": False
+    },
+    {
+        "name": "Yozgat - Boğazlıyan Şeker & Sanayi",
+        "city": "Yozgat",
+        "district": "Boğazlıyan",
+        "latitude": 39.19,
+        "longitude": 35.25,
+        "station_type": "branch",
+        "daily_capacity": 8000,
+        "is_depot": False
+    },
+    {
+        "name": "Yozgat - Akdağmadeni Orman Ürünleri",
+        "city": "Yozgat",
+        "district": "Akdağmadeni",
+        "latitude": 39.66,
+        "longitude": 35.88,
+        "station_type": "branch",
+        "daily_capacity": 7000,
+        "is_depot": False
+    },
+    {
+        "name": "Aksaray - Ortaköy Tarım Dağıtım",
+        "city": "Aksaray",
+        "district": "Ortaköy",
+        "latitude": 38.74,
+        "longitude": 34.04,
+        "station_type": "branch",
+        "daily_capacity": 7000,
+        "is_depot": False
+    },
+    {
+        "name": "Aksaray - Eskil Tuz Gölü Hub",
+        "city": "Aksaray",
+        "district": "Eskil",
+        "latitude": 38.58,
+        "longitude": 33.41,
+        "station_type": "branch",
+        "daily_capacity": 6500,
+        "is_depot": False
+    },
+    {
+        "name": "Aksaray - Sultanhanı İpekyolu Kervanı",
+        "city": "Aksaray",
+        "district": "Sultanhanı",
+        "latitude": 38.25,
+        "longitude": 33.54,
+        "station_type": "branch",
+        "daily_capacity": 6000,
+        "is_depot": False
+    },
+    {
+        "name": "Niğde - Bor Karma OSB Hub",
+        "city": "Niğde",
+        "district": "Bor",
+        "latitude": 37.89,
+        "longitude": 34.56,
+        "station_type": "hub",
+        "daily_capacity": 11000,
+        "is_depot": False
+    },
+    {
+        "name": "Niğde - Ulukışla Lojistik Kavşağı",
+        "city": "Niğde",
+        "district": "Ulukışla",
+        "latitude": 37.54,
+        "longitude": 34.48,
+        "station_type": "hub",
+        "daily_capacity": 9500,
+        "is_depot": False
+    },
+    {
+        "name": "Nevşehir - Ürgüp Turizm & Kargo Hub",
+        "city": "Nevşehir",
+        "district": "Ürgüp",
+        "latitude": 38.63,
+        "longitude": 34.91,
+        "station_type": "hub",
+        "daily_capacity": 9000,
+        "is_depot": False
+    },
+    {
+        "name": "Nevşehir - Avanos Seramik & Sanayi",
+        "city": "Nevşehir",
+        "district": "Avanos",
+        "latitude": 38.71,
+        "longitude": 34.84,
+        "station_type": "branch",
+        "daily_capacity": 7000,
+        "is_depot": False
+    },
+    {
+        "name": "Nevşehir - Derinkuyu Patates Depoları",
+        "city": "Nevşehir",
+        "district": "Derinkuyu",
+        "latitude": 38.37,
+        "longitude": 34.73,
+        "station_type": "branch",
+        "daily_capacity": 7500,
+        "is_depot": False
+    },
+    {
+        "name": "Kırşehir - Kaman Ceviz & Dağıtım Hub",
+        "city": "Kırşehir",
+        "district": "Kaman",
+        "latitude": 39.36,
+        "longitude": 33.72,
+        "station_type": "hub",
+        "daily_capacity": 8500,
+        "is_depot": False
+    },
+    {
+        "name": "Kırşehir - Mucur Hub",
+        "city": "Kırşehir",
+        "district": "Mucur",
+        "latitude": 39.06,
+        "longitude": 34.37,
+        "station_type": "branch",
+        "daily_capacity": 6000,
+        "is_depot": False
+    },
+    {
+        "name": "Karaman - Ermenek Maden & Tarım",
+        "city": "Karaman",
+        "district": "Ermenek",
+        "latitude": 36.63,
+        "longitude": 32.89,
+        "station_type": "branch",
+        "daily_capacity": 6000,
+        "is_depot": False
+    },
+    {
+        "name": "Karaman - Kazımkarabekir Hub",
+        "city": "Karaman",
+        "district": "Kazımkarabekir",
+        "latitude": 37.23,
+        "longitude": 33.02,
+        "station_type": "branch",
+        "daily_capacity": 5500,
+        "is_depot": False
+    },
+    {
+        "name": "Ankara - Polatlı Tahıl Borsası Hub",
+        "city": "Ankara",
+        "district": "Polatlı",
+        "latitude": 39.58,
+        "longitude": 32.14,
+        "station_type": "hub",
+        "daily_capacity": 16000,
+        "is_depot": False
+    },
+    {
+        "name": "Ankara - Şereflikoçhisar Tuz & Lojistik",
+        "city": "Ankara",
+        "district": "Şereflikoçhisar",
+        "latitude": 38.94,
+        "longitude": 33.54,
+        "station_type": "hub",
+        "daily_capacity": 11000,
+        "is_depot": False
+    },
+    {
+        "name": "Ankara - Beypazarı Maden Suyu & Sanayi",
+        "city": "Ankara",
+        "district": "Beypazarı",
+        "latitude": 40.16,
+        "longitude": 31.92,
+        "station_type": "hub",
+        "daily_capacity": 10000,
+        "is_depot": False
+    },
+    {
+        "name": "Ankara - Çubuk Dağıtım",
+        "city": "Ankara",
+        "district": "Çubuk",
+        "latitude": 40.24,
+        "longitude": 33.03,
+        "station_type": "branch",
+        "daily_capacity": 9000,
+        "is_depot": False
+    },
+    {
+        "name": "Kırıkkale - Yahşihan Sanayi Hub",
+        "city": "Kırıkkale",
+        "district": "Yahşihan",
+        "latitude": 39.83,
+        "longitude": 33.45,
+        "station_type": "hub",
+        "daily_capacity": 10000,
+        "is_depot": False
+    },
+    {
+        "name": "Kırıkkale - Keskin Hub",
+        "city": "Kırıkkale",
+        "district": "Keskin",
+        "latitude": 39.67,
+        "longitude": 33.61,
+        "station_type": "branch",
+        "daily_capacity": 6000,
+        "is_depot": False
+    },
+    {
+        "name": "Çankırı - Ilgaz Dağı Geçişi Hub",
+        "city": "Çankırı",
+        "district": "Ilgaz",
+        "latitude": 40.92,
+        "longitude": 33.62,
+        "station_type": "hub",
+        "daily_capacity": 9000,
+        "is_depot": False
+    },
+    {
+        "name": "Çankırı - Çerkeş Hayvancılık & OSB",
+        "city": "Çankırı",
+        "district": "Çerkeş",
+        "latitude": 40.81,
+        "longitude": 32.89,
+        "station_type": "branch",
+        "daily_capacity": 7500,
+        "is_depot": False
+    },
+    {
+        "name": "Eskişehir - Çifteler Tarım Hub",
+        "city": "Eskişehir",
+        "district": "Çifteler",
+        "latitude": 39.38,
+        "longitude": 31.13,
+        "station_type": "branch",
+        "daily_capacity": 7000,
+        "is_depot": False
+    },
+    {
+        "name": "Eskişehir - Alpu Dağıtım",
+        "city": "Eskişehir",
+        "district": "Alpu",
+        "latitude": 39.77,
+        "longitude": 31.18,
+        "station_type": "branch",
+        "daily_capacity": 6000,
+        "is_depot": False
+    },
+    {
+        "name": "Afyonkarahisar - Sandıklı Jeotermal & Hub",
+        "city": "Afyonkarahisar",
+        "district": "Sandıklı",
+        "latitude": 38.46,
+        "longitude": 30.27,
+        "station_type": "hub",
+        "daily_capacity": 12000,
+        "is_depot": False
+    },
+    {
+        "name": "Afyonkarahisar - Dinar Kavşak Lojistik Hub",
+        "city": "Afyonkarahisar",
+        "district": "Dinar",
+        "latitude": 38.06,
+        "longitude": 30.16,
+        "station_type": "hub",
+        "daily_capacity": 14000,
+        "is_depot": False
+    },
+    {
+        "name": "Afyonkarahisar - Bolvadin Hub",
+        "city": "Afyonkarahisar",
+        "district": "Bolvadin",
+        "latitude": 38.71,
+        "longitude": 31.05,
+        "station_type": "branch",
+        "daily_capacity": 8500,
+        "is_depot": False
+    },
+    {
+        "name": "Afyonkarahisar - Emirdağ Gurbetçi & Dağıtım",
+        "city": "Afyonkarahisar",
+        "district": "Emirdağ",
+        "latitude": 39.02,
+        "longitude": 31.15,
+        "station_type": "hub",
+        "daily_capacity": 9500,
+        "is_depot": False
+    },
+    {
+        "name": "Kütahya - Tavşanlı OSB & Linyit Hub",
+        "city": "Kütahya",
+        "district": "Tavşanlı",
+        "latitude": 39.54,
+        "longitude": 29.49,
+        "station_type": "hub",
+        "daily_capacity": 13000,
+        "is_depot": False
+    },
+    {
+        "name": "Kütahya - Simav Jeotermal & Sera Hub",
+        "city": "Kütahya",
+        "district": "Simav",
+        "latitude": 39.09,
+        "longitude": 28.98,
+        "station_type": "branch",
+        "daily_capacity": 7500,
+        "is_depot": False
+    },
+    {
+        "name": "Kütahya - Gediz Dağıtım",
+        "city": "Kütahya",
+        "district": "Gediz",
+        "latitude": 38.99,
+        "longitude": 29.57,
+        "station_type": "branch",
+        "daily_capacity": 7000,
+        "is_depot": False
+    },
+    {
+        "name": "Uşak - Banaz OSB Hub",
+        "city": "Uşak",
+        "district": "Banaz",
+        "latitude": 38.74,
+        "longitude": 29.75,
+        "station_type": "branch",
+        "daily_capacity": 8000,
+        "is_depot": False
+    },
+    {
+        "name": "Uşak - Eşme Kilim & Tarım",
+        "city": "Uşak",
+        "district": "Eşme",
+        "latitude": 38.4,
+        "longitude": 28.97,
+        "station_type": "branch",
+        "daily_capacity": 6500,
+        "is_depot": False
+    },
+    {
+        "name": "Burdur - Bucak Mermer & Taşımacılık Hub",
+        "city": "Burdur",
+        "district": "Bucak",
+        "latitude": 37.46,
+        "longitude": 30.59,
+        "station_type": "hub",
+        "daily_capacity": 13000,
+        "is_depot": False
+    },
+    {
+        "name": "Isparta - Yalvaç Sanayi & Dağıtım",
+        "city": "Isparta",
+        "district": "Yalvaç",
+        "latitude": 38.3,
+        "longitude": 31.18,
+        "station_type": "branch",
+        "daily_capacity": 8000,
+        "is_depot": False
+    },
+    {
+        "name": "Isparta - Eğirdir Elma & Soğuk Hava Deposu",
+        "city": "Isparta",
+        "district": "Eğirdir",
+        "latitude": 37.87,
+        "longitude": 30.85,
+        "station_type": "hub",
+        "daily_capacity": 9500,
+        "is_depot": False
+    },
+    {
+        "name": "Çorum - Sungurlu OSB & Kavşak Hub",
+        "city": "Çorum",
+        "district": "Sungurlu",
+        "latitude": 40.16,
+        "longitude": 34.37,
+        "station_type": "hub",
+        "daily_capacity": 13000,
+        "is_depot": False
+    },
+    {
+        "name": "Çorum - Osmancık İpekyolu Çeltik Hub",
+        "city": "Çorum",
+        "district": "Osmancık",
+        "latitude": 40.97,
+        "longitude": 34.8,
+        "station_type": "hub",
+        "daily_capacity": 11000,
+        "is_depot": False
+    },
+    {
+        "name": "Çorum - Alaca Dağıtım",
+        "city": "Çorum",
+        "district": "Alaca",
+        "latitude": 40.17,
+        "longitude": 34.84,
+        "station_type": "branch",
+        "daily_capacity": 7000,
+        "is_depot": False
+    },
+    {
+        "name": "Tokat - Erbaa Yaprak & Sanayi Hub",
+        "city": "Tokat",
+        "district": "Erbaa",
+        "latitude": 40.67,
+        "longitude": 36.57,
+        "station_type": "hub",
+        "daily_capacity": 12000,
+        "is_depot": False
+    },
+    {
+        "name": "Tokat - Turhal Şeker & Lojistik",
+        "city": "Tokat",
+        "district": "Turhal",
+        "latitude": 40.39,
+        "longitude": 36.08,
+        "station_type": "hub",
+        "daily_capacity": 10500,
+        "is_depot": False
+    },
+    {
+        "name": "Tokat - Niksar Su & Ceviz Dağıtım",
+        "city": "Tokat",
+        "district": "Niksar",
+        "latitude": 40.59,
+        "longitude": 36.95,
+        "station_type": "branch",
+        "daily_capacity": 8500,
+        "is_depot": False
+    },
+    {
+        "name": "Tokat - Zile Hub",
+        "city": "Tokat",
+        "district": "Zile",
+        "latitude": 40.3,
+        "longitude": 35.89,
+        "station_type": "branch",
+        "daily_capacity": 7500,
+        "is_depot": False
+    },
+    {
+        "name": "Amasya - Merzifon Lojistik & Havalimanı Hub",
+        "city": "Amasya",
+        "district": "Merzifon",
+        "latitude": 40.87,
+        "longitude": 35.46,
+        "station_type": "hub",
+        "daily_capacity": 15000,
+        "is_depot": False
+    },
+    {
+        "name": "Amasya - Suluova Et & Biyogaz Sanayi",
+        "city": "Amasya",
+        "district": "Suluova",
+        "latitude": 40.83,
+        "longitude": 35.65,
+        "station_type": "hub",
+        "daily_capacity": 9500,
+        "is_depot": False
+    },
+    {
+        "name": "Kastamonu - Tosya Ahşap & Kapı Sanayi Hub",
+        "city": "Kastamonu",
+        "district": "Tosya",
+        "latitude": 41.02,
+        "longitude": 34.04,
+        "station_type": "hub",
+        "daily_capacity": 12000,
+        "is_depot": False
+    },
+    {
+        "name": "Kastamonu - Taşköprü Sarımsak Hub",
+        "city": "Kastamonu",
+        "district": "Taşköprü",
+        "latitude": 41.51,
+        "longitude": 34.21,
+        "station_type": "branch",
+        "daily_capacity": 8000,
+        "is_depot": False
+    },
+    {
+        "name": "Sinop - Boyabat Tuğla & Toprak Sanayi Hub",
+        "city": "Sinop",
+        "district": "Boyabat",
+        "latitude": 41.47,
+        "longitude": 34.77,
+        "station_type": "hub",
+        "daily_capacity": 10000,
+        "is_depot": False
+    },
+    {
+        "name": "Kahramanmaraş - Elbistan Termik & Lojistik Hub",
+        "city": "Kahramanmaraş",
+        "district": "Elbistan",
+        "latitude": 38.2,
+        "longitude": 37.19,
+        "station_type": "hub",
+        "daily_capacity": 13500,
+        "is_depot": False
+    },
+    {
+        "name": "Kahramanmaraş - Afşin Hub",
+        "city": "Kahramanmaraş",
+        "district": "Afşin",
+        "latitude": 38.25,
+        "longitude": 36.91,
+        "station_type": "branch",
+        "daily_capacity": 8000,
+        "is_depot": False
+    },
+    {
+        "name": "Kahramanmaraş - Göksun Karayolu Geçişi",
+        "city": "Kahramanmaraş",
+        "district": "Göksun",
+        "latitude": 38.02,
+        "longitude": 36.49,
+        "station_type": "branch",
+        "daily_capacity": 7500,
+        "is_depot": False
+    },
+    {
+        "name": "Malatya - Yeşilyurt 2. OSB Hub",
+        "city": "Malatya",
+        "district": "Yeşilyurt",
+        "latitude": 38.31,
+        "longitude": 38.24,
+        "station_type": "hub",
+        "daily_capacity": 16000,
+        "is_depot": False
+    },
+    {
+        "name": "Malatya - Battalgazi Kayısı Dağıtım",
+        "city": "Malatya",
+        "district": "Battalgazi",
+        "latitude": 38.42,
+        "longitude": 38.36,
+        "station_type": "branch",
+        "daily_capacity": 11000,
+        "is_depot": False
+    },
+    {
+        "name": "Malatya - Darende İpekyolu Geçişi",
+        "city": "Malatya",
+        "district": "Darende",
+        "latitude": 38.56,
+        "longitude": 37.5,
+        "station_type": "branch",
+        "daily_capacity": 7000,
+        "is_depot": False
+    },
+    {
+        "name": "Elazığ - Kovancılar Kavşağı Hub",
+        "city": "Elazığ",
+        "district": "Kovancılar",
+        "latitude": 38.71,
+        "longitude": 39.85,
+        "station_type": "hub",
+        "daily_capacity": 9500,
+        "is_depot": False
+    },
+    {
+        "name": "Erzincan - Tercan Dağıtım",
+        "city": "Erzincan",
+        "district": "Tercan",
+        "latitude": 39.78,
+        "longitude": 40.38,
+        "station_type": "branch",
+        "daily_capacity": 6500,
+        "is_depot": False
+    },
+    {
+        "name": "Erzurum - Pasinler Hub",
+        "city": "Erzurum",
+        "district": "Pasinler",
+        "latitude": 39.98,
+        "longitude": 41.67,
+        "station_type": "branch",
+        "daily_capacity": 7500,
+        "is_depot": False
+    },
+    {
+        "name": "Erzurum - Horasan İpekyolu Bağlantısı Hub",
+        "city": "Erzurum",
+        "district": "Horasan",
+        "latitude": 40.04,
+        "longitude": 42.17,
+        "station_type": "hub",
+        "daily_capacity": 9500,
+        "is_depot": False
+    },
+    {
+        "name": "Ağrı - Doğubayazıt Gürbulak Sınır Kapısı Hub",
+        "city": "Ağrı",
+        "district": "Doğubayazıt",
+        "latitude": 39.55,
+        "longitude": 44.08,
+        "station_type": "hub",
+        "daily_capacity": 15000,
+        "is_depot": False
+    },
+    {
+        "name": "Ağrı - Patnos Hub",
+        "city": "Ağrı",
+        "district": "Patnos",
+        "latitude": 39.23,
+        "longitude": 42.86,
+        "station_type": "branch",
+        "daily_capacity": 8000,
+        "is_depot": False
+    },
+    {
+        "name": "Kars - Sarıkamış Dağıtım",
+        "city": "Kars",
+        "district": "Sarıkamış",
+        "latitude": 40.33,
+        "longitude": 42.57,
+        "station_type": "branch",
+        "daily_capacity": 6500,
+        "is_depot": False
+    },
+    {
+        "name": "Van - Erciş Lojistik Hub",
+        "city": "Van",
+        "district": "Erciş",
+        "latitude": 39.03,
+        "longitude": 43.36,
+        "station_type": "hub",
+        "daily_capacity": 12500,
+        "is_depot": False
+    },
+    {
+        "name": "Van - Edremit Dağıtım",
+        "city": "Van",
+        "district": "Edremit",
+        "latitude": 38.42,
+        "longitude": 43.25,
+        "station_type": "branch",
+        "daily_capacity": 8000,
+        "is_depot": False
+    },
+    {
+        "name": "Şanlıurfa - Siverek Hub",
+        "city": "Şanlıurfa",
+        "district": "Siverek",
+        "latitude": 37.75,
+        "longitude": 39.31,
+        "station_type": "hub",
+        "daily_capacity": 14000,
+        "is_depot": False
+    },
+    {
+        "name": "Şanlıurfa - Viranşehir Hub",
+        "city": "Şanlıurfa",
+        "district": "Viranşehir",
+        "latitude": 37.23,
+        "longitude": 39.76,
+        "station_type": "hub",
+        "daily_capacity": 12000,
+        "is_depot": False
+    },
+    {
+        "name": "Şanlıurfa - Birecik Fıstık & Lojistik",
+        "city": "Şanlıurfa",
+        "district": "Birecik",
+        "latitude": 37.03,
+        "longitude": 37.98,
+        "station_type": "hub",
+        "daily_capacity": 11000,
+        "is_depot": False
+    },
+    {
+        "name": "Şanlıurfa - Suruç Dağıtım",
+        "city": "Şanlıurfa",
+        "district": "Suruç",
+        "latitude": 36.98,
+        "longitude": 38.42,
+        "station_type": "branch",
+        "daily_capacity": 8500,
+        "is_depot": False
+    },
+    {
+        "name": "Mardin - Midyat Taş Vadisi Hub",
+        "city": "Mardin",
+        "district": "Midyat",
+        "latitude": 37.42,
+        "longitude": 41.34,
+        "station_type": "hub",
+        "daily_capacity": 11500,
+        "is_depot": False
+    },
+    {
+        "name": "Mardin - Nusaybin İpekyolu Sınır Hub",
+        "city": "Mardin",
+        "district": "Nusaybin",
+        "latitude": 37.07,
+        "longitude": 41.21,
+        "station_type": "hub",
+        "daily_capacity": 13000,
+        "is_depot": False
+    },
+    {
+        "name": "Gaziantep - Nizip Zeytin & Sabun Hub",
+        "city": "Gaziantep",
+        "district": "Nizip",
+        "latitude": 37.01,
+        "longitude": 37.79,
+        "station_type": "hub",
+        "daily_capacity": 13500,
+        "is_depot": False
+    },
+    {
+        "name": "Gaziantep - İslahiye Dağıtım",
+        "city": "Gaziantep",
+        "district": "İslahiye",
+        "latitude": 37.03,
+        "longitude": 36.63,
+        "station_type": "branch",
+        "daily_capacity": 8000,
+        "is_depot": False
+    },
+    {
+        "name": "Diyarbakır - Ergani Maden Yolu Hub",
+        "city": "Diyarbakır",
+        "district": "Ergani",
+        "latitude": 38.27,
+        "longitude": 39.76,
+        "station_type": "hub",
+        "daily_capacity": 12000,
+        "is_depot": False
+    },
+    {
+        "name": "Diyarbakır - Bismil Pamuk & Tarım",
+        "city": "Diyarbakır",
+        "district": "Bismil",
+        "latitude": 37.85,
+        "longitude": 40.67,
+        "station_type": "branch",
+        "daily_capacity": 9500,
+        "is_depot": False
     }
 ]
 
-# Çok Sınıflı, Gerçekçi Lojistik Araç Filosu (Gerçek Litre/100km Tüketim & Karbon Katsayıları)
 EXPANDED_VEHICLES = [
     {
         "id": 1,
@@ -2650,8 +3548,8 @@ EXPANDED_VEHICLES = [
         "volume_m3": 0.3,
         "fuel_type": "gasoline",
         "fuel_liters_per_100km": 3.5,
-        "fuel_consumption": 1.51,  # 3.5 L / 100km * 43.20 TL/L = 1.51 TL/km
-        "rental_cost": 80.0,
+        "fuel_consumption": 2.99,
+        "rental_cost": 180.0,
         "speed_factor": 1.25,
         "co2_g_per_km": 80.8,
         "is_owned": 1,
@@ -2669,9 +3567,9 @@ EXPANDED_VEHICLES = [
         "volume_m3": 4.2,
         "fuel_type": "diesel",
         "fuel_liters_per_100km": 7.8,
-        "fuel_consumption": 3.47,  # 7.8 L / 100km * 44.50 TL/L = 3.47 TL/km
-        "rental_cost": 180.0,
-        "speed_factor": 1.10,
+        "fuel_consumption": 7.22,
+        "rental_cost": 380.0,
+        "speed_factor": 1.1,
         "co2_g_per_km": 209.0,
         "is_owned": 1,
         "icon": "fa-van-shuttle",
@@ -2688,9 +3586,9 @@ EXPANDED_VEHICLES = [
         "volume_m3": 12.5,
         "fuel_type": "diesel",
         "fuel_liters_per_100km": 11.5,
-        "fuel_consumption": 5.12,  # 11.5 L / 100km * 44.50 TL/L = 5.12 TL/km
-        "rental_cost": 280.0,
-        "speed_factor": 1.00,
+        "fuel_consumption": 10.64,
+        "rental_cost": 580.0,
+        "speed_factor": 1.0,
         "co2_g_per_km": 308.2,
         "is_owned": 1,
         "icon": "fa-truck-pickup",
@@ -2707,8 +3605,8 @@ EXPANDED_VEHICLES = [
         "volume_m3": 28.0,
         "fuel_type": "diesel",
         "fuel_liters_per_100km": 21.0,
-        "fuel_consumption": 9.35,  # 21.0 L / 100km * 44.50 TL/L = 9.35 TL/km
-        "rental_cost": 450.0,
+        "fuel_consumption": 19.43,
+        "rental_cost": 950.0,
         "speed_factor": 0.95,
         "co2_g_per_km": 562.8,
         "is_owned": 1,
@@ -2726,9 +3624,9 @@ EXPANDED_VEHICLES = [
         "volume_m3": 50.0,
         "fuel_type": "diesel",
         "fuel_liters_per_100km": 29.5,
-        "fuel_consumption": 13.13, # 29.5 L / 100km * 44.50 TL/L = 13.13 TL/km
-        "rental_cost": 750.0,
-        "speed_factor": 0.90,
+        "fuel_consumption": 27.29,
+        "rental_cost": 1600.0,
+        "speed_factor": 0.9,
         "co2_g_per_km": 790.6,
         "is_owned": 1,
         "icon": "fa-truck-moving",
@@ -2745,8 +3643,8 @@ EXPANDED_VEHICLES = [
         "volume_m3": 95.0,
         "fuel_type": "diesel",
         "fuel_liters_per_100km": 33.5,
-        "fuel_consumption": 15.45, # 33.5 L * 44.50 TL + AdBlue payı = 15.45 TL/km
-        "rental_cost": 1200.0,
+        "fuel_consumption": 31.56,
+        "rental_cost": 2400.0,
         "speed_factor": 0.85,
         "co2_g_per_km": 897.8,
         "is_owned": 1,
@@ -2756,34 +3654,120 @@ EXPANDED_VEHICLES = [
     }
 ]
 
-# Güncel Türkiye Akaryakıt, Otoyol & Operasyonel Maliyet Modeli
 LOGISTICS_PARAMS = {
     "fuel_prices": {
-        "diesel_per_liter": 44.50,       # Motorin (Dizel) pompa fiyatı (TL/Litre)
-        "gasoline_per_liter": 43.20,     # Kurşunsuz Benzin 95 pompa fiyatı (TL/Litre)
-        "adblue_per_liter": 18.00,       # AdBlue katkısı (TL/Litre)
-        "lpg_per_liter": 25.40           # Otogaz LPG (TL/Litre)
+        "diesel_per_liter": 92.5,
+        "gasoline_per_liter": 85.5,
+        "adblue_per_liter": 36.5,
+        "lpg_per_liter": 45.0
     },
     "toll_rates": {
-        "osmangazi_bridge": 555.0,       # Osmangazi Köprüsü Geçişi (TL)
-        "canakkale_1915": 419.0,         # 1915 Çanakkale Köprüsü (TL)
-        "yavuz_sultan_selim": 95.0,      # Yavuz Sultan Selim Köprüsü (TL)
-        "highway_per_km": 0.85           # Otoyol km başına HGS/OGS ortalama tarifesi (TL/km)
+        "osmangazi_bridge": 980.0,
+        "canakkale_1915": 740.0,
+        "yavuz_sultan_selim": 180.0,
+        "highway_per_km": 1.8
     },
-    "driver_daily_wage": 1250.0,         # Şoför günlük hakediş bedeli (TL)
+    "driver_daily_wage": 2500.0,
     "co2_emission_factors": {
-        "diesel": 2.68,                  # kg CO2 / Litre motorin
-        "gasoline": 2.31                 # kg CO2 / Litre benzin
+        "diesel": 2.68,
+        "gasoline": 2.31
     }
 }
 
-# Türkiye Coğrafi Bölgeleri ve İl Listeleri (Frontend ve Filtreleme İçin)
 TURKEY_REGIONS = {
-    "Marmara": ["Kocaeli", "İstanbul", "Bursa", "Sakarya", "Yalova", "Tekirdağ", "Edirne", "Kırklareli", "Balıkesir", "Çanakkale", "Bilecik"],
-    "Ege": ["İzmir", "Manisa", "Aydın", "Denizli", "Muğla", "Afyonkarahisar", "Kütahya", "Uşak"],
-    "İç Anadolu": ["Ankara", "Konya", "Eskişehir", "Kayseri", "Sivas", "Aksaray", "Kırıkkale", "Kırşehir", "Nevşehir", "Niğde", "Karaman", "Yozgat", "Çankırı"],
-    "Akdeniz": ["Antalya", "Adana", "Mersin", "Hatay", "Kahramanmaraş", "Osmaniye", "Isparta", "Burdur"],
-    "Karadeniz": ["Samsun", "Trabzon", "Ordu", "Giresun", "Rize", "Artvin", "Zonguldak", "Bolu", "Düzce", "Karabük", "Bartın", "Kastamonu", "Sinop", "Amasya", "Çorum", "Tokat", "Gümüşhane", "Bayburt"],
-    "Güneydoğu Anadolu": ["Gaziantep", "Diyarbakır", "Şanlıurfa", "Batman", "Mardin", "Adıyaman", "Siirt", "Şırnak", "Kilis"],
-    "Doğu Anadolu": ["Malatya", "Elazığ", "Erzurum", "Van", "Erzincan", "Kars", "Ağrı", "Muş", "Bitlis", "Bingöl", "Tunceli", "Iğdır", "Ardahan", "Hakkari"]
+    "Marmara": [
+        "Kocaeli",
+        "İstanbul",
+        "Bursa",
+        "Sakarya",
+        "Yalova",
+        "Tekirdağ",
+        "Edirne",
+        "Kırklareli",
+        "Balıkesir",
+        "Çanakkale",
+        "Bilecik"
+    ],
+    "Ege": [
+        "İzmir",
+        "Manisa",
+        "Aydın",
+        "Denizli",
+        "Muğla",
+        "Afyonkarahisar",
+        "Kütahya",
+        "Uşak"
+    ],
+    "İç Anadolu": [
+        "Ankara",
+        "Konya",
+        "Eskişehir",
+        "Kayseri",
+        "Sivas",
+        "Aksaray",
+        "Kırıkkale",
+        "Kırşehir",
+        "Nevşehir",
+        "Niğde",
+        "Karaman",
+        "Yozgat",
+        "Çankırı"
+    ],
+    "Akdeniz": [
+        "Antalya",
+        "Adana",
+        "Mersin",
+        "Hatay",
+        "Kahramanmaraş",
+        "Osmaniye",
+        "Isparta",
+        "Burdur"
+    ],
+    "Karadeniz": [
+        "Samsun",
+        "Trabzon",
+        "Ordu",
+        "Giresun",
+        "Rize",
+        "Artvin",
+        "Zonguldak",
+        "Bolu",
+        "Düzce",
+        "Karabük",
+        "Bartın",
+        "Kastamonu",
+        "Sinop",
+        "Amasya",
+        "Çorum",
+        "Tokat",
+        "Gümüşhane",
+        "Bayburt"
+    ],
+    "Güneydoğu Anadolu": [
+        "Gaziantep",
+        "Diyarbakır",
+        "Şanlıurfa",
+        "Batman",
+        "Mardin",
+        "Adıyaman",
+        "Siirt",
+        "Şırnak",
+        "Kilis"
+    ],
+    "Doğu Anadolu": [
+        "Malatya",
+        "Elazığ",
+        "Erzurum",
+        "Van",
+        "Erzincan",
+        "Kars",
+        "Ağrı",
+        "Muş",
+        "Bitlis",
+        "Bingöl",
+        "Tunceli",
+        "Iğdır",
+        "Ardahan",
+        "Hakkari"
+    ]
 }

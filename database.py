@@ -138,7 +138,7 @@ def init_database() -> bool:
         EXPANDED_VEHICLES = []
         LOGISTICS_PARAMS = {}
 
-    if db.stations.count_documents({}) < 200:
+    if db.stations.count_documents({}) != len(TURKEY_STATIONS):
         db.stations.delete_many({})
         db.counters.update_one({'_id': 'stations'}, {'$set': {'seq': 0}}, upsert=True)
         for st in TURKEY_STATIONS:
@@ -187,22 +187,22 @@ def init_database() -> bool:
     db.parameters.delete_many({})
     db.parameters.insert_one({
         'id': 1,
-        'cost_per_km': 4.5,
-        'rental_cost': 350.0,
+        'cost_per_km': 10.5,
+        'rental_cost': 650.0,
         'rental_capacity': 1000,
         'fuel_prices': LOGISTICS_PARAMS.get('fuel_prices', {
-            'diesel_per_liter': 44.50,
-            'gasoline_per_liter': 43.20,
-            'adblue_per_liter': 18.00,
-            'lpg_per_liter': 25.40
+            'diesel_per_liter': 92.50,
+            'gasoline_per_liter': 85.50,
+            'adblue_per_liter': 36.50,
+            'lpg_per_liter': 45.00
         }),
         'toll_rates': LOGISTICS_PARAMS.get('toll_rates', {
-            'osmangazi_bridge': 555.0,
-            'canakkale_1915': 419.0,
-            'yavuz_sultan_selim': 95.0,
-            'highway_per_km': 0.85
+            'osmangazi_bridge': 980.0,
+            'canakkale_1915': 740.0,
+            'yavuz_sultan_selim': 180.0,
+            'highway_per_km': 1.80
         }),
-        'driver_daily_wage': 1250.0,
+        'driver_daily_wage': 2500.0,
         'co2_emission_factors': {
             'diesel': 2.68,
             'gasoline': 2.31

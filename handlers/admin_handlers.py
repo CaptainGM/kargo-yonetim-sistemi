@@ -116,9 +116,9 @@ def handle_get_stats(handler):
     }
 
     # 3. Lojistik Maliyet Kırılımı (Yakıt, Otoyol, Şoför, Amortisman)
-    calc_fuel = total_fuel_cost if total_fuel_cost > 0 else 1250.0
-    calc_toll = total_toll_cost if total_toll_cost > 0 else 480.0
-    calc_driver = total_driver_cost if total_driver_cost > 0 else 620.0
+    calc_fuel = total_fuel_cost if total_fuel_cost > 0 else 2480.0
+    calc_toll = total_toll_cost if total_toll_cost > 0 else 980.0
+    calc_driver = total_driver_cost if total_driver_cost > 0 else 1250.0
     calc_deprec = round((calc_fuel + calc_toll + calc_driver) * 0.08, 2)
 
     cost_breakdown = {
@@ -129,10 +129,10 @@ def handle_get_stats(handler):
     # 4. Güncel Akaryakıt Piyasası
     params = db.parameters.find_one({'id': 1}) or {}
     fuel_prices = params.get('fuel_prices', {
-        'diesel_per_liter': 44.50,
-        'gasoline_per_liter': 43.20,
-        'adblue_per_liter': 18.00,
-        'lpg_per_liter': 25.40
+        'diesel_per_liter': 92.50,
+        'gasoline_per_liter': 85.50,
+        'adblue_per_liter': 36.50,
+        'lpg_per_liter': 45.00
     })
 
     # 5. Son Sevkiyat & Kargo Hareketleri (Canlı Takip Listesi)

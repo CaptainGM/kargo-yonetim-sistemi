@@ -488,12 +488,12 @@ async function loadDashboard() {
 
         // Canlı Akaryakıt & Piyasa Şeridi
         if (stats.fuel_prices) {
-            setEl('tickerDiesel', `${stats.fuel_prices.diesel_per_liter?.toFixed(2) || '44.50'} TL/L`);
-            setEl('tickerGasoline', `${stats.fuel_prices.gasoline_per_liter?.toFixed(2) || '43.20'} TL/L`);
-            setEl('tickerAdblue', `${stats.fuel_prices.adblue_per_liter?.toFixed(2) || '18.00'} TL/L`);
+            setEl('tickerDiesel', `${stats.fuel_prices.diesel_per_liter?.toFixed(2) || '92.50'} TL/L`);
+            setEl('tickerGasoline', `${stats.fuel_prices.gasoline_per_liter?.toFixed(2) || '85.50'} TL/L`);
+            setEl('tickerAdblue', `${stats.fuel_prices.adblue_per_liter?.toFixed(2) || '36.50'} TL/L`);
         }
-        setEl('tickerCo2', `${(stats.total_co2_kg || 454.7).toLocaleString('tr-TR', { maximumFractionDigits: 1 })} kg CO₂`);
-        setEl('tickerOnTime', `%${stats.on_time_delivery_rate || 98.7}`);
+        setEl('tickerCo2', `${(stats.total_co2_kg || 685.4).toLocaleString('tr-TR', { maximumFractionDigits: 1 })} kg CO₂`);
+        setEl('tickerOnTime', `%${stats.on_time_delivery_rate || 99.2}`);
 
         // Canlı Kargo Akış Tablosu
         const activityTbody = document.getElementById('dashboardActivityTable');
