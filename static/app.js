@@ -935,6 +935,26 @@ const CURATED_SCENARIOS = {
         tachoRemain: '02 sa 45 dk',
         uetdsCode: 'UETDS-2026-TR-418029',
         driver: 'Mustafa Çelik (SRC-4: TR-34-99120)',
+        incident: {
+            title: 'D-100 Hereke Geçişi: Zincirleme Kaza & Kilit',
+            headline: 'D-100 HEREKE: ZİNCİRLEME KAZA & KİLİT',
+            subText: 'Sahil Yolu Çift Şerit Kapalı • +40 Dk Bekleme',
+            delayMinutes: 40,
+            blockedPoint: [40.7890, 29.5400],
+            bypassTitle: 'Kuzey Marmara Otoyolu (KMO) Kaçış Rotası (32 Dk Kazanç)',
+            savingsInfo: '⚡ 32 dk süre kurtarıldı • Akıcı KMO Transit Geçiş',
+            alternativeBadge: 'KMO Kuzey Marmara Kaçış Hattı',
+            triggerStepRatio: 0.28
+        },
+        alternativePath: [
+            [40.8027, 29.4307], // Gebze KMO Bağlantısı
+            [40.8500, 29.6200], // KMO Sevindikli Viyadüğü
+            [40.8300, 29.8200], // KMO İzmit Batı Kavşağı
+            [40.7654, 29.9408], // Kocaeli / İzmit Dağıtım Hub
+            [40.7100, 29.9300], // Başiskele
+            [40.6552, 29.2769], // Yalova
+            [40.1885, 29.0610]  // Bursa
+        ],
         path: [
             [40.9927, 29.0277], // İstanbul Kadıköy Transfer
             [40.8767, 29.2344], // Pendik D-100
@@ -976,6 +996,28 @@ const CURATED_SCENARIOS = {
         tachoRemain: '03 sa 10 dk',
         uetdsCode: 'UETDS-2026-TR-354921',
         driver: 'Barış Demir (SRC-4: TR-35-77291)',
+        incident: {
+            title: 'O-5 Susurluk Rampaları: Ağır Vasıta Devrilmesi',
+            headline: 'O-5 SUSURLUK VARYANTI: KAZA & TIKANIKLIK',
+            subText: 'Tek Şerit Kapalı • 7 km Ağır Vasıta Kuyruğu (+45 Dk)',
+            delayMinutes: 45,
+            blockedPoint: [39.9120, 28.1600],
+            bypassTitle: 'Bandırma-Balıkesir D-565 Kaçış Hattı (36 Dk Kazanç)',
+            savingsInfo: '⚡ 36 dk süre kurtarıldı • ₺220 TL Rölanti Tasarrufu',
+            alternativeBadge: 'D-565 Bandırma Alternatif Koridoru',
+            triggerStepRatio: 0.38
+        },
+        alternativePath: [
+            [40.1885, 29.0610], // Bursa
+            [40.0000, 28.7000], // Karacabey Ayrımı
+            [40.1000, 28.2500], // D-565 Bandırma Yolu (Bypass)
+            [39.7500, 28.0500], // Manyas-Balıkesir Devlet Yolu
+            [39.6484, 27.8826], // Balıkesir Merkez
+            [39.3000, 27.7000], // Soma
+            [39.1200, 27.5000], // Akhisar
+            [38.6191, 27.4289], // Manisa
+            [38.4192, 27.1287]  // İzmir
+        ],
         path: [
             [41.0082, 28.9784], // İstanbul Avrupa Hub
             [40.9927, 29.0277], // Kadıköy
@@ -1015,6 +1057,29 @@ const CURATED_SCENARIOS = {
         tachoRemain: '01 sa 50 dk (Mola Yaklaşıyor)',
         uetdsCode: 'UETDS-2026-TR-061942',
         driver: 'Hasan Kurt (SRC-4: TR-06-88124)',
+        incident: {
+            title: 'O-4 Bolu Dağı Tüneli: 3 Araçlı Zincirleme Kaza',
+            headline: 'O-4 BOLU DAĞI TÜNELİ: ZİNCİRLEME KAZA',
+            subText: 'Otoyol Çift Şerit Kapalı • +55 Dk Bekleme & Tüketim',
+            delayMinutes: 55,
+            blockedPoint: [40.7350, 31.5500],
+            bypassTitle: 'D-100 Dağ Geçidi Serbest (42 Dk Kazanç)',
+            savingsInfo: '⚡ 42 dk süre kurtarıldı • ₺190 TL Yakıt Tasarrufu',
+            alternativeBadge: 'D-100 Eski Dağ Geçidi Bypass',
+            triggerStepRatio: 0.35
+        },
+        alternativePath: [
+            [40.8438, 31.1565], // Düzce Merkez
+            [40.7400, 31.4500], // Kaynaşlı Sapağı
+            [40.7100, 31.4850], // D-100 Eski Dağ Yolu Girişi (Bypass)
+            [40.6900, 31.5400], // Abant Kavşağı Yan Yolu
+            [40.7100, 31.5900], // Bolu Güney Çevre Yolu
+            [40.7350, 31.6080], // Bolu Merkez (Bağlantı)
+            [40.7600, 32.2000], // Gerede Kavşağı
+            [40.4000, 32.5500], // Kızılcahamam
+            [40.1000, 32.6500], // Kahramankazan
+            [39.9334, 32.8597]  // Ankara Ana Lojistik Hub
+        ],
         path: [
             [41.0082, 28.9784], // İstanbul
             [40.8027, 29.4307], // Gebze D-100
@@ -1421,8 +1486,142 @@ let curatedSimState = {
     isRunning: false,
     speedMultiplier: 1,
     laneState: 'right',
-    laneStepCount: 0
+    laneStepCount: 0,
+    incidentTriggered: false,
+    rerouted: false,
+    incidentMarker: null,
+    altPolyline: null
 };
+
+// =========================================================================
+// CANLI TÜRKİYE KARAYOLLARI TRAFİK AKIŞI & KAZA VERİLERİ (TRAFFIC TELEMETRY)
+// =========================================================================
+let isTrafficLayerActive = false;
+let trafficLayerGroup = null;
+
+const TURKEY_TRAFFIC_INCIDENTS_DATA = [
+    {
+        id: 'inc_bolu',
+        coords: [40.7350, 31.5500],
+        type: 'accident',
+        headline: 'O-4 Bolu Dağı Tüneli: 3 Araçlı Zincirleme Kaza',
+        sub: 'Otoyol çift şerit kapalı. Bekleme süresi +55 dk.',
+        delay: 55,
+        bypass: 'D-100 Dağ Geçidi Serbest (42 Dk Kazanç)'
+    },
+    {
+        id: 'inc_susurluk',
+        coords: [39.9120, 28.1600],
+        type: 'works',
+        headline: 'O-5 Susurluk Rampaları: Asfalt Yenileme',
+        sub: 'Gidiş istikameti tek şerit. Ağır vasıta kuyruğu: 7 km.',
+        delay: 35,
+        bypass: 'D-565 Bandırma-Balıkesir Devlet Yolu (28 Dk Kazanç)'
+    },
+    {
+        id: 'inc_fsm',
+        coords: [41.0910, 29.0620],
+        type: 'jam',
+        headline: 'FSM Köprüsü: Aşırı Yoğun Mesai Trafiği',
+        sub: 'Anadolu-Avrupa yönü dur-kalk ilerliyor. Ortalama hız: 12 km/s.',
+        delay: 45,
+        bypass: 'Yavuz Sultan Selim Köprüsü & KMO (35 Dk Kazanç)'
+    },
+    {
+        id: 'inc_hereke',
+        coords: [40.7890, 29.5400],
+        type: 'accident',
+        headline: 'D-100 Hereke Viyadüğü: Hasarlı Kaza',
+        sub: 'Körfez sahil yolu kilitlendi. Bekleme: +40 dk.',
+        delay: 40,
+        bypass: 'Kuzey Marmara Otoyolu (KMO) Bypass Hattı'
+    },
+    {
+        id: 'inc_pozanti',
+        coords: [37.4200, 34.8700],
+        type: 'jam',
+        headline: 'Pozantı - Toroslar: Ağır Vasıta Yangını & Tıkanıklık',
+        sub: 'Rampa çıkışında arızalanan TIR nedeniyle sağ şerit kapalı.',
+        delay: 50,
+        bypass: 'D-750 Eski Dağ Boğazı Kaçış Yolu (38 Dk Kazanç)'
+    }
+];
+
+const TURKEY_TRAFFIC_FLOW_LINES = [
+    // 1. İstanbul - Kocaeli D-100 (Kırmızı / Kilit)
+    {
+        coords: [[41.0082, 28.9784], [40.9927, 29.0277], [40.8767, 29.2344], [40.8027, 29.4307]],
+        color: '#ef4444',
+        weight: 6,
+        opacity: 0.85,
+        title: 'İstanbul E-5 / D-100 (Kilitli • Hız: 18 km/s)'
+    },
+    // 2. Kuzey Marmara Otoyolu (Yeşil / Akıcı)
+    {
+        coords: [[41.1400, 28.4600], [41.1800, 29.0500], [40.8500, 29.6200], [40.8300, 29.8200]],
+        color: '#10b981',
+        weight: 5,
+        opacity: 0.85,
+        title: 'Kuzey Marmara Otoyolu (Akıcı • Hız: 115 km/s)'
+    },
+    // 3. Bolu Dağı O-4 Tünel Yaklaşımı (Kırmızı / Kaza Kilit)
+    {
+        coords: [[40.8438, 31.1565], [40.7400, 31.4500], [40.7350, 31.5500], [40.7350, 31.6080]],
+        color: '#dc2626',
+        weight: 7,
+        opacity: 0.9,
+        dashArray: '6, 6',
+        title: 'O-4 Bolu Dağı Tüneli (KAZA NEDENİYLE KAPALI • +55 Dk)'
+    },
+    // 4. D-100 Bolu Dağ Geçidi Kaçış (Yeşil / Akıcı)
+    {
+        coords: [[40.7400, 31.4500], [40.7100, 31.4850], [40.6900, 31.5400], [40.7100, 31.5900], [40.7350, 31.6080]],
+        color: '#10b981',
+        weight: 5,
+        opacity: 0.9,
+        title: 'D-100 Alternatif Dağ Geçidi (Açık ve Akıcı • 55 km/s)'
+    },
+    // 5. O-5 Osmangazi - Bursa (Yeşil / Akıcı)
+    {
+        coords: [[40.8027, 29.4307], [40.7450, 29.5150], [40.6552, 29.2769], [40.1885, 29.0610]],
+        color: '#10b981',
+        weight: 5,
+        opacity: 0.85,
+        title: 'O-5 Osmangazi - Bursa (Akıcı • Hız: 120 km/s)'
+    },
+    // 6. Susurluk O-5 Rampaları (Turuncu / Yol Çalışması)
+    {
+        coords: [[40.0000, 28.7000], [39.9120, 28.1600], [39.6484, 27.8826]],
+        color: '#f59e0b',
+        weight: 6,
+        opacity: 0.85,
+        title: 'O-5 Susurluk Varyantı (Yoğun / Yol Çalışması • +35 Dk)'
+    },
+    // 7. Balıkesir - Manisa - İzmir (Yeşil / Akıcı)
+    {
+        coords: [[39.6484, 27.8826], [39.1200, 27.5000], [38.6191, 27.4289], [38.4192, 27.1287]],
+        color: '#10b981',
+        weight: 5,
+        opacity: 0.85,
+        title: 'O-5 Balıkesir - İzmir Ekspres (Akıcı • 110 km/s)'
+    },
+    // 8. Bolu - Gerede - Ankara O-4 (Yeşil / Akıcı)
+    {
+        coords: [[40.7350, 31.6080], [40.7600, 32.2000], [40.1000, 32.6500], [39.9334, 32.8597]],
+        color: '#10b981',
+        weight: 5,
+        opacity: 0.85,
+        title: 'Gerede - Ankara Anadolu Otoyolu (Akıcı • 110 km/s)'
+    },
+    // 9. Pozantı - Toroslar Geçidi (Kırmızı / Yoğun)
+    {
+        coords: [[37.9600, 34.6800], [37.4200, 34.8700], [37.0000, 35.3213]],
+        color: '#ef4444',
+        weight: 6,
+        opacity: 0.85,
+        title: 'Toroslar Pozantı Koridoru (TIR Tıkanıklığı • +50 Dk)'
+    }
+];
 
 function interpolatePath(points, segmentsPerLeg = 14) {
     const result = [];
@@ -1529,6 +1728,14 @@ function startCuratedSimulation(scenarioKey) {
     if (curatedSimState.marker && mainMap.hasLayer(curatedSimState.marker)) {
         mainMap.removeLayer(curatedSimState.marker);
     }
+    if (curatedSimState.incidentMarker && mainMap.hasLayer(curatedSimState.incidentMarker)) {
+        mainMap.removeLayer(curatedSimState.incidentMarker);
+        curatedSimState.incidentMarker = null;
+    }
+    if (curatedSimState.altPolyline && mainMap.hasLayer(curatedSimState.altPolyline)) {
+        mainMap.removeLayer(curatedSimState.altPolyline);
+        curatedSimState.altPolyline = null;
+    }
     if (curatedSimState.intervalId) {
         clearInterval(curatedSimState.intervalId);
         curatedSimState.intervalId = null;
@@ -1542,6 +1749,11 @@ function startCuratedSimulation(scenarioKey) {
     curatedSimState.isRunning = true;
     curatedSimState.laneState = 'right';
     curatedSimState.laneStepCount = 0;
+    curatedSimState.incidentTriggered = false;
+    curatedSimState.rerouted = false;
+
+    const incidentCard = document.getElementById('hudIncidentAlertCard');
+    if (incidentCard) incidentCard.style.display = 'none';
 
     // Yüksek kontrastlı çift katmanlı neon otoyol çizgisi
     curatedSimState.polylineCasing = L.polyline(scenario.path, {
@@ -1764,16 +1976,33 @@ function startSimTimer() {
 
         // İlerledikçe kalan mesafe ve süreyi dinamik eksilt
         const progressFrac = curatedSimState.step / pts.length;
+
+        // Otomatik Kaza & Yol Tıkanıklığı Tespiti (Senaryo ilerleyişine göre)
+        if (!curatedSimState.incidentTriggered && scenario && scenario.incident && progressFrac >= (scenario.incident.triggerStepRatio || 0.28)) {
+            triggerSimIncident(scenario.incident);
+        }
+
+        // Kaza patladıysa ama henüz alternatif rotaya sapılmadıysa araç yavaşlasın (tıkanıklık/kuyruk hissi)
+        let displaySpeed = curSpeed;
+        if (curatedSimState.incidentTriggered && !curatedSimState.rerouted) {
+            displaySpeed = Math.max(18, Math.floor(curSpeed * 0.42));
+        }
+
         const distLeft = Math.max(0, Math.round(scenario.totalDistance * (1 - progressFrac)));
         const minsLeft = Math.max(0, Math.round(scenario.etaMinutes * (1 - progressFrac)));
         const hoursLeft = Math.floor(minsLeft / 60);
         const remMins = minsLeft % 60;
 
         const setEl = (id, val) => { const el = document.getElementById(id); if (el) el.textContent = val; };
-        setEl('hudSpeedDigital', curSpeed);
+        setEl('hudSpeedDigital', displaySpeed);
         setEl('hudRpmVal', `${curRpm.toLocaleString('tr-TR')} RPM`);
         setEl('hudDistLeftVal', `${distLeft} km`);
-        setEl('hudEtaVal', `${hoursLeft > 0 ? hoursLeft + ' sa ' : ''}${remMins} dk`);
+        
+        if (curatedSimState.incidentTriggered && !curatedSimState.rerouted) {
+            setEl('hudEtaVal', `${hoursLeft > 0 ? hoursLeft + ' sa ' : ''}${remMins} dk (+${scenario.incident ? scenario.incident.delayMinutes : 45} dk Kaza Gecikmesi)`);
+        } else {
+            setEl('hudEtaVal', `${hoursLeft > 0 ? hoursLeft + ' sa ' : ''}${remMins} dk`);
+        }
 
         const tachoFill = document.getElementById('hudTachoFill');
         if (tachoFill) {
@@ -1781,7 +2010,13 @@ function startSimTimer() {
         }
 
         const markerSpeed = document.getElementById('markerLiveSpeed');
-        if (markerSpeed) markerSpeed.textContent = `⚡ ${curSpeed} km/s`;
+        if (markerSpeed) {
+            if (curatedSimState.incidentTriggered && !curatedSimState.rerouted) {
+                markerSpeed.textContent = `⚠️ ${displaySpeed} km/s (Trafik Tıkalı)`;
+            } else {
+                markerSpeed.textContent = `⚡ ${displaySpeed} km/s`;
+            }
+        }
     }, baseDelay);
 }
 
@@ -1934,6 +2169,17 @@ function closeTelemetryHud() {
         mainMap.removeLayer(curatedSimState.polylineCasing);
         curatedSimState.polylineCasing = null;
     }
+    if (curatedSimState.incidentMarker && mainMap) {
+        mainMap.removeLayer(curatedSimState.incidentMarker);
+        curatedSimState.incidentMarker = null;
+    }
+    if (curatedSimState.altPolyline && mainMap) {
+        mainMap.removeLayer(curatedSimState.altPolyline);
+        curatedSimState.altPolyline = null;
+    }
+
+    const alertCard = document.getElementById('hudIncidentAlertCard');
+    if (alertCard) alertCard.style.display = 'none';
 
     const hud = document.getElementById('simTelemetryHud');
     if (hud) {
@@ -1958,10 +2204,255 @@ function closeTelemetryHud() {
     curatedSimState.key = null;
     curatedSimState.isRunning = false;
     curatedSimState.isPaused = false;
+    curatedSimState.incidentTriggered = false;
+    curatedSimState.rerouted = false;
 }
 
 function stopVehicleSimulation() {
     toggleSimStopPlay();
+}
+
+// =========================================================================
+// DİNAMİK TRAFİK, KAZA ALARMI & ALTERNATİF KAÇIŞ ROTASI (REROUTE) MOTORU
+// =========================================================================
+
+function triggerSimIncident(incident) {
+    if (!incident || curatedSimState.incidentTriggered) return;
+    curatedSimState.incidentTriggered = true;
+
+    // 1. HUD İçindeki Kırmızı Alarm Kartını Aç
+    const alertCard = document.getElementById('hudIncidentAlertCard');
+    if (alertCard) {
+        alertCard.style.display = 'block';
+        const hl = document.getElementById('incidentHeadline');
+        if (hl) hl.textContent = incident.headline;
+        const sub = document.getElementById('incidentSubText');
+        if (sub) sub.textContent = incident.subText;
+        const byp = document.getElementById('incidentBypassText');
+        if (byp) byp.textContent = `Önerilen Kaçış: ${incident.bypassTitle}`;
+        const btnAction = document.getElementById('btnRerouteAction');
+        if (btnAction) {
+            btnAction.className = 'btn-reroute-action';
+            btnAction.innerHTML = '<i class="fas fa-route"></i> Alternatif Rotaya Sap (Dinamik Reroute)';
+        }
+    }
+
+    // 2. Haritada Kaza Noktası İkonu & Pulse Ring Yerleştir
+    if (incident.blockedPoint && mainMap) {
+        if (curatedSimState.incidentMarker && mainMap.hasLayer(curatedSimState.incidentMarker)) {
+            mainMap.removeLayer(curatedSimState.incidentMarker);
+        }
+
+        const incIcon = L.divIcon({
+            className: 'traffic-incident-marker',
+            html: `
+                <div class="traffic-incident-beacon type-accident" title="${incident.title}">
+                    <div class="pulse-ring"></div>
+                    <i class="fas fa-triangle-exclamation"></i>
+                </div>
+            `,
+            iconSize: [36, 36],
+            iconAnchor: [18, 18]
+        });
+
+        curatedSimState.incidentMarker = L.marker(incident.blockedPoint, { icon: incIcon }).addTo(mainMap);
+        curatedSimState.incidentMarker.bindPopup(`
+            <div class="traffic-popup-box">
+                <div class="traffic-popup-header text-danger">
+                    <i class="fas fa-car-burst"></i> ${incident.headline}
+                </div>
+                <div class="traffic-popup-desc">${incident.subText}</div>
+                <div class="traffic-popup-tag bg-danger text-white">Bekleme: +${incident.delayMinutes} Dk</div>
+            </div>
+        `).openPopup();
+    }
+
+    // 3. Önerilen Alternatif Kaçış Çizgisini Haritada Çiz (Yeşil Kesikli Çizgi)
+    if (curatedSimState.scenario && curatedSimState.scenario.alternativePath && mainMap) {
+        if (curatedSimState.altPolyline && mainMap.hasLayer(curatedSimState.altPolyline)) {
+            mainMap.removeLayer(curatedSimState.altPolyline);
+        }
+        curatedSimState.altPolyline = L.polyline(curatedSimState.scenario.alternativePath, {
+            color: '#10b981',
+            weight: 6,
+            opacity: 0.95,
+            dashArray: '8, 8'
+        }).addTo(mainMap);
+    }
+}
+
+// Kullanıcı "Alternatif Rotaya Sap" Butonuna Bastığında:
+function applyAlternativeReroute() {
+    if (!curatedSimState.scenario) return;
+    const scenario = curatedSimState.scenario;
+    const incident = scenario.incident || {
+        headline: 'ALTERNATİF GÜZERGAH AKTİF',
+        savingsInfo: '🌱 35 dk Süre ve Rölanti Tasarrufu',
+        alternativeBadge: 'Alternatif Kaçış Koridoru'
+    };
+
+    // 1. Araç Kokpit Sinyal & Kaçış Direksiyon Hareketi (Sola viraj alıp şerit değiştirme)
+    const carChassis = document.getElementById('cockpitCarChassis');
+    const blLeft = document.getElementById('cockpitBlinkerLeft');
+    if (blLeft) blLeft.classList.add('blinking');
+    if (carChassis) carChassis.className = 'cockpit-car-chassis lane-left steering-left';
+
+    setTimeout(() => {
+        if (carChassis) carChassis.className = 'cockpit-car-chassis lane-left';
+        if (blLeft) blLeft.classList.remove('blinking');
+    }, 1200);
+
+    // 2. Buton Durumunu Başarılıya Çevir
+    const btnAction = document.getElementById('btnRerouteAction');
+    if (btnAction) {
+        btnAction.className = 'btn-reroute-action btn-reroute-success';
+        btnAction.innerHTML = '<i class="fas fa-check-circle"></i> ALTERNATİF GÜZERGAHA SAPILDI (REROUTE AKTİF)';
+    }
+
+    // 3. Haritadaki Rota Çizgilerini Yenile:
+    // Mevcut rota kırmızımsı kesikli "Kilitli Rota" olarak arkada kalır
+    if (curatedSimState.polyline) {
+        curatedSimState.polyline.setStyle({
+            color: '#ef4444',
+            opacity: 0.45,
+            dashArray: '4, 8'
+        });
+    }
+
+    // Alternatif yol ana rota haline gelir
+    const altPath = scenario.alternativePath || scenario.path;
+    if (curatedSimState.altPolyline) {
+        curatedSimState.altPolyline.setStyle({
+            color: '#10b981',
+            weight: 6,
+            opacity: 1.0,
+            dashArray: null
+        });
+    }
+
+    // 4. Aracın Simülasyon Noktalarını Alternatif Yol Koordinatlarıyla Güncelle!
+    const altInterp = interpolatePath(altPath, 16);
+    curatedSimState.interpolatedPoints = altInterp;
+    curatedSimState.step = 0; // Yeni rotanın başından devam et
+    curatedSimState.rerouted = true;
+
+    // 5. Telemetri Rozetleri ve Bilgilerini Güncelle
+    const setEl = (id, val) => { const el = document.getElementById(id); if (el) el.textContent = val; };
+    setEl('hudRoadTypeBadge', incident.alternativeBadge || 'ALTERNATİF KAÇIŞ HATTI');
+    setEl('hudSavingsText', incident.savingsInfo || '🌱 42 dk Süre ve Yakıt Tasarrufu');
+    setEl('hudRouteName', `${scenario.title.split('(')[0].trim()} (Bypass Aktif)`);
+    const badge = document.getElementById('hudRoadTypeBadge');
+    if (badge) {
+        badge.style.borderColor = '#10b981';
+        badge.style.color = '#10b981';
+    }
+
+    // Haritayı yeni rotaya yumuşakça odakla
+    if (mainMap && altInterp.length > 0) {
+        mainMap.panTo(altInterp[0], { animate: true, duration: 1.2 });
+    }
+}
+
+// HUD Kontrol Barındaki "🚨" Butonu ile Manuel Test
+function triggerSimIncidentTest() {
+    if (!curatedSimState.key) {
+        startCuratedSimulation('baskent_anadolu');
+        setTimeout(() => {
+            const sc = curatedSimState.scenario;
+            if (sc && sc.incident) triggerSimIncident(sc.incident);
+        }, 600);
+        return;
+    }
+
+    const scenario = curatedSimState.scenario;
+    if (scenario && scenario.incident) {
+        triggerSimIncident(scenario.incident);
+    } else {
+        // Varsayılan kaza olayı oluştur
+        const curPts = curatedSimState.interpolatedPoints;
+        const midPoint = curPts && curPts.length > 0 ? curPts[Math.min(curPts.length - 1, curatedSimState.step + 10)] : [40.75, 30.5];
+        triggerSimIncident({
+            title: 'Trafik Yoğunluğu & Şerit Kapanması',
+            headline: 'İLERİDE ZİNCİRLEME KAZA: YOL KİLİTLENDİ',
+            subText: '2 Şerit Trafiğe Kapandı • +45 Dk Bekleme Süresi',
+            delayMinutes: 45,
+            blockedPoint: midPoint,
+            bypassTitle: 'D-100 Alternatif Yan Yol Kaçışı (35 Dk Kazanç)',
+            savingsInfo: '⚡ 35 dk süre kurtarıldı • ₺180 TL Tasarruf',
+            alternativeBadge: 'D-100 Alternatif Kaçış Koridoru'
+        });
+    }
+}
+
+// =========================================================================
+// TÜM TÜRKİYE CANLI KARAYOLLARI TRAFİK & OLAY KATMANI (TOGGLE)
+// =========================================================================
+function toggleTrafficIncidentLayer() {
+    if (!mainMap) return;
+    const btn = document.getElementById('btnTrafficLayer');
+
+    if (isTrafficLayerActive) {
+        // Kapat
+        if (trafficLayerGroup) {
+            mainMap.removeLayer(trafficLayerGroup);
+            trafficLayerGroup = null;
+        }
+        isTrafficLayerActive = false;
+        if (btn) btn.classList.remove('active');
+        return;
+    }
+
+    // Aç
+    trafficLayerGroup = L.layerGroup();
+
+    // 1. Karayolu Trafik Akış Çizgileri
+    TURKEY_TRAFFIC_FLOW_LINES.forEach(flow => {
+        const line = L.polyline(flow.coords, {
+            color: flow.color,
+            weight: flow.weight,
+            opacity: flow.opacity,
+            dashArray: flow.dashArray || null
+        });
+        line.bindTooltip(`<strong>${flow.title}</strong>`, { sticky: true });
+        trafficLayerGroup.addLayer(line);
+    });
+
+    // 2. Noktasal Kaza & Yol Çalışması Olay Marker'ları
+    TURKEY_TRAFFIC_INCIDENTS_DATA.forEach(inc => {
+        const beaconClass = inc.type === 'accident' ? 'type-accident' : (inc.type === 'works' ? 'type-works' : 'type-jam');
+        const iconName = inc.type === 'accident' ? 'fa-car-burst' : (inc.type === 'works' ? 'fa-person-digging' : 'fa-traffic-light');
+
+        const mIcon = L.divIcon({
+            className: 'traffic-incident-marker',
+            html: `
+                <div class="traffic-incident-beacon ${beaconClass}" title="${inc.headline}">
+                    <div class="pulse-ring"></div>
+                    <i class="fas ${iconName}"></i>
+                </div>
+            `,
+            iconSize: [34, 34],
+            iconAnchor: [17, 17]
+        });
+
+        const marker = L.marker(inc.coords, { icon: mIcon });
+        marker.bindPopup(`
+            <div class="traffic-popup-box">
+                <div class="traffic-popup-header ${inc.type === 'accident' ? 'text-danger' : (inc.type === 'works' ? 'text-warning' : 'text-danger')}">
+                    <i class="fas ${iconName}"></i> ${inc.headline}
+                </div>
+                <div class="traffic-popup-desc">${inc.sub}</div>
+                <div style="font-size:10px; color:#10b981; margin-bottom:5px; font-weight:700;">
+                    <i class="fas fa-shield-halved"></i> ${inc.bypass}
+                </div>
+                <span class="traffic-popup-tag bg-danger text-white">Bekleme: +${inc.delay} Dk</span>
+            </div>
+        `);
+        trafficLayerGroup.addLayer(marker);
+    });
+
+    trafficLayerGroup.addTo(mainMap);
+    isTrafficLayerActive = true;
+    if (btn) btn.classList.add('active');
 }
 
 function openUetdsModal() {

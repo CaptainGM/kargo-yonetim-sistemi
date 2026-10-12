@@ -535,6 +535,9 @@
                         <button onclick="zoomToTurkey()" class="btn-map-control" title="Tüm Türkiye'ye Odaklan">
                             <i class="fas fa-expand"></i> TR Odak
                         </button>
+                        <button onclick="toggleTrafficIncidentLayer()" id="btnTrafficLayer" class="btn-map-control" title="Canlı Karayolu Trafik Akışı ve Kaza Olaylarını Göster">
+                            <i class="fas fa-traffic-light"></i> Trafik & Olaylar
+                        </button>
                         <button onclick="toggleMapRoutes()" id="btnToggleRoutes" class="btn-map-control active" title="Rotaları Göster/Gizle">
                             <i class="fas fa-route"></i> Rotalar
                         </button>
@@ -665,6 +668,24 @@
                             </div>
                         </div>
 
+                        <!-- Dinamik Trafik / Kaza Uyarı & Alternatif Kaçış Kartı -->
+                        <div id="hudIncidentAlertCard" class="hud-incident-alert-card" style="display: none;">
+                            <div class="incident-header">
+                                <div class="incident-pulse-icon"><i class="fas fa-triangle-exclamation"></i></div>
+                                <div class="incident-title-box">
+                                    <div class="incident-headline" id="incidentHeadline">O-4 BOLU TÜNELİ: ZİNCİRLEME KAZA</div>
+                                    <div class="incident-sub" id="incidentSubText">Yol Kilitli • +55 Dk Gecikme & Aşırı Tüketim</div>
+                                </div>
+                            </div>
+                            <div class="incident-bypass-info">
+                                <i class="fas fa-shield-halved text-success"></i> 
+                                <span id="incidentBypassText">Önerilen Kaçış: D-100 Dağ Geçidi Serbest (42 Dk Kazanç)</span>
+                            </div>
+                            <button type="button" class="btn-reroute-action" id="btnRerouteAction" onclick="applyAlternativeReroute()">
+                                <i class="fas fa-route"></i> Alternatif Rotaya Sap (Dinamik Reroute)
+                            </button>
+                        </div>
+
                         <!-- Sefer & Operasyonel Bilgiler (Maliyet, Süre, Araç Sayısı) -->
                         <div class="hud-stats-list">
                             <div class="hud-row highlight-row">
@@ -728,6 +749,9 @@
                                 <button onclick="setSimSpeed(5)" class="btn-sim-speed" id="btnSim5x" title="5 Kat Hızlı">5x</button>
                             </div>
                             <div class="hud-action-btns">
+                                <button onclick="triggerSimIncidentTest()" class="btn btn-warning btn-sm" id="btnSimIncident" title="Kaza & Kilitli Yol Simüle Et">
+                                    <i class="fas fa-triangle-exclamation"></i>
+                                </button>
                                 <button onclick="toggleSimPause()" class="btn btn-secondary btn-sm" id="btnSimPause" title="Duraklat / Devam Et">
                                     <i class="fas fa-pause"></i>
                                 </button>
