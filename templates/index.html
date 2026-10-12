@@ -287,19 +287,52 @@
         <main class="main-content">
             <section id="dashboard" class="page active">
                 <div class="page-header">
-                    <h1><i class="fas fa-tachometer-alt"></i> Dashboard</h1>
-                </div>
-                <div class="admin-only">
-                    <div class="stats-grid" style="display: grid !important; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)) !important; gap: 20px !important; margin-bottom: 25px !important;">
+                    <h1><i class="fas fa-tachometer-alt"></i> Dashboard</h1>                <div class="admin-only">
+                    <!-- 1. Canlı Akaryakıt & Lojistik Endeksi Şeridi -->
+                    <div class="market-ticker-bar">
+                        <div class="ticker-item">
+                            <i class="fas fa-gas-pump text-warning"></i>
+                            <span class="ticker-label">Motorin (Dizel):</span>
+                            <strong class="ticker-val" id="tickerDiesel">44.50 TL/L</strong>
+                        </div>
+                        <div class="ticker-item">
+                            <i class="fas fa-oil-can text-danger"></i>
+                            <span class="ticker-label">Benzin 95:</span>
+                            <strong class="ticker-val" id="tickerGasoline">43.20 TL/L</strong>
+                        </div>
+                        <div class="ticker-item">
+                            <i class="fas fa-tint text-info"></i>
+                            <span class="ticker-label">AdBlue Katkısı:</span>
+                            <strong class="ticker-val" id="tickerAdblue">18.00 TL/L</strong>
+                        </div>
+                        <div class="ticker-item">
+                            <i class="fas fa-gauge-high text-primary"></i>
+                            <span class="ticker-label">Filo Tüketim Ort.:</span>
+                            <strong class="ticker-val">10.8 L / 100km</strong>
+                        </div>
+                        <div class="ticker-item">
+                            <i class="fas fa-leaf text-success"></i>
+                            <span class="ticker-label">Karbon Ayak İzi:</span>
+                            <strong class="ticker-val" id="tickerCo2">454.7 kg CO₂</strong>
+                        </div>
+                        <div class="ticker-item">
+                            <i class="fas fa-shield-halved text-success"></i>
+                            <span class="ticker-label">Zamanında Teslimat:</span>
+                            <strong class="ticker-val" id="tickerOnTime">%98.7</strong>
+                        </div>
+                    </div>
+
+                    <!-- 2. 8 Büyük Lojistik KPI Kartı -->
+                    <div class="stats-grid">
                         <div class="stat-card">
-                            <div class="stat-icon bg-primary"><i class="fas fa-boxes"></i></div>
+                            <div class="stat-icon bg-primary"><i class="fas fa-boxes-stacked"></i></div>
                             <div class="stat-info">
                                 <h3 id="statTotalCargos">0</h3>
                                 <p>Toplam Kargo</p>
                             </div>
                         </div>
                         <div class="stat-card">
-                            <div class="stat-icon bg-warning"><i class="fas fa-clock"></i></div>
+                            <div class="stat-icon bg-warning"><i class="fas fa-clock-rotate-left"></i></div>
                             <div class="stat-info">
                                 <h3 id="statPendingCargos">0</h3>
                                 <p>Bekleyen Kargo</p>
@@ -309,43 +342,99 @@
                             <div class="stat-icon bg-success"><i class="fas fa-route"></i></div>
                             <div class="stat-info">
                                 <h3 id="statTotalRoutes">0</h3>
-                                <p>Toplam Rota</p>
+                                <p>Aktif Sevkiyat Rotası</p>
                             </div>
                         </div>
                         <div class="stat-card">
                             <div class="stat-icon bg-info"><i class="fas fa-road"></i></div>
                             <div class="stat-info">
                                 <h3 id="statTotalDistance">0 km</h3>
-                                <p>Toplam Mesafe</p>
+                                <p>Toplam Kat Edilen Yol</p>
                             </div>
                         </div>
                         <div class="stat-card">
-                            <div class="stat-icon bg-danger"><i class="fas fa-money-bill-wave"></i></div>
+                            <div class="stat-icon bg-danger"><i class="fas fa-receipt"></i></div>
                             <div class="stat-info">
                                 <h3 id="statTotalCost">0 TL</h3>
-                                <p>Toplam Maliyet</p>
+                                <p>Toplam Operasyonel Maliyet</p>
+                            </div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-icon bg-warning"><i class="fas fa-gas-pump"></i></div>
+                            <div class="stat-info">
+                                <h3 id="statTotalFuel">0 L</h3>
+                                <p>Yakıt Tüketimi (Litre)</p>
                             </div>
                         </div>
                         <div class="stat-card">
                             <div class="stat-icon bg-secondary"><i class="fas fa-weight-hanging"></i></div>
                             <div class="stat-info">
                                 <h3 id="statTotalWeight">0 kg</h3>
-                                <p>Toplam Ağırlık</p>
+                                <p>Toplam Taşınan Yük</p>
+                            </div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-icon bg-purple"><i class="fas fa-truck-ramp-box"></i></div>
+                            <div class="stat-info">
+                                <h3 id="statFleetUtilization">%82.5</h3>
+                                <p>Filo Kapasite Doluluk</p>
                             </div>
                         </div>
                     </div>
-                </div>
-                <div class="charts-row admin-only" style="display: flex; gap: 20px; flex-wrap: wrap;">
-                    <div class="chart-card" style="flex: 1; min-width: 280px; max-height: 280px;">
-                        <h3 style="font-size: 14px; margin-bottom: 10px;"><i class="fas fa-chart-bar"></i> Istasyon
-                            Bazli Kargo Dagilimi</h3>
-                        <canvas id="stationChart" style="max-height: 220px;"></canvas>
+
+                    <!-- 3. İki Büyük Analitik Grafik -->
+                    <div class="charts-row">
+                        <div class="chart-card">
+                            <div class="chart-header">
+                                <h3><i class="fas fa-chart-column text-primary"></i> Bölgesel Sevkiyat & İstasyon Yük Yoğunluğu</h3>
+                                <span class="chart-badge">Canlı Hacim</span>
+                            </div>
+                            <div class="chart-canvas-wrapper">
+                                <canvas id="stationChart"></canvas>
+                            </div>
+                        </div>
+                        <div class="chart-card">
+                            <div class="chart-header">
+                                <h3><i class="fas fa-chart-pie text-success"></i> Lojistik Operasyonel Maliyet Kırılımı</h3>
+                                <span class="chart-badge">Maliyet Analizi</span>
+                            </div>
+                            <div class="chart-canvas-wrapper">
+                                <canvas id="weightChart"></canvas>
+                            </div>
+                        </div>
                     </div>
-                    <div class="chart-card" style="flex: 1; min-width: 280px; max-height: 280px;">
-                        <h3 style="font-size: 14px; margin-bottom: 10px;"><i class="fas fa-chart-pie"></i> Agirlik
-                            Dagilimi</h3>
-                        <canvas id="weightChart" style="max-height: 220px;"></canvas>
-                    </div>
+
+                    <!-- 4. Canlı Lojistik Sevkiyat Akışı Tablosu -->
+                    <div class="card" style="margin-top: 25px;">
+                        <div class="card-header" style="display:flex; justify-content:space-between; align-items:center;">
+                            <div>
+                                <h3 style="font-size:16px; font-weight:700; color:#0f172a; margin:0;">
+                                    <i class="fas fa-satellite text-primary"></i> Canlı Kargo Transfer & Dağıtım Akışı
+                                </h3>
+                                <p style="font-size:12px; color:#64748b; margin:4px 0 0 0;">Gerçek zamanlı takip kodları, çıkış/varış istasyonları ve transfer durumları</p>
+                            </div>
+                            <button onclick="loadDashboard()" class="btn btn-secondary btn-sm">
+                                <i class="fas fa-rotate"></i> Yenile
+                            </button>
+                        </div>
+                        <div class="table-responsive">
+                            <table class="data-table">
+                                <thead>
+                                    <tr>
+                                        <th>Takip No</th>
+                                        <th>Çıkış / Dağıtım Hub'ı</th>
+                                        <th>İl / Bölge</th>
+                                        <th>Ağırlık</th>
+                                        <th>Gönderen</th>
+                                        <th>Teslim Tarihi</th>
+                                        <th>Durum</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="dashboardActivityTable">
+                                    <!-- Canlı Akış Satırları -->
+                                </tbody>
+                            </table>
+                        </div>
                 </div>
                 <div class="user-dashboard-info" id="userDashboardInfo">
                     <div class="welcome-card">

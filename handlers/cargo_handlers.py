@@ -57,8 +57,13 @@ def handle_add_cargo(handler, data: Dict):
 
     db = get_db()
     cid = get_next_id('cargos')
+    tracking_code = data.get('tracking_code') or f"LGT-TR{station_id:02d}-{cid:04d}"
+    delivery_type = data.get('delivery_type', 'Standart Dağıtım')
+
     db.cargos.insert_one({
         'id': cid,
+        'tracking_code': tracking_code,
+        'delivery_type': delivery_type,
         'user_id': user_id,
         'station_id': station_id,
         'weight': weight,
@@ -67,7 +72,7 @@ def handle_add_cargo(handler, data: Dict):
         'created_at': datetime.now()
     })
 
-    BaseHandler.send_json(handler, {'success': True, 'id': cid})
+    BaseHandler.send_json(handler, {'success': True, 'id': cid, 'tracking_code': tracking_code})
 
 
 def handle_delete_cargo(handler, cargo_id: int):

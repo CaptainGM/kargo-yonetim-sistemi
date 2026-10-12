@@ -130,14 +130,15 @@ def init_database() -> bool:
             })
             print(f"  [+] Varsayılan kullanıcı eklendi: {u['username']} (ID: {uid})")
 
-    # 3. Türkiye Geneli 81 İl ve İlçe İstasyonları
+    # 3. Türkiye Geneli 81 İl ve İlçe İstasyonları (260+ İstasyon)
     try:
-        from data_turkey import TURKEY_STATIONS, EXPANDED_VEHICLES
+        from data_turkey import TURKEY_STATIONS, EXPANDED_VEHICLES, LOGISTICS_PARAMS
     except ImportError:
         TURKEY_STATIONS = []
         EXPANDED_VEHICLES = []
+        LOGISTICS_PARAMS = {}
 
-    if db.stations.count_documents({}) < 50:
+    if db.stations.count_documents({}) < 200:
         db.stations.delete_many({})
         db.counters.update_one({'_id': 'stations'}, {'$set': {'seq': 0}}, upsert=True)
         for st in TURKEY_STATIONS:
@@ -149,44 +150,66 @@ def init_database() -> bool:
                 'district': st.get('district', ''),
                 'latitude': float(st['latitude']),
                 'longitude': float(st['longitude']),
+                'station_type': st.get('station_type', 'branch'),
+                'daily_capacity': int(st.get('daily_capacity', 10000)),
                 'is_active': 1,
                 'is_depot': st.get('is_depot', False)
             })
         print(f"  [+] {len(TURKEY_STATIONS)} adet Türkiye geneli il ve ilçe istasyonu eklendi.")
 
     # 4. Genişletilmiş ve Çeşitlendirilmiş Araç Filosu
-    if db.vehicles.count_documents({}) < 5:
-        db.vehicles.delete_many({})
-        db.counters.update_one({'_id': 'vehicles'}, {'$set': {'seq': 0}}, upsert=True)
-        for v in EXPANDED_VEHICLES:
-            vid = get_next_id('vehicles')
-            db.vehicles.insert_one({
-                'id': vid,
-                'name': v['name'],
-                'plate': v.get('plate', f'41 LOG {vid:03d}'),
-                'type': v.get('type', 'truck'),
-                'category': v.get('category', 'Lojistik'),
-                'capacity': int(v['capacity']),
-                'volume_m3': float(v.get('volume_m3', 10.0)),
-                'rental_cost': float(v.get('rental_cost', 0.0)),
-                'fuel_consumption': float(v['fuel_consumption']),
-                'speed_factor': float(v.get('speed_factor', 1.0)),
-                'icon': v.get('icon', 'fa-truck'),
-                'color': v.get('color', '#6366f1'),
-                'description': v.get('description', ''),
-                'is_owned': int(v.get('is_owned', 1))
-            })
-        print(f"  [+] {len(EXPANDED_VEHICLES)} adet çok sınıflı lojistik araç filosu eklendi.")
-
-    # 5. Sistem Parametreleri
-    if db.parameters.count_documents({'id': 1}) == 0:
-        db.parameters.insert_one({
-            'id': 1,
-            'cost_per_km': 1.0,
-            'rental_cost': 200.0,
-            'rental_capacity': 500
+    db.vehicles.delete_many({})
+    db.counters.update_one({'_id': 'vehicles'}, {'$set': {'seq': 0}}, upsert=True)
+    for v in EXPANDED_VEHICLES:
+        vid = get_next_id('vehicles')
+        db.vehicles.insert_one({
+            'id': vid,
+            'name': v['name'],
+            'plate': v.get('plate', f'41 LOG {vid:03d}'),
+            'type': v.get('type', 'truck'),
+            'category': v.get('category', 'Lojistik'),
+            'capacity': int(v['capacity']),
+            'volume_m3': float(v.get('volume_m3', 10.0)),
+            'rental_cost': float(v.get('rental_cost', 0.0)),
+            'fuel_type': v.get('fuel_type', 'diesel'),
+            'fuel_liters_per_100km': float(v.get('fuel_liters_per_100km', 10.0)),
+            'fuel_consumption': float(v['fuel_consumption']),
+            'co2_g_per_km': float(v.get('co2_g_per_km', 250.0)),
+            'speed_factor': float(v.get('speed_factor', 1.0)),
+            'icon': v.get('icon', 'fa-truck'),
+            'color': v.get('color', '#6366f1'),
+            'description': v.get('description', ''),
+            'is_owned': int(v.get('is_owned', 1))
         })
-        print(f"  [+] Sistem parametreleri kaydedildi.")
+    print(f"  [+] {len(EXPANDED_VEHICLES)} adet çok sınıflı lojistik araç filosu eklendi.")
+
+    # 5. Gerçekçi Türkiye Akaryakıt & Operasyonel Maliyet Parametreleri
+    db.parameters.delete_many({})
+    db.parameters.insert_one({
+        'id': 1,
+        'cost_per_km': 4.5,
+        'rental_cost': 350.0,
+        'rental_capacity': 1000,
+        'fuel_prices': LOGISTICS_PARAMS.get('fuel_prices', {
+            'diesel_per_liter': 44.50,
+            'gasoline_per_liter': 43.20,
+            'adblue_per_liter': 18.00,
+            'lpg_per_liter': 25.40
+        }),
+        'toll_rates': LOGISTICS_PARAMS.get('toll_rates', {
+            'osmangazi_bridge': 555.0,
+            'canakkale_1915': 419.0,
+            'yavuz_sultan_selim': 95.0,
+            'highway_per_km': 0.85
+        }),
+        'driver_daily_wage': 1250.0,
+        'co2_emission_factors': {
+            'diesel': 2.68,
+            'gasoline': 2.31
+        }
+    })
+    print("  [+] Gerçekçi akaryakıt ve lojistik maliyet parametreleri yüklendi.")
+    print("  [+] Sistem parametreleri kaydedildi.")
 
     print("[OK] MongoDB veritabanı başarıyla hazırlandı!")
     return True

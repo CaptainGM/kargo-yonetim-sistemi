@@ -345,14 +345,32 @@ class RouteOptimizer:
         if depot_id is not None:
             full_route.append(depot_id)
 
-        dist = 0.0
-        for i in range(len(full_route) - 1):
-            dist += dist_matrix.get(full_route[i], {}).get(full_route[i + 1], 0.0)
+        dist = round(dist, 2)
+        fuel_liters_100km = vehicle.get('fuel_liters_per_100km', 10.0)
+        fuel_type = vehicle.get('fuel_type', 'diesel')
+        fuel_prices = self.params.get('fuel_prices', {})
+        unit_fuel_price = fuel_prices.get('gasoline_per_liter', 43.20) if fuel_type == 'gasoline' else fuel_prices.get('diesel_per_liter', 44.50)
 
-        cost_per_km = self.params.get('cost_per_km', 1.0)
-        fuel_cost = dist * cost_per_km
+        # 1. Gerçek Akaryakıt Tüketimi (Litre ve TL)
+        fuel_liters = round((dist / 100.0) * fuel_liters_100km, 2)
+        fuel_cost = round(dist * vehicle.get('fuel_consumption', (fuel_liters_100km * unit_fuel_price / 100.0)), 2)
+
+        # 2. Otoyol / HGS / Köprü Geçiş Tahmini
+        toll_cost = round(dist * 0.40, 2) if dist > 80 else 0.0
+
+        # 3. Sürücü Günlük Yevmiye & Operasyon Payı
+        speed_factor = vehicle.get('speed_factor', 1.0)
+        avg_speed = 75.0 * speed_factor
+        est_duration_hours = round(dist / max(avg_speed, 30.0), 1)
+        driver_cost = round(min(1250.0, max(150.0, est_duration_hours * 120.0)), 2)
+
+        # 4. Kiralama ve Toplam Operasyonel Maliyet
         rental_cost = vehicle.get('rental_cost', 0.0) if not vehicle.get('is_owned', True) else 0.0
-        total_cost = fuel_cost + rental_cost
+        total_cost = round(fuel_cost + toll_cost + rental_cost + driver_cost, 2)
+
+        # 5. Karbon Ayak İzi (kg CO2)
+        co2_g_km = vehicle.get('co2_g_per_km', 250.0)
+        co2_emission_kg = round((dist * co2_g_km) / 1000.0, 2)
 
         # İstasyon bazlı kargo detayları
         station_cargo_details = []
@@ -384,9 +402,14 @@ class RouteOptimizer:
             'route_names': [self.stations.get(sid, {}).get('name', f'İstasyon {sid}') for sid in full_route],
             'cargos': selected_cargos,
             'cargo_users': cargo_users,
-            'distance': round(dist, 2),
-            'fuel_cost': round(fuel_cost, 2),
-            'cost': round(total_cost, 2),
+            'distance': dist,
+            'fuel_liters': fuel_liters,
+            'fuel_cost': fuel_cost,
+            'toll_cost': toll_cost,
+            'driver_cost': driver_cost,
+            'cost': total_cost,
+            'co2_emission_kg': co2_emission_kg,
+            'duration_hours': est_duration_hours,
             'weight': round(sum(c['weight'] for c in selected_cargos), 2),
             'cargo_count': len(selected_cargos),
             'is_rented': not bool(vehicle.get('is_owned', True)),
