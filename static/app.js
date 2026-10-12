@@ -2497,8 +2497,10 @@ function triggerSimIncidentTest() {
     }
 }
 
+let googleTrafficTileLayer = null;
+
 // =========================================================================
-// TÜM TÜRKİYE CANLI KARAYOLLARI TRAFİK & OLAY KATMANI (TOGGLE)
+// TÜM TÜRKİYE GOOGLE HARİTALAR CANLI TRAFİK & DARBOĞAZ KATMANI (TOGGLE)
 // =========================================================================
 function toggleTrafficIncidentLayer() {
     if (!mainMap) return;
@@ -2506,17 +2508,20 @@ function toggleTrafficIncidentLayer() {
 
     if (isTrafficLayerActive) {
         // Kapat
-        if (trafficLayerGroup) {
+        if (googleTrafficTileLayer && mainMap.hasLayer(googleTrafficTileLayer)) {
+            mainMap.removeLayer(googleTrafficTileLayer);
+        }
+        if (trafficLayerGroup && mainMap.hasLayer(trafficLayerGroup)) {
             mainMap.removeLayer(trafficLayerGroup);
             trafficLayerGroup = null;
         }
         isTrafficLayerActive = false;
         if (btn) {
             btn.classList.remove('active');
-            btn.innerHTML = '<i class="fas fa-traffic-light"></i> Trafik & Olaylar';
+            btn.innerHTML = '<i class="fas fa-traffic-light"></i> 🚦 Google Canlı Trafik';
         }
 
-        // İstasyon markerlarını ve ana aktarma merkezlerini haritaya geri yükle!
+        // İstasyon markerlarını haritaya geri yükle
         stationMarkers.forEach(m => {
             if (!mainMap.hasLayer(m)) {
                 mainMap.addLayer(m);
@@ -2525,28 +2530,28 @@ function toggleTrafficIncidentLayer() {
         return;
     }
 
-    // Aç: Haritadaki istasyon ve ana aktarma merkezlerini kaldırarak sadece yolları & trafiği göster!
+    // Aç: İstasyonları gizleyerek canlı trafiği net göster
     stationMarkers.forEach(m => {
         if (mainMap.hasLayer(m)) {
             mainMap.removeLayer(m);
         }
     });
 
+    // 1. Google Haritalar Canlı Trafik Akış Katmanı (Gerçek Zamanlı Google Telemetrisi)
+    if (!googleTrafficTileLayer) {
+        googleTrafficTileLayer = L.tileLayer('https://mt{s}.google.com/vt?lyrs=m,traffic&x={x}&y={y}&z={z}', {
+            maxZoom: 20,
+            subdomains: ['0', '1', '2', '3'],
+            attribution: '&copy; Google Maps Canlı Trafik Akışı'
+        });
+    }
+    if (!mainMap.hasLayer(googleTrafficTileLayer)) {
+        mainMap.addLayer(googleTrafficTileLayer);
+    }
+
     trafficLayerGroup = L.layerGroup();
 
-    // 1. Karayolu Trafik Akış Çizgileri
-    TURKEY_TRAFFIC_FLOW_LINES.forEach(flow => {
-        const line = L.polyline(flow.coords, {
-            color: flow.color,
-            weight: flow.weight,
-            opacity: flow.opacity,
-            dashArray: flow.dashArray || null
-        });
-        line.bindTooltip(`<strong>${flow.title}</strong>`, { sticky: true });
-        trafficLayerGroup.addLayer(line);
-    });
-
-    // 2. Noktasal Kaza & Yol Çalışması Olay Marker'ları
+    // 2. Noktasal Trafik Darboğaz & Kaza Noktaları Marker'ları
     TURKEY_TRAFFIC_INCIDENTS_DATA.forEach(inc => {
         const beaconClass = inc.type === 'accident' ? 'type-accident' : (inc.type === 'works' ? 'type-works' : 'type-jam');
         const iconName = inc.type === 'accident' ? 'fa-car-burst' : (inc.type === 'works' ? 'fa-person-digging' : 'fa-traffic-light');
@@ -2570,16 +2575,21 @@ function toggleTrafficIncidentLayer() {
                     <i class="fas ${iconName}"></i> ${inc.headline}
                 </div>
                 <div class="traffic-popup-desc">${inc.sub}</div>
-                <div style="font-size:10px; color:#10b981; margin-bottom:6px; font-weight:700;">
+                <div style="font-size:11px; color:#10b981; margin-bottom:8px; font-weight:700;">
                     <i class="fas fa-shield-halved"></i> ${inc.bypass}
                 </div>
-                <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px; gap:4px;">
-                    <span class="badge-confidence"><i class="fas fa-check-double"></i> <strong>${inc.confidenceRate}</strong> (Teyitli)</span>
+                <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;">
+                    <span class="badge-confidence"><i class="fas fa-satellite"></i> Google Telemetrisi</span>
                     <span class="traffic-popup-tag bg-danger text-white">Bekleme: +${inc.delay} Dk</span>
                 </div>
-                <button type="button" class="btn-popup-news" onclick="openIncidentNewsModal('${inc.id}')">
-                    <i class="fas fa-newspaper"></i> Resmi Haberi & Raporu Gör
-                </button>
+                <div style="display:flex; flex-direction:column; gap:6px;">
+                    <a href="https://www.google.com/maps/@${inc.coords[0]},${inc.coords[1]},13z/data=!5m1!1e1" target="_blank" rel="noopener noreferrer" class="btn-popup-news" style="background:#4285F4; text-decoration:none; padding:7px 10px;">
+                        <i class="fab fa-google"></i> Google Haritalar'da Canlı Trafiği Aç
+                    </a>
+                    <button type="button" class="btn-popup-news" style="background:#10b981; padding:7px 10px;" onclick="applyAlternativeReroute()">
+                        <i class="fas fa-route"></i> Alternatif Kaçış Rotasını Seç
+                    </button>
+                </div>
             </div>
         `);
         trafficLayerGroup.addLayer(marker);
@@ -2589,9 +2599,18 @@ function toggleTrafficIncidentLayer() {
     isTrafficLayerActive = true;
     if (btn) {
         btn.classList.add('active');
-        btn.innerHTML = '<i class="fas fa-traffic-light"></i> Trafik Aktif (İstasyonlar Gizlendi)';
+        btn.innerHTML = '<i class="fas fa-traffic-light"></i> 🚦 Google Trafik Açık';
     }
 }
+
+function openGoogleTrafficForIncident() {
+    let coords = [40.7350, 31.5500];
+    if (curatedSimState.scenario && curatedSimState.scenario.incident && curatedSimState.scenario.incident.blockedPoint) {
+        coords = curatedSimState.scenario.incident.blockedPoint;
+    }
+    window.open(`https://www.google.com/maps/@${coords[0]},${coords[1]},13z/data=!5m1!1e1`, '_blank');
+}
+window.openGoogleTrafficForIncident = openGoogleTrafficForIncident;
 
 function openUetdsModal() {
     const scenario = curatedSimState.scenario || CURATED_SCENARIOS['marmara_d100'];

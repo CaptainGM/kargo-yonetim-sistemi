@@ -111,8 +111,8 @@ def handle_get_stats(handler):
     """Dashboard özet istatistiklerini, akaryakıt endeksini ve Chart.js analitik grafiklerini döner."""
     db = get_db()
     total_cargos = db.cargos.count_documents({})
-    pending_cargos = db.cargos.count_documents({'status': 'pending'})
-    assigned_cargos = db.cargos.count_documents({'status': 'assigned'})
+    pending_cargos = db.cargos.count_documents({'status': {'$in': ['pending', 'hazirlaniyor', 'beklemede', 'depoda']}})
+    assigned_cargos = db.cargos.count_documents({'status': {'$in': ['assigned', 'dagitimda', 'yolda']}})
     total_stations = db.stations.count_documents({'is_active': 1})
     total_vehicles = db.vehicles.count_documents({'is_owned': 1})
     total_routes = db.routes.count_documents({})

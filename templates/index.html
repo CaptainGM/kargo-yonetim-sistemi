@@ -554,8 +554,8 @@
                         <button onclick="zoomToTurkey()" class="btn-map-control" title="Tüm Türkiye'ye Odaklan">
                             <i class="fas fa-expand"></i> TR Odak
                         </button>
-                        <button onclick="toggleTrafficIncidentLayer()" id="btnTrafficLayer" class="btn-map-control" title="Canlı Karayolu Trafik Akışı ve Kaza Olaylarını Göster">
-                            <i class="fas fa-traffic-light"></i> Trafik & Olaylar
+                        <button onclick="toggleTrafficIncidentLayer()" id="btnTrafficLayer" class="btn-map-control" title="Google Haritalar Canlı Trafik Akışını Göster">
+                            <i class="fas fa-traffic-light"></i> 🚦 Google Canlı Trafik
                         </button>
                         <button onclick="toggleMapRoutes()" id="btnToggleRoutes" class="btn-map-control active" title="Rotaları Göster/Gizle">
                             <i class="fas fa-route"></i> Rotalar
@@ -700,11 +700,11 @@
                                 <i class="fas fa-shield-halved text-success"></i> 
                                 <span id="incidentBypassText">Önerilen Kaçış: D-100 Dağ Geçidi Serbest (42 Dk Kazanç)</span>
                             </div>
-                            <!-- Doğruluk Oranı & Resmi Haber Butonu -->
+                            <!-- Google Haritalar Canlı Trafik & Dinamik Reroute Butonları -->
                             <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px; gap:6px;">
-                                <span class="badge-confidence"><i class="fas fa-check-double"></i> <strong id="hudConfidenceVal">%96.8 Doğruluk</strong> (KGM Teyitli)</span>
-                                <button type="button" class="btn btn-outline btn-sm" onclick="openIncidentNewsModal()" style="font-size:10px; padding:3px 9px; border-color:#38bdf8; color:#38bdf8; background:rgba(56,189,248,0.1);">
-                                    <i class="fas fa-newspaper"></i> KGM Resmi Raporu & Haberi
+                                <span class="badge-confidence"><i class="fas fa-satellite"></i> Google Trafik Algılandı</span>
+                                <button type="button" class="btn btn-outline btn-sm" onclick="openGoogleTrafficForIncident()" style="font-size:10px; padding:4px 10px; border-color:#4285F4; color:#fff; background:#4285F4;" title="Google Haritalar üzerinde bu noktadaki canlı trafiği görüntüle">
+                                    <i class="fab fa-google"></i> Google Canlı Trafik
                                 </button>
                             </div>
                             <button type="button" class="btn-reroute-action" id="btnRerouteAction" onclick="applyAlternativeReroute()">
@@ -1577,7 +1577,7 @@
                         <span id="formulaLiveFuel" class="badge" style="background:#3b82f6; color:#fff; font-size:12px; padding:4px 8px;">11.2 L / 100km</span>
                     </div>
                     <p style="font-size:12.5px; line-height:1.5; margin-bottom:8px; color:#cbd5e1;">
-                        <strong>Nasıl Hesaplanır?</strong> Filodaki tüm aktif seferlerin toplam tükettiği motorin miktarının toplam kat edilen güzergah mesafesine bölünmesiyle bulunur. Araçların tükettiği yakıt; <strong>araç segmenti</strong> (Doblo: 7.8 L, Transit: 11.5 L, Kamyon: 21.0 L, TIR: 29.5 L) ve <strong>taşınan kargonun ağırlığına</strong> göre dinamik olarak hesaplanır.
+                        <strong>Nasıl Hesaplanır?</strong> Filodaki tüm aktif seferlerin toplam tükettiği motorin miktarının toplam kat edilen güzergah mesafesine bölünmesiyle bulunur. Araç segmentleri: <strong>Moto Kurye (3.5 L)</strong>, <strong>Doblo Maxi (7.8 L)</strong>, <strong>Transit Kamyonet (11.5 L)</strong>, <strong>Orta Kamyon (18.5 L)</strong>, <strong>Şehirlerarası TIR (29.5 - 31.0 L)</strong>.
                     </p>
                     <div style="background:rgba(0,0,0,0.25); padding:10px 12px; border-radius:6px; font-family:monospace; font-size:12px; color:#38bdf8; margin-bottom:8px;">
                         Matematiksel Formül: Filo Tüketimi = (Σ Toplam Tüketilen Motorin [Litre] / Σ Toplam Kat Edilen Yol [km]) × 100
@@ -1586,7 +1586,7 @@
                         <strong>Sistemdeki Canlı Hesaplama:</strong> (Toplam <strong id="formulaLiveLiters">--</strong> L / Toplam <strong id="formulaLiveDist">--</strong> km) × 100 = <strong id="formulaLiveFuelCalc">--</strong> L / 100km
                     </div>
                     <div style="margin-top:6px; font-size:11.5px; color:#94a3b8;">
-                        * <em>Yük Faktörü Formülü:</em> <span style="font-family:monospace; color:#38bdf8;">Etkin Tüketim = Baz Tüketim × (1 + 0.35 × (Taşınan Kargo Ağırlığı / Araç Kapasitesi))</span>. Ağır yük taşındığında tüketim doğrusal olarak artar.
+                        * <em>Yük Faktörü Formülü:</em> <span style="font-family:monospace; color:#38bdf8;">Etkin Tüketim = Baz Tüketim × (1 + 0.35 × (Taşınan Kargo Ağırlığı / Araç Kapasitesi))</span>. Ağır yük taşındığında tüketim baz değerin üzerine doğrusal olarak eklenir.
                     </div>
                 </div>
 
@@ -1596,10 +1596,10 @@
                         <h4 style="color:#10b981; margin:0; display:flex; align-items:center; gap:8px; font-size:14px;">
                             <i class="fas fa-leaf"></i> 2. Karbon Ayak İzi (CO₂ Salımı)
                         </h4>
-                        <span id="formulaLiveCo2" class="badge" style="background:#10b981; color:#fff; font-size:12px; padding:4px 8px;">685.4 kg CO₂</span>
+                        <span id="formulaLiveCo2" class="badge" style="background:#10b981; color:#fff; font-size:12px; padding:4px 8px;">545.8 kg CO₂</span>
                     </div>
                     <p style="font-size:12.5px; line-height:1.5; margin-bottom:8px; color:#cbd5e1;">
-                        <strong>Nasıl Hesaplanır?</strong> Avrupa Çevre Ajansı (EEA) ve Euro-6 dizel emisyon katsayılarına göre, güzergah mesafesi ile o rotada görevlendirilen aracın yüklü emisyon katsayısının (Doblo: 160 g/km, Transit: 240 g/km, Kamyon: 480 g/km, TIR: 750 g/km) çarpımıyla hesaplanır.
+                        <strong>Nasıl Hesaplanır?</strong> Avrupa Çevre Ajansı (EEA) ve Euro-6 dizel emisyon katsayılarına göre, güzergah mesafesi ile o rotada görevlendirilen aracın yüklü emisyon katsayısının (Doblo: 160-210 g/km, Transit: 240-305 g/km, Kamyon: 480 g/km, TIR: 750 g/km) çarpımıyla hesaplanır.
                     </p>
                     <div style="background:rgba(0,0,0,0.25); padding:10px 12px; border-radius:6px; font-family:monospace; font-size:12px; color:#34d399; margin-bottom:8px;">
                         Matematiksel Formül: Toplam Emisyon (kg CO₂) = Σ (Güzergah Mesafesi [km] × Aracın Yüklü CO₂ Değeri [g/km]) / 1.000
@@ -1618,13 +1618,13 @@
                         <span id="formulaLiveOnTime" class="badge" style="background:#f59e0b; color:#fff; font-size:12px; padding:4px 8px;">%75.0</span>
                     </div>
                     <p style="font-size:12.5px; line-height:1.5; margin-bottom:8px; color:#cbd5e1;">
-                        <strong>Nasıl Hesaplanır?</strong> Veritabanındaki (<span style="font-family:monospace; color:#f59e0b;">db.cargos</span>) kargo paketlerinin taahhüt edilen teslimat planına uygun ilerleme oranıdır. Teslim edilen veya araçlara atanıp yola çıkmış paketler zamanında kabul edilir; depoda bekleyen paketler oranı düşürür.
+                        <strong>Nasıl Hesaplanır?</strong> Veritabanındaki (<span style="font-family:monospace; color:#f59e0b;">db.cargos</span>) kargo paketlerinin taahhüt edilen teslimat planına uygun ilerleme oranıdır. Teslim edilen veya araçlara atanıp yola çıkmış paketler zamanında kabul edilir; depoda hazırlık aşamasında bekleyen paketler oranı düşürür.
                     </p>
                     <div style="background:rgba(0,0,0,0.25); padding:10px 12px; border-radius:6px; font-family:monospace; font-size:12px; color:#fbbf24; margin-bottom:8px;">
                         Matematiksel Formül: OTIF (%) = (Zamanında / Sevk Halindeki Paket Sayısı / Toplam Paket Sayısı) × 100
                     </div>
                     <div style="background:rgba(245,158,11,0.1); padding:8px 12px; border-radius:6px; font-size:12px; color:#fde68a;">
-                        <strong>Sistemdeki Canlı Durum:</strong> Toplam <strong id="formulaLiveTotalCargos">--</strong> kargodan <strong id="formulaLiveMovingCargos">--</strong> adedi sevk/teslim halinde, <strong id="formulaLivePendingCargos">--</strong> adedi depoda beklemede $\rightarrow$ <strong>Oran: <span id="formulaLiveOnTimeCalc">--</span></strong>
+                        <strong>Sistemdeki Canlı Durum:</strong> Toplam <strong id="formulaLiveTotalCargos">--</strong> kargodan <strong id="formulaLiveMovingCargos">--</strong> adedi sevk/teslimat sürecinde, <strong id="formulaLivePendingCargos">--</strong> adedi depoda hazırlık aşamasında &rarr; <strong>Zamanında Teslimat Oranı: <span id="formulaLiveOnTimeCalc">--</span></strong>
                     </div>
                     <div style="margin-top:6px; font-size:11.5px; color:#94a3b8;">
                         * <em>Dinamik Kaçış (Reroute) Etkisi:</em> Haritada bir kaza meydana geldiğinde o güzergahtaki kargolar gecikme riskiyle karşılaşır. Reroute butonuna basılıp alternatif bypass yolu seçildiğinde gecikme telafi edilir ve oran korunur.
