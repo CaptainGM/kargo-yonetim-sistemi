@@ -1418,8 +1418,9 @@ let curatedSimState = {
     step: 0,
     intervalId: null,
     isPaused: false,
+    isRunning: false,
     speedMultiplier: 1,
-    laneState: 'center',
+    laneState: 'right',
     laneStepCount: 0
 };
 
@@ -1440,22 +1441,109 @@ function interpolatePath(points, segmentsPerLeg = 14) {
     return result;
 }
 
+function renderCockpitWeather(scenario) {
+    const box = document.getElementById('weatherParticlesBox');
+    const badge = document.getElementById('hudWeatherBadge');
+    const wiper = document.getElementById('cockpitWiper');
+    if (!box) return;
+
+    box.innerHTML = '';
+    const initialWeather = scenario.weather || { text: 'Açık & Kuru Zemin (22°C)', icon: 'fa-sun', condition: 'clear', rain: false };
+
+    if (badge) {
+        badge.innerHTML = `<i class="fas ${initialWeather.icon}"></i> <span id="hudWeatherText">${initialWeather.text}</span>`;
+    }
+
+    const cond = initialWeather.condition || (initialWeather.rain ? 'rain' : 'clear');
+
+    if (cond === 'rain') {
+        for (let i = 0; i < 24; i++) {
+            const drop = document.createElement('div');
+            drop.className = 'rain-drop';
+            drop.style.left = `${Math.floor(Math.random() * 100)}%`;
+            drop.style.animationDelay = `${(Math.random() * 0.5).toFixed(2)}s`;
+            drop.style.animationDuration = `${(0.32 + Math.random() * 0.15).toFixed(2)}s`;
+            box.appendChild(drop);
+        }
+        if (wiper) wiper.classList.add('active');
+    } else if (cond === 'snow') {
+        for (let i = 0; i < 18; i++) {
+            const flake = document.createElement('div');
+            flake.className = 'snow-flake';
+            flake.style.left = `${Math.floor(Math.random() * 100)}%`;
+            flake.style.animationDelay = `${(Math.random() * 2.5).toFixed(2)}s`;
+            flake.style.width = `${Math.floor(3 + Math.random() * 3)}px`;
+            flake.style.height = flake.style.width;
+            box.appendChild(flake);
+        }
+        if (wiper) wiper.classList.add('active');
+    } else if (cond === 'wind') {
+        for (let i = 0; i < 6; i++) {
+            const gust = document.createElement('div');
+            gust.className = 'wind-gust';
+            gust.style.top = `${15 + Math.floor(Math.random() * 70)}%`;
+            gust.style.animationDelay = `${(Math.random() * 1.5).toFixed(2)}s`;
+            box.appendChild(gust);
+        }
+        if (wiper) wiper.classList.remove('active');
+    } else if (cond === 'fog') {
+        const fog = document.createElement('div');
+        fog.className = 'fog-layer';
+        box.appendChild(fog);
+        if (wiper) wiper.classList.remove('active');
+    } else {
+        if (wiper) wiper.classList.remove('active');
+    }
+
+    // Koordinata göre gerçek zamanlı Open-Meteo canlı hava durumu çekimi (CORS destekli)
+    if (scenario.path && scenario.path.length > 0) {
+        const p = scenario.path[0];
+        fetch(`https://api.open-meteo.com/v1/forecast?latitude=${p[0]}&longitude=${p[1]}&current_weather=true`)
+            .then(res => res.json())
+            .then(data => {
+                if (data && data.current_weather) {
+                    const temp = Math.round(data.current_weather.temperature);
+                    const wind = Math.round(data.current_weather.windspeed);
+                    const weatherText = document.getElementById('hudWeatherText');
+                    if (weatherText) {
+                        weatherText.textContent = `${scenario.weather ? scenario.weather.text.split('(')[0].trim() : 'Bölgesel Hava Durumu'} (${temp}°C • ${wind} km/s rüzgar)`;
+                    }
+                }
+            })
+            .catch(() => {});
+    }
+}
+
 function startCuratedSimulation(scenarioKey) {
     if (!mainMap) return;
     const scenario = CURATED_SCENARIOS[scenarioKey];
     if (!scenario) return;
 
-    stopVehicleSimulation();
+    // Temizle ve yeni rota çiz
+    if (curatedSimState.polyline && mainMap.hasLayer(curatedSimState.polyline)) {
+        mainMap.removeLayer(curatedSimState.polyline);
+    }
+    if (curatedSimState.polylineCasing && mainMap.hasLayer(curatedSimState.polylineCasing)) {
+        mainMap.removeLayer(curatedSimState.polylineCasing);
+    }
+    if (curatedSimState.marker && mainMap.hasLayer(curatedSimState.marker)) {
+        mainMap.removeLayer(curatedSimState.marker);
+    }
+    if (curatedSimState.intervalId) {
+        clearInterval(curatedSimState.intervalId);
+        curatedSimState.intervalId = null;
+    }
 
     curatedSimState.key = scenarioKey;
     curatedSimState.scenario = scenario;
     curatedSimState.interpolatedPoints = interpolatePath(scenario.path, 16);
     curatedSimState.step = 0;
     curatedSimState.isPaused = false;
-    curatedSimState.laneState = 'center';
+    curatedSimState.isRunning = true;
+    curatedSimState.laneState = 'right';
     curatedSimState.laneStepCount = 0;
 
-    // Yüksek kontrastlı çift katmanlı neon otoyol çizgisi (Yeşil değil; her zeminde parlayan elektrik mavisi/cyan)
+    // Yüksek kontrastlı çift katmanlı neon otoyol çizgisi
     curatedSimState.polylineCasing = L.polyline(scenario.path, {
         color: '#0f172a',
         weight: 9,
@@ -1469,14 +1557,14 @@ function startCuratedSimulation(scenarioKey) {
         dashArray: scenario.roadType === 'devlet_yolu' ? '10, 8' : '14, 6'
     }).addTo(mainMap);
 
-    // Otomatik odaklanma / Zoom: Harita koridor sınırlarına tam sığacak şekilde pürüzsüz kaydırılır
+    // Harita odaklanma
     mainMap.flyToBounds(curatedSimState.polyline.getBounds(), {
         padding: [60, 60],
         maxZoom: 10,
         duration: 1.5
     });
 
-    // Kokpit HUD Panelini Aç ve Tüm Verileri Yerleştir
+    // HUD Paneli Aç
     const hud = document.getElementById('simTelemetryHud');
     if (hud) {
         hud.style.display = 'block';
@@ -1491,9 +1579,10 @@ function startCuratedSimulation(scenarioKey) {
         hudView.classList.add(`speed-${curatedSimState.speedMultiplier}x`);
     }
 
+    // Araç Modeli Başlangıcı: Sağ Şeride Tam Oturmuş
     const carChassis = document.getElementById('cockpitCarChassis');
     if (carChassis) {
-        carChassis.className = 'cockpit-car-chassis';
+        carChassis.className = 'cockpit-car-chassis lane-right';
     }
     const blLeft = document.getElementById('cockpitBlinkerLeft');
     const blRight = document.getElementById('cockpitBlinkerRight');
@@ -1512,28 +1601,20 @@ function startCuratedSimulation(scenarioKey) {
     setEl('hudFuelVal', scenario.fuelText);
 
     // Plaka & Takograf & Tasarruf
-    const cleanPlate = scenario.plate ? scenario.plate.split('•')[0].trim() : '34 LOG 92';
+    const cleanPlate = scenario.plate ? scenario.plate.split('•')[0].trim() : '34 KRG 102';
     setEl('cockpitPlateTag', cleanPlate);
     setEl('hudTachoRemain', scenario.tachoRemain || '02 sa 45 dk');
     setEl('hudSavingsText', scenario.savingsText || '🌱 38 kg CO₂ • ₺550 Köprü Tasarrufu');
     const tachoFill = document.getElementById('hudTachoFill');
     if (tachoFill) tachoFill.style.width = '35%';
 
-    // Canlı Hava Durumu & Silecek
-    const weather = scenario.weather || { text: 'Açık & Kuru Zemin (22°C)', icon: 'fa-sun', rain: false };
-    const weatherBadge = document.getElementById('hudWeatherBadge');
-    if (weatherBadge) {
-        weatherBadge.innerHTML = `<i class="fas ${weather.icon}"></i> <span id="hudWeatherText">${weather.text}</span>`;
-    }
-    const wiper = document.getElementById('cockpitWiper');
-    if (wiper) {
-        wiper.classList.toggle('active', !!weather.rain);
-    }
+    // Canlı Hava Durumu & Hareketli Parçacıklar
+    renderCockpitWeather(scenario);
 
     const banner = document.getElementById('simCompleteBanner');
     if (banner) banner.style.display = 'none';
 
-    // Büyük ve Dikkat Çekici Canlı Araç Göstergesi
+    // Harita Üzerindeki Araç İşareti
     const isDevlet = scenario.roadType === 'devlet_yolu';
     const truckIcon = L.divIcon({
         className: 'sim-truck-marker',
@@ -1554,10 +1635,20 @@ function startCuratedSimulation(scenarioKey) {
 
     curatedSimState.marker = L.marker(curatedSimState.interpolatedPoints[0], { icon: truckIcon }).addTo(mainMap);
 
+    // Buton Durumları: Çalışıyor -> 'Durdur'
     const btnSim = document.getElementById('btnSimulate');
     if (btnSim) {
         btnSim.classList.add('active');
         btnSim.innerHTML = '<i class="fas fa-stop"></i> Durdur';
+    }
+    const btnStop = document.getElementById('btnSimStop');
+    if (btnStop) {
+        btnStop.className = 'btn btn-danger btn-sm';
+        btnStop.innerHTML = '<i class="fas fa-stop"></i> Durdur';
+    }
+    const btnPause = document.getElementById('btnSimPause');
+    if (btnPause) {
+        btnPause.innerHTML = '<i class="fas fa-pause"></i>';
     }
 
     const selectEl = document.getElementById('curatedScenarioSelect');
@@ -1580,33 +1671,51 @@ function startSimTimer() {
         curatedSimState.step++;
         curatedSimState.laneStepCount++;
 
-        // Şerit Değiştirme Telemetrisi: Her 15 adımda bir sol şeride sollama ve geri dönüş
-        if (curatedSimState.laneStepCount >= 15) {
+        // Şerit Değiştirme Animasyonu:
+        // Araç sağ şerittedir, sol sinyali yakar, direksiyonu kırıp sol şeride TAMAMEN girer.
+        // Bir süre sonra sağ sinyali yakar, direksiyonu kırıp sağ şeride TAMAMEN geri döner.
+        if (curatedSimState.laneStepCount >= 16) {
             curatedSimState.laneStepCount = 0;
             const carChassis = document.getElementById('cockpitCarChassis');
             const blLeft = document.getElementById('cockpitBlinkerLeft');
             const blRight = document.getElementById('cockpitBlinkerRight');
 
-            if (curatedSimState.laneState === 'center') {
+            if (curatedSimState.laneState === 'right') {
+                // 1. Sol Sinyali Yak
                 if (blLeft) blLeft.classList.add('blinking');
                 setTimeout(() => {
                     if (curatedSimState.isPaused) return;
-                    if (carChassis) carChassis.classList.add('lane-left');
+                    // 2. Sola Direksiyon Kır ve Sol Şeride Geç
+                    if (carChassis) {
+                        carChassis.className = 'cockpit-car-chassis lane-left steering-left';
+                    }
                     setTimeout(() => {
+                        // 3. Direksiyonu Düzelt ve Sol Şeride Otur
+                        if (carChassis) {
+                            carChassis.className = 'cockpit-car-chassis lane-left';
+                        }
                         if (blLeft) blLeft.classList.remove('blinking');
                         curatedSimState.laneState = 'left';
-                    }, 1100);
-                }, 350);
+                    }, 800);
+                }, 400);
             } else {
+                // 1. Sağ Sinyali Yak
                 if (blRight) blRight.classList.add('blinking');
                 setTimeout(() => {
                     if (curatedSimState.isPaused) return;
-                    if (carChassis) carChassis.classList.remove('lane-left');
+                    // 2. Sağa Direksiyon Kır ve Sağ Şeride Dön
+                    if (carChassis) {
+                        carChassis.className = 'cockpit-car-chassis lane-right steering-right';
+                    }
                     setTimeout(() => {
+                        // 3. Direksiyonu Düzelt ve Sağ Şeride Otur
+                        if (carChassis) {
+                            carChassis.className = 'cockpit-car-chassis lane-right';
+                        }
                         if (blRight) blRight.classList.remove('blinking');
-                        curatedSimState.laneState = 'center';
-                    }, 1100);
-                }, 350);
+                        curatedSimState.laneState = 'right';
+                    }, 800);
+                }, 400);
             }
         }
 
@@ -1627,6 +1736,17 @@ function startSimTimer() {
             if (hud) hud.classList.add('sim-paused');
             const carChassis = document.getElementById('cockpitCarChassis');
             if (carChassis) carChassis.classList.add('brake-active');
+
+            curatedSimState.isRunning = false;
+            const btnStop = document.getElementById('btnSimStop');
+            if (btnStop) {
+                btnStop.className = 'btn btn-success btn-sm';
+                btnStop.innerHTML = '<i class="fas fa-play"></i> Yeniden Başlat';
+            }
+            const btnSim = document.getElementById('btnSimulate');
+            if (btnSim) {
+                btnSim.innerHTML = '<i class="fas fa-play"></i> Simülasyon';
+            }
 
             clearInterval(curatedSimState.intervalId);
             curatedSimState.intervalId = null;
@@ -1665,47 +1785,102 @@ function startSimTimer() {
     }, baseDelay);
 }
 
-function toggleSimPause() {
-    curatedSimState.isPaused = !curatedSimState.isPaused;
-    const btn = document.getElementById('btnSimPause');
-    if (btn) {
-        btn.innerHTML = curatedSimState.isPaused ? '<i class="fas fa-play"></i>' : '<i class="fas fa-pause"></i>';
-        btn.title = curatedSimState.isPaused ? 'Devam Et' : 'Duraklat';
+// Durdur / Başlat: Paneli ve rotayı silmeden SADECE yol akışını ve aracı durdurur/başlatır
+function toggleSimStopPlay() {
+    if (!curatedSimState.key) {
+        startCuratedSimulation('marmara_d100');
+        return;
     }
 
     const hudView = document.getElementById('hudCockpitView');
     const hud = document.getElementById('simTelemetryHud');
     const carChassis = document.getElementById('cockpitCarChassis');
+    const btnStop = document.getElementById('btnSimStop');
+    const btnSim = document.getElementById('btnSimulate');
+    const btnPause = document.getElementById('btnSimPause');
+    const speedDig = document.getElementById('hudSpeedDigital');
 
-    // Durdurulduğunda yol animasyonunu DONDUR ve Fren Lambalarını yak
-    if (curatedSimState.isPaused) {
+    if (curatedSimState.isRunning && !curatedSimState.isPaused) {
+        // Durdura basıldı -> YOL VE ARAÇ DURUR, FREN LAMBALARI YANAR, HIZ 0 OLUR, PANEL KAPANMAZ!
+        curatedSimState.isPaused = true;
+        curatedSimState.isRunning = false;
+        if (curatedSimState.intervalId) {
+            clearInterval(curatedSimState.intervalId);
+            curatedSimState.intervalId = null;
+        }
+
         if (hudView) hudView.classList.add('is-paused');
         if (hud) hud.classList.add('sim-paused');
         if (carChassis) carChassis.classList.add('brake-active');
+        if (speedDig) speedDig.textContent = '0';
+
+        if (btnStop) {
+            btnStop.className = 'btn btn-success btn-sm';
+            btnStop.innerHTML = '<i class="fas fa-play"></i> Başlat';
+        }
+        if (btnSim) {
+            btnSim.className = 'btn-map-control active';
+            btnSim.innerHTML = '<i class="fas fa-play"></i> Başlat';
+        }
+        if (btnPause) {
+            btnPause.innerHTML = '<i class="fas fa-play"></i>';
+        }
     } else {
+        // Başlat'a basıldı -> Yol tekrar akar, araç hareket eder, fren lambaları söner!
+        curatedSimState.isPaused = false;
+        curatedSimState.isRunning = true;
+
         if (hudView) hudView.classList.remove('is-paused');
         if (hud) hud.classList.remove('sim-paused');
         if (carChassis) carChassis.classList.remove('brake-active');
+
+        if (btnStop) {
+            btnStop.className = 'btn btn-danger btn-sm';
+            btnStop.innerHTML = '<i class="fas fa-stop"></i> Durdur';
+        }
+        if (btnSim) {
+            btnSim.className = 'btn-map-control active';
+            btnSim.innerHTML = '<i class="fas fa-stop"></i> Durdur';
+        }
+        if (btnPause) {
+            btnPause.innerHTML = '<i class="fas fa-pause"></i>';
+        }
+
+        startSimTimer();
     }
+}
+
+function toggleSimPause() {
+    toggleSimStopPlay();
 }
 
 function restartSim() {
     curatedSimState.step = 0;
     curatedSimState.isPaused = false;
-    curatedSimState.laneState = 'center';
+    curatedSimState.isRunning = true;
+    curatedSimState.laneState = 'right';
     curatedSimState.laneStepCount = 0;
+
     const banner = document.getElementById('simCompleteBanner');
     if (banner) banner.style.display = 'none';
 
     const btnPause = document.getElementById('btnSimPause');
     if (btnPause) btnPause.innerHTML = '<i class="fas fa-pause"></i>';
 
+    const btnStop = document.getElementById('btnSimStop');
+    if (btnStop) {
+        btnStop.className = 'btn btn-danger btn-sm';
+        btnStop.innerHTML = '<i class="fas fa-stop"></i> Durdur';
+    }
+
     const hudView = document.getElementById('hudCockpitView');
     if (hudView) hudView.classList.remove('is-paused');
     const hud = document.getElementById('simTelemetryHud');
     if (hud) hud.classList.remove('sim-paused');
     const carChassis = document.getElementById('cockpitCarChassis');
-    if (carChassis) carChassis.classList.remove('brake-active', 'lane-left');
+    if (carChassis) {
+        carChassis.className = 'cockpit-car-chassis lane-right';
+    }
 
     if (curatedSimState.marker && curatedSimState.interpolatedPoints.length > 0) {
         curatedSimState.marker.setLatLng(curatedSimState.interpolatedPoints[0]);
@@ -1730,7 +1905,19 @@ function setSimSpeed(multiplier) {
     }
 }
 
-function stopVehicleSimulation() {
+// Üst Bardaki Simülasyon Butonu
+function toggleVehicleSimulation() {
+    if (curatedSimState.key) {
+        toggleSimStopPlay();
+    } else {
+        const sel = document.getElementById('curatedScenarioSelect');
+        const key = (sel && sel.value) ? sel.value : 'marmara_d100';
+        startCuratedSimulation(key);
+    }
+}
+
+// Sağ Üstteki Kapat (X) Butonu: Paneli ve haritayı tamamen temizler
+function closeTelemetryHud() {
     if (curatedSimState.intervalId) {
         clearInterval(curatedSimState.intervalId);
         curatedSimState.intervalId = null;
@@ -1759,11 +1946,6 @@ function stopVehicleSimulation() {
         hudView.classList.remove('is-paused');
     }
 
-    const carChassis = document.getElementById('cockpitCarChassis');
-    if (carChassis) {
-        carChassis.className = 'cockpit-car-chassis';
-    }
-
     const btnSim = document.getElementById('btnSimulate');
     if (btnSim) {
         btnSim.classList.remove('active');
@@ -1774,14 +1956,12 @@ function stopVehicleSimulation() {
     if (selectEl) selectEl.value = '';
 
     curatedSimState.key = null;
+    curatedSimState.isRunning = false;
+    curatedSimState.isPaused = false;
 }
 
-function toggleVehicleSimulation() {
-    if (curatedSimState.intervalId || curatedSimState.key) {
-        stopVehicleSimulation();
-    } else {
-        startCuratedSimulation('marmara_d100');
-    }
+function stopVehicleSimulation() {
+    toggleSimStopPlay();
 }
 
 function openUetdsModal() {
@@ -1790,7 +1970,7 @@ function openUetdsModal() {
 
     const setEl = (id, val) => { const el = document.getElementById(id); if (el) el.textContent = val; };
     setEl('uetdsDocCode', scenario.uetdsCode || 'UETDS-2026-TR-418029');
-    setEl('uetdsDocPlate', scenario.plate ? scenario.plate.split('•')[0].trim() : '34 LOG 92');
+    setEl('uetdsDocPlate', scenario.plate ? scenario.plate.split('•')[0].trim() : '34 KRG 102');
     setEl('uetdsDocDriver', scenario.driver || 'Mustafa Çelik (SRC-4 Belgesi Onaylı)');
     setEl('uetdsDocRoute', scenario.title);
     setEl('uetdsDocDistEta', `${scenario.totalDistance} km • ${scenario.etaText}`);

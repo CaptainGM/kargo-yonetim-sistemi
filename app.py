@@ -37,7 +37,7 @@ from handlers.admin_handlers import (
     handle_get_parameters, handle_update_parameters,
     handle_get_stats, handle_get_db_stats, handle_get_db_data,
     handle_get_users, handle_delete_user, handle_get_reset_codes,
-    handle_market_fuel_check
+    handle_market_fuel_check, handle_live_weather
 )
 
 
@@ -89,6 +89,8 @@ class KargoRequestHandler(SimpleHTTPRequestHandler):
             handle_get_db_stats(self)
         elif path == '/api/db-data':
             handle_get_db_data(self)
+        elif path == '/api/live-weather':
+            handle_live_weather(self)
 
         # HTML Sayfa Rotaları
         elif path in ('/', '/index.html'):

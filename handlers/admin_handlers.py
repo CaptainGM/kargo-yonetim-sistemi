@@ -309,3 +309,74 @@ def handle_get_reset_codes(handler):
     db = get_db()
     codes = list(db.password_reset_codes.find().sort('created_at', -1).limit(50))
     BaseHandler.send_json(handler, serialize_docs(codes))
+
+
+def handle_live_weather(handler):
+    """
+    Open-Meteo REST API üzerinden koordinat bazlı anlık hava durumu telemetrisi.
+    """
+    import urllib.request
+    import json
+    from urllib.parse import urlparse, parse_qs
+
+    parsed = urlparse(handler.path)
+    qs = parse_qs(parsed.query)
+    lat = qs.get('lat', ['40.735'])[0]
+    lon = qs.get('lon', ['31.55'])[0]
+
+    try:
+        url = f"https://api.open-meteo.com/v1/forecast?latitude={lat}&longitude={lon}&current_weather=true"
+        req = urllib.request.Request(url, headers={'User-Agent': 'LogiRoute-Weather/1.0'})
+        with urllib.request.urlopen(req, timeout=3) as resp:
+            data = json.loads(resp.read().decode('utf-8'))
+            cw = data.get('current_weather', {})
+            temp = round(cw.get('temperature', 16.0), 1)
+            wcode = cw.get('weathercode', 0)
+            wspeed = round(cw.get('windspeed', 12.0), 1)
+
+            condition = 'clear'
+            desc = 'Açık & Kuru Zemin'
+            icon = 'fa-sun'
+
+            if wcode in (51, 53, 55, 61, 63, 65, 80, 81, 82):
+                condition = 'rain'
+                desc = 'Sağanak Yağış & Islak Asfalt'
+                icon = 'fa-cloud-rain'
+            elif wcode in (71, 73, 75, 77, 85, 86):
+                condition = 'snow'
+                desc = 'Kar Yağışı & Don Uyarısı'
+                icon = 'fa-snowflake'
+            elif wcode in (45, 48):
+                condition = 'fog'
+                desc = 'Yoğun Sis & Görüş Kısıtlı'
+                icon = 'fa-smog'
+            elif wspeed > 35 or wcode in (95, 96, 99):
+                condition = 'wind'
+                desc = f'Fırtına & Yan Rüzgar ({wspeed} km/s)'
+                icon = 'fa-wind'
+            elif wcode in (1, 2, 3):
+                condition = 'cloudy'
+                desc = 'Parçalı Bulutlu'
+                icon = 'fa-cloud-sun'
+
+            BaseHandler.send_json(handler, {
+                'success': True,
+                'temperature': temp,
+                'windspeed': wspeed,
+                'condition': condition,
+                'text': f"{desc} ({temp}°C)",
+                'icon': icon
+            })
+            return
+    except Exception:
+        pass
+
+    BaseHandler.send_json(handler, {
+        'success': True,
+        'temperature': 18.0,
+        'windspeed': 10.0,
+        'condition': 'clear',
+        'text': 'Açık & Kuru Zemin (18°C)',
+        'icon': 'fa-sun'
+    })
+
