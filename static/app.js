@@ -1523,7 +1523,8 @@ let curatedSimState = {
     rerouted: false,
     incidentMarker: null,
     altPolyline: null,
-    altPolylineCasing: null
+    altPolylineCasing: null,
+    waypointMarkers: []
 };
 
 // =========================================================================
@@ -2076,6 +2077,12 @@ function clearCuratedSimulationLayers() {
         mainMap.removeLayer(curatedSimState.altPolylineCasing);
         curatedSimState.altPolylineCasing = null;
     }
+    if (curatedSimState.waypointMarkers && curatedSimState.waypointMarkers.length > 0) {
+        curatedSimState.waypointMarkers.forEach(layer => {
+            if (mainMap && mainMap.hasLayer(layer)) mainMap.removeLayer(layer);
+        });
+        curatedSimState.waypointMarkers = [];
+    }
 }
 
 // Seçilen koridor rotasındaki her bacak için Google Haritalar benzeri canlı trafik akış durumu (Yeşil, Turuncu, Kırmızı)
@@ -2317,6 +2324,15 @@ function selectCuratedScenario(scenarioKey) {
     // 1. Önceki simülasyon katmanlarını temizle
     clearCuratedSimulationLayers();
 
+    // 1.1 Haritadaki 353 istasyon ve merkez pinini gizle (seçilen koridor rotası temiz ve net görünsün)
+    if (typeof stationMarkers !== 'undefined' && stationMarkers && stationMarkers.length > 0) {
+        stationMarkers.forEach(m => {
+            if (mainMap && mainMap.hasLayer(m)) {
+                mainMap.removeLayer(m);
+            }
+        });
+    }
+
     // 2. Durum değişkenlerini başlat (DİKKAT: isRunning = false, isPaused = true -> Kullanıcı 'Başlat' diyene kadar bekle!)
     curatedSimState.key = scenarioKey;
     curatedSimState.scenario = scenario;
@@ -2331,6 +2347,28 @@ function selectCuratedScenario(scenarioKey) {
 
     // 3. Güzergahı trafik segmentleriyle (Yeşil, Turuncu, Kırmızı) ve koyu zemin casing'i ile çiz
     renderCorridorTrafficRoute(scenarioKey, scenario);
+
+    // 3.1 Başlangıç ve Varış Noktası İşaretçileri (Temiz ve Şık Koridor Uçları)
+    if (scenario.path && scenario.path.length >= 2) {
+        const startPt = scenario.path[0];
+        const endPt = scenario.path[scenario.path.length - 1];
+        
+        const startIcon = L.divIcon({
+            className: 'custom-marker',
+            html: `<div style="background:#10b981; color:white; font-size:11px; font-weight:700; padding:4px 8px; border-radius:12px; border:2px solid white; box-shadow:0 0 10px rgba(16,185,129,0.8); display:flex; align-items:center; gap:4px; white-space:nowrap;"><i class="fas fa-play"></i> Çıkış</div>`,
+            iconAnchor: [24, 14]
+        });
+        const startMarker = L.marker(startPt, { icon: startIcon }).addTo(mainMap);
+        curatedSimState.waypointMarkers.push(startMarker);
+
+        const endIcon = L.divIcon({
+            className: 'custom-marker',
+            html: `<div style="background:#ef4444; color:white; font-size:11px; font-weight:700; padding:4px 8px; border-radius:12px; border:2px solid white; box-shadow:0 0 10px rgba(239,68,68,0.8); display:flex; align-items:center; gap:4px; white-space:nowrap;"><i class="fas fa-flag-checkered"></i> Varış</div>`,
+            iconAnchor: [24, 14]
+        });
+        const endMarker = L.marker(endPt, { icon: endIcon }).addTo(mainMap);
+        curatedSimState.waypointMarkers.push(endMarker);
+    }
 
     // 4. Haritayı rotaya odakla
     if (curatedSimState.polyline) {
@@ -2414,15 +2452,15 @@ function selectCuratedScenario(scenarioKey) {
     const incidentCard = document.getElementById('hudIncidentAlertCard');
     if (incidentCard) incidentCard.style.display = 'none';
 
-    // 7. Butonları Kullanıcının Başlatmasını Bekleyecek Şekilde Ayarla
+    // 7. Butonları Kullanıcının Başlatmasını Bekleyecek Şekilde Ayarla (Yeşil & Dikkat Çekici)
     const btnSim = document.getElementById('btnSimulate');
     if (btnSim) {
-        btnSim.classList.remove('active');
+        btnSim.className = 'btn-map-control btn-pulse-green';
         btnSim.innerHTML = '<i class="fas fa-play"></i> Simülasyonu Başlat';
     }
     const btnStop = document.getElementById('btnSimStop');
     if (btnStop) {
-        btnStop.className = 'btn btn-success btn-sm';
+        btnStop.className = 'btn btn-success btn-sm btn-pulse-green';
         btnStop.innerHTML = '<i class="fas fa-play"></i> Başlat';
     }
     const btnPause = document.getElementById('btnSimPause');
@@ -2614,11 +2652,11 @@ function toggleSimStopPlay() {
         if (markerSpeed) markerSpeed.textContent = '⚡ 0 km/s (Durduruldu)';
 
         if (btnStop) {
-            btnStop.className = 'btn btn-success btn-sm';
+            btnStop.className = 'btn btn-success btn-sm btn-pulse-green';
             btnStop.innerHTML = '<i class="fas fa-play"></i> Başlat';
         }
         if (btnSim) {
-            btnSim.className = 'btn-map-control';
+            btnSim.className = 'btn-map-control btn-pulse-green';
             btnSim.innerHTML = '<i class="fas fa-play"></i> Simülasyonu Başlat';
         }
         if (btnPause) {
@@ -2736,8 +2774,22 @@ function closeTelemetryHud() {
 
     const btnSim = document.getElementById('btnSimulate');
     if (btnSim) {
-        btnSim.classList.remove('active');
+        btnSim.className = 'btn-map-control';
         btnSim.innerHTML = '<i class="fas fa-play"></i> Simülasyon';
+    }
+
+    const btnStop = document.getElementById('btnSimStop');
+    if (btnStop) {
+        btnStop.classList.remove('btn-pulse-green');
+    }
+
+    // İstasyon ve merkez pinlerini haritaya geri getir
+    if (typeof stationMarkers !== 'undefined' && stationMarkers && stationMarkers.length > 0) {
+        stationMarkers.forEach(m => {
+            if (mainMap && !mainMap.hasLayer(m)) {
+                mainMap.addLayer(m);
+            }
+        });
     }
 
     const selectEl = document.getElementById('curatedScenarioSelect');

@@ -1308,11 +1308,17 @@ body {
     z-index: 1000;
     box-shadow: 0 18px 45px rgba(0, 0, 0, 0.65);
     color: #f8fafc;
+    max-height: calc(100vh - 140px);
+    overflow-y: auto;
 }
 
 .sim-telemetry-hud.active {
     display: block !important;
     animation: hudSlideIn 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.sim-telemetry-hud.active ~ .map-floating-hud {
+    display: none !important;
 }
 
 /* Gerçekçi Güneş ve Ay İkonları */
@@ -2458,6 +2464,37 @@ body {
 }
 
 .line-route { background: linear-gradient(90deg, #6366f1, #10b981); }
+
+.dark-theme .map-legend-modern {
+    background: rgba(15, 23, 42, 0.92);
+    border-color: rgba(255, 255, 255, 0.12);
+    color: #e2e8f0;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+}
+
+.dark-theme .map-legend-modern h4 {
+    color: #38bdf8;
+}
+
+.dark-theme .legend-row {
+    color: #cbd5e1;
+}
+
+/* Dikkat Çekici Başlat Butonu Animasyonları */
+.btn-pulse-green {
+    background: #10b981 !important;
+    color: white !important;
+    border-color: #059669 !important;
+    font-weight: 700 !important;
+    box-shadow: 0 0 16px rgba(16, 185, 129, 0.6) !important;
+    animation: btnGreenPulse 1.8s infinite;
+}
+
+@keyframes btnGreenPulse {
+    0% { box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.7); }
+    70% { box-shadow: 0 0 0 10px rgba(16, 185, 129, 0); }
+    100% { box-shadow: 0 0 0 0 rgba(16, 185, 129, 0); }
+}
 
 /* Vehicle Class Badges */
 .vehicle-type-badge {
