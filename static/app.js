@@ -2344,40 +2344,21 @@ function triggerSimIncident(incident) {
         if (confVal) {
             confVal.textContent = (incident.confidenceRate || '%96.8') + ' Doğruluk';
         }
-        const btnNews = alertCard.querySelector('button[onclick*="openIncidentNewsModal"]');
-        if (btnNews) {
-            btnNews.setAttribute('onclick', `openIncidentNewsModal('${incident.id || ''}')`);
-        }
     }
 
-    // 2. Haritada Kaza Noktası İkonu & Pulse Ring Yerleştir
-    if (incident.blockedPoint && mainMap) {
-        if (curatedSimState.incidentMarker && mainMap.hasLayer(curatedSimState.incidentMarker)) {
-            mainMap.removeLayer(curatedSimState.incidentMarker);
-        }
-
-        const incIcon = L.divIcon({
-            className: 'traffic-incident-marker',
-            html: `
-                <div class="traffic-incident-beacon type-accident" title="${incident.title}">
-                    <div class="pulse-ring"></div>
-                    <i class="fas fa-triangle-exclamation"></i>
-                </div>
-            `,
-            iconSize: [36, 36],
-            iconAnchor: [18, 18]
+    // 2. Yolu Google Haritalar gibi Kırmızıya Boya (Kilitli / Yoğun Trafik Koridoru)
+    if (curatedSimState.polyline) {
+        curatedSimState.polyline.setStyle({
+            color: '#ef4444',
+            weight: 6.5,
+            opacity: 0.95
         });
+    }
 
-        curatedSimState.incidentMarker = L.marker(incident.blockedPoint, { icon: incIcon }).addTo(mainMap);
-        curatedSimState.incidentMarker.bindPopup(`
-            <div class="traffic-popup-box">
-                <div class="traffic-popup-header text-danger">
-                    <i class="fas fa-car-burst"></i> ${incident.headline}
-                </div>
-                <div class="traffic-popup-desc">${incident.subText}</div>
-                <div class="traffic-popup-tag bg-danger text-white">Bekleme: +${incident.delayMinutes} Dk</div>
-            </div>
-        `).openPopup();
+    // Eski marker varsa temizle (Logosuz, sadece renkli yol)
+    if (curatedSimState.incidentMarker && mainMap && mainMap.hasLayer(curatedSimState.incidentMarker)) {
+        mainMap.removeLayer(curatedSimState.incidentMarker);
+        curatedSimState.incidentMarker = null;
     }
 
     // 3. Önerilen Alternatif Kaçış Çizgisini Haritada Çiz (Yeşil Kesikli Çizgi)
@@ -2511,14 +2492,10 @@ function toggleTrafficIncidentLayer() {
         if (googleTrafficTileLayer && mainMap.hasLayer(googleTrafficTileLayer)) {
             mainMap.removeLayer(googleTrafficTileLayer);
         }
-        if (trafficLayerGroup && mainMap.hasLayer(trafficLayerGroup)) {
-            mainMap.removeLayer(trafficLayerGroup);
-            trafficLayerGroup = null;
-        }
         isTrafficLayerActive = false;
         if (btn) {
             btn.classList.remove('active');
-            btn.innerHTML = '<i class="fas fa-traffic-light"></i> 🚦 Google Canlı Trafik';
+            btn.innerHTML = '<i class="fas fa-traffic-light"></i> 🚦 Canlı Trafik';
         }
 
         // İstasyon markerlarını haritaya geri yükle
@@ -2530,87 +2507,31 @@ function toggleTrafficIncidentLayer() {
         return;
     }
 
-    // Aç: İstasyonları gizleyerek canlı trafiği net göster
+    // Aç: İstasyon ikonlarını gizleyerek karayollarındaki canlı trafik akış çizgilerini (yeşil, sarı, kırmızı) net göster
     stationMarkers.forEach(m => {
         if (mainMap.hasLayer(m)) {
             mainMap.removeLayer(m);
         }
     });
 
-    // 1. Google Haritalar Canlı Trafik Akış Katmanı (Gerçek Zamanlı Google Telemetrisi)
+    // Google Haritalar Canlı Trafik Akış Katmanı (Yolları anlık yeşil/sarı/kırmızı gösterir, logosuz ve temizdir)
     if (!googleTrafficTileLayer) {
         googleTrafficTileLayer = L.tileLayer('https://mt{s}.google.com/vt?lyrs=m,traffic&x={x}&y={y}&z={z}', {
             maxZoom: 20,
             subdomains: ['0', '1', '2', '3'],
-            attribution: '&copy; Google Maps Canlı Trafik Akışı'
+            attribution: '&copy; Google Maps Canlı Trafik'
         });
     }
     if (!mainMap.hasLayer(googleTrafficTileLayer)) {
         mainMap.addLayer(googleTrafficTileLayer);
     }
 
-    trafficLayerGroup = L.layerGroup();
-
-    // 2. Noktasal Trafik Darboğaz & Kaza Noktaları Marker'ları
-    TURKEY_TRAFFIC_INCIDENTS_DATA.forEach(inc => {
-        const beaconClass = inc.type === 'accident' ? 'type-accident' : (inc.type === 'works' ? 'type-works' : 'type-jam');
-        const iconName = inc.type === 'accident' ? 'fa-car-burst' : (inc.type === 'works' ? 'fa-person-digging' : 'fa-traffic-light');
-
-        const mIcon = L.divIcon({
-            className: 'traffic-incident-marker',
-            html: `
-                <div class="traffic-incident-beacon ${beaconClass}" title="${inc.headline}">
-                    <div class="pulse-ring"></div>
-                    <i class="fas ${iconName}"></i>
-                </div>
-            `,
-            iconSize: [34, 34],
-            iconAnchor: [17, 17]
-        });
-
-        const marker = L.marker(inc.coords, { icon: mIcon });
-        marker.bindPopup(`
-            <div class="traffic-popup-box">
-                <div class="traffic-popup-header ${inc.type === 'accident' ? 'text-danger' : (inc.type === 'works' ? 'text-warning' : 'text-danger')}">
-                    <i class="fas ${iconName}"></i> ${inc.headline}
-                </div>
-                <div class="traffic-popup-desc">${inc.sub}</div>
-                <div style="font-size:11px; color:#10b981; margin-bottom:8px; font-weight:700;">
-                    <i class="fas fa-shield-halved"></i> ${inc.bypass}
-                </div>
-                <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;">
-                    <span class="badge-confidence"><i class="fas fa-satellite"></i> Google Telemetrisi</span>
-                    <span class="traffic-popup-tag bg-danger text-white">Bekleme: +${inc.delay} Dk</span>
-                </div>
-                <div style="display:flex; flex-direction:column; gap:6px;">
-                    <a href="https://www.google.com/maps/@${inc.coords[0]},${inc.coords[1]},13z/data=!5m1!1e1" target="_blank" rel="noopener noreferrer" class="btn-popup-news" style="background:#4285F4; text-decoration:none; padding:7px 10px;">
-                        <i class="fab fa-google"></i> Google Haritalar'da Canlı Trafiği Aç
-                    </a>
-                    <button type="button" class="btn-popup-news" style="background:#10b981; padding:7px 10px;" onclick="applyAlternativeReroute()">
-                        <i class="fas fa-route"></i> Alternatif Kaçış Rotasını Seç
-                    </button>
-                </div>
-            </div>
-        `);
-        trafficLayerGroup.addLayer(marker);
-    });
-
-    trafficLayerGroup.addTo(mainMap);
     isTrafficLayerActive = true;
     if (btn) {
         btn.classList.add('active');
-        btn.innerHTML = '<i class="fas fa-traffic-light"></i> 🚦 Google Trafik Açık';
+        btn.innerHTML = '<i class="fas fa-traffic-light"></i> 🚦 Canlı Trafik Açık';
     }
 }
-
-function openGoogleTrafficForIncident() {
-    let coords = [40.7350, 31.5500];
-    if (curatedSimState.scenario && curatedSimState.scenario.incident && curatedSimState.scenario.incident.blockedPoint) {
-        coords = curatedSimState.scenario.incident.blockedPoint;
-    }
-    window.open(`https://www.google.com/maps/@${coords[0]},${coords[1]},13z/data=!5m1!1e1`, '_blank');
-}
-window.openGoogleTrafficForIncident = openGoogleTrafficForIncident;
 
 function openUetdsModal() {
     const scenario = curatedSimState.scenario || CURATED_SCENARIOS['marmara_d100'];
@@ -2900,24 +2821,24 @@ async function loadVehicles() {
             const rental = v.rental_cost > 0 ? `${v.rental_cost} TL` : '0 TL (Özmal)';
             return `
             <tr>
-                <td><strong style="color: #0f172a; font-weight:700;">#${v.id}</strong></td>
+                <td><strong class="vehicle-col-id">#${v.id}</strong></td>
                 <td>
                     <div style="display:flex; align-items:center; gap:10px;">
                         <i class="fas ${icon}" style="color:${v.color || '#6366f1'}; font-size:18px;"></i>
                         <div>
-                            <div style="color: #0f172a; font-weight:700; font-size: 14px;">${v.name}</div>
-                            <div style="font-size:11px; color:#475569; margin-top:2px;">
-                                ${v.plate ? `<span style="display:inline-block; background:#0f172a; color:#f8fafc; padding:1px 6px; border-radius:4px; font-weight:700; font-size:10px; letter-spacing:0.5px; margin-right:6px;">${v.plate}</span>` : ''}
+                            <div class="vehicle-col-name">${v.name}</div>
+                            <div class="vehicle-col-desc">
+                                ${v.plate ? `<span class="vehicle-col-plate">${v.plate}</span>` : ''}
                                 <span>${v.description || ''}</span>
                             </div>
                         </div>
                     </div>
                 </td>
                 <td><span class="vehicle-type-badge vehicle-type-${vType}"><i class="fas ${icon}"></i> ${cat}</span></td>
-                <td><strong style="color: #0f172a; font-weight: 700;">${v.capacity.toLocaleString('tr-TR')} kg</strong></td>
-                <td style="color: #334155; font-weight: 500;">${vol}</td>
-                <td><span style="color:#059669; font-weight:700; background:rgba(5,150,105,0.08); padding:3px 8px; border-radius:6px;">${v.fuel_consumption} TL/km</span></td>
-                <td style="color: #334155; font-weight: 500;">${rental}</td>
+                <td><strong class="vehicle-col-cap">${v.capacity.toLocaleString('tr-TR')} kg</strong></td>
+                <td class="vehicle-col-vol">${vol}</td>
+                <td><span style="color:#10b981; font-weight:700; background:rgba(16,185,129,0.12); padding:3px 8px; border-radius:6px; border:1px solid rgba(16,185,129,0.25);">${v.fuel_consumption} TL/km</span></td>
+                <td class="vehicle-col-rent">${rental}</td>
                 <td><span class="status ${v.is_owned ? 'status-assigned' : 'status-pending'}">${v.is_owned ? 'Özmal Filo' : 'Kiralık'}</span></td>
                 <td>
                     <button onclick="deleteVehicle(${v.id})" class="btn btn-danger btn-sm" title="Aracı Sil"><i class="fas fa-trash"></i></button>
@@ -2931,12 +2852,12 @@ async function loadVehicles() {
 
 function onVehicleTypeChange(type) {
     const presets = {
-        'courier': { cap: 50, vol: 0.3, fuel: 0.35, rental: 80, name: 'Moto Kurye - Honda CBF 150 (Express)' },
-        'van': { cap: 400, vol: 4.2, fuel: 0.75, rental: 180, name: 'Panelvan - Fiat Doblo Maxi (Hafif Ticari)' },
-        'light_truck': { cap: 1000, vol: 12.5, fuel: 1.15, rental: 280, name: 'Dağıtım Kamyoneti - Ford Transit 350L' },
-        'medium_truck': { cap: 2500, vol: 28.0, fuel: 1.85, rental: 450, name: 'Bölgesel Kamyon - Isuzu NPR Long' },
-        'heavy_truck': { cap: 6000, vol: 50.0, fuel: 3.10, rental: 750, name: 'Ağır Hizmet Kamyonu - Mercedes-Benz Axor' },
-        'trailer': { cap: 15000, vol: 95.0, fuel: 4.60, rental: 1200, name: 'Mega Treyler TIR - Scania R450 Highline' }
+        'courier': { cap: 50, vol: 0.3, fuel: 2.99, rental: 180, name: 'Moto Kurye - Honda CBF 150 (Express)' },
+        'van': { cap: 400, vol: 4.2, fuel: 7.22, rental: 380, name: 'Panelvan - Fiat Doblo Maxi (Hafif Ticari)' },
+        'light_truck': { cap: 1000, vol: 12.5, fuel: 10.64, rental: 580, name: 'Dağıtım Kamyoneti - Ford Transit 350L' },
+        'medium_truck': { cap: 2500, vol: 28.0, fuel: 19.43, rental: 950, name: 'Bölgesel Kamyon - Isuzu NPR Long' },
+        'heavy_truck': { cap: 6000, vol: 50.0, fuel: 27.29, rental: 1600, name: 'Ağır Hizmet Kamyonu - Mercedes-Benz Axor' },
+        'trailer': { cap: 15000, vol: 95.0, fuel: 31.56, rental: 2400, name: 'Mega Treyler TIR - Scania R450 Highline' }
     };
     const p = presets[type];
     if (p) {
@@ -3020,24 +2941,24 @@ async function loadPendingCargos() {
         allCargos.forEach(c => {
             const formattedDate = c.delivery_date ? new Date(c.delivery_date).toLocaleDateString('tr-TR') : '-';
             const isChecked = selectedCargoIds.has(c.id) ? 'checked' : '';
-            const statusColor = c.status === 'pending' ? '#ffc107' : '#28a745';
-            const statusText = c.status === 'pending' ? 'Bekliyor' : 'Atandi';
-            const rowStyle = c.status === 'assigned' ? 'background-color: rgba(40, 167, 69, 0.1);' : '';
-            html += `<tr style="${rowStyle}; color:#1e293b;">
+            const statusColor = c.status === 'pending' ? '#f59e0b' : '#10b981';
+            const statusText = c.status === 'pending' ? 'Bekliyor' : 'Atandı';
+            const rowClass = c.status === 'assigned' ? 'row-assigned' : '';
+            html += `<tr class="${rowClass}">
                 <td><input type="checkbox" class="cargo-checkbox" value="${c.id}" ${isChecked} onchange="updateCargoSelection(${c.id}, this.checked)"></td>
-                <td><strong>#${c.id}</strong></td>
-                <td><strong style="color:#0f172a;">${c.station_name}</strong></td>
-                <td><strong>${c.weight} kg</strong></td>
+                <td><strong class="cargo-id">#${c.id}</strong></td>
+                <td><strong class="cargo-station">${c.station_name}</strong></td>
+                <td><strong class="cargo-weight">${c.weight} kg</strong></td>
                 <td><span style="color:${statusColor}; font-weight:bold;">${statusText}</span></td>
-                <td style="color:#475569;">${formattedDate}</td>
+                <td class="cargo-date">${formattedDate}</td>
             </tr>`;
         });
 
         const totalWeight = allCargos.reduce((sum, c) => sum + c.weight, 0);
-        html += `<tr style="font-weight:bold; background:#f1f5f9; color:#0f172a;"><td></td><td></td><td>TOPLAM</td><td>${totalWeight.toFixed(1)} kg</td><td>${pending.length} bekliyor / ${assigned.length} atandı</td><td>${allCargos.length} kargo</td></tr>`;
+        html += `<tr class="summary-total-row" style="font-weight:bold;"><td></td><td></td><td>TOPLAM</td><td>${totalWeight.toFixed(1)} kg</td><td>${pending.length} bekliyor / ${assigned.length} atandı</td><td>${allCargos.length} kargo</td></tr>`;
         html += '</tbody></table>';
 
-        html += '<div id="selectedCargosSummary" style="margin-top:10px;padding:10px;background:#fff3cd;border-radius:5px;display:none;"></div>';
+        html += '<div id="selectedCargosSummary" class="selected-cargos-alert" style="display:none;"></div>';
 
         summaryDiv.innerHTML = html;
         updateSelectedSummary();
@@ -3238,21 +3159,21 @@ async function displayOptimizationResults(result) {
 
     if (result.undelivered && result.undelivered.length > 0) {
         let undeliveredHtml = `
-            <div class="alert alert-warning" style="background: #fff3cd; border: 1px solid #ffc107; border-radius: 8px; padding: 15px; margin-top: 15px;">
-                <h5 style="color: #856404; margin-bottom: 10px;">
+            <div class="undelivered-alert-card">
+                <h5>
                     <i class="fas fa-exclamation-triangle"></i> 
                     ${result.undelivered.length} kargo teslim edilemedi
                 </h5>
-                <p style="color: #856404; margin-bottom: 10px; font-size: 13px;">
+                <p class="undelivered-desc">
                     <strong>Sebep:</strong> Kargo ağırlığı mevcut araç kapasitelerini aşıyor veya araç kapasitesi doldu.
                 </p>
-                <table style="width: 100%; background: white; border-radius: 5px; overflow: hidden;">
-                    <thead style="background: #ffc107; color: #333;">
+                <table class="undelivered-table">
+                    <thead>
                         <tr>
-                            <th style="padding: 8px; text-align: left;">Kargo ID</th>
-                            <th style="padding: 8px; text-align: left;">İstasyon</th>
-                            <th style="padding: 8px; text-align: left;">Ağırlık</th>
-                            <th style="padding: 8px; text-align: left;">Sebep</th>
+                            <th>Kargo ID</th>
+                            <th>İstasyon</th>
+                            <th>Ağırlık</th>
+                            <th>Sebep</th>
                         </tr>
                     </thead>
                     <tbody>`;
@@ -3272,11 +3193,11 @@ async function displayOptimizationResults(result) {
             }
 
             undeliveredHtml += `
-                <tr style="border-bottom: 1px solid #eee;">
-                    <td style="padding: 8px; color: #333;">#${cargo.id}</td>
-                    <td style="padding: 8px; color: #333;"><strong>${stationName}</strong></td>
-                    <td style="padding: 8px; color: #e74c3c; font-weight: bold;">${weight} kg</td>
-                    <td style="padding: 8px; color: #856404;">${reason}</td>
+                <tr>
+                    <td class="undelivered-id">#${cargo.id}</td>
+                    <td class="undelivered-station"><strong>${stationName}</strong></td>
+                    <td class="undelivered-weight">${weight} kg</td>
+                    <td class="undelivered-reason">${reason}</td>
                 </tr>`;
         });
 
@@ -3338,33 +3259,53 @@ async function loadRoutes() {
         }
 
         const isAdmin = currentUser && currentUser.role === 'admin';
+        window.loadedRoutes = routes;
 
         tbody.innerHTML = routes.map(r => {
             let routeStations = '-';
-            try {
-                const parsed = JSON.parse(r.route_data);
-                routeStations = (parsed.stations || parsed).join(' -> ');
-            } catch (e) { }
+            if (Array.isArray(r.route_names) && r.route_names.length > 0) {
+                routeStations = r.route_names.join(' &rarr; ');
+            } else if (Array.isArray(r.route_data)) {
+                routeStations = r.route_data.map(idOrName => {
+                    const s = (stations || []).find(st => st.id === idOrName || st.name === idOrName);
+                    return s ? s.name : String(idOrName);
+                }).join(' &rarr; ');
+            } else if (typeof r.route_data === 'string') {
+                try {
+                    const parsed = JSON.parse(r.route_data);
+                    const list = parsed.stations || parsed.route_names || parsed;
+                    if (Array.isArray(list)) {
+                        routeStations = list.map(idOrName => {
+                            const s = (stations || []).find(st => st.id === idOrName || st.name === idOrName);
+                            return s ? s.name : String(idOrName);
+                        }).join(' &rarr; ');
+                    } else {
+                        routeStations = r.route_data;
+                    }
+                } catch (e) {
+                    routeStations = r.route_data;
+                }
+            }
 
             const cargoIds = r.cargo_ids ? r.cargo_ids.join(', ') : '-';
 
             return `
             <tr>
-                <td>${r.id}</td>
+                <td><strong class="route-col-id">#${r.id}</strong></td>
                 <td>
-                    <strong>${r.vehicle_name || 'Kiralık'}</strong>
+                    <strong class="route-col-vname">${r.vehicle_name || 'Kiralık'}</strong>
                     ${r.road_type_label ? `<br><small style="color:#0284c7; font-weight:600;">${r.road_type_label}</small>` : ''}
                     ${r.duration_formatted ? `<br><small style="color:#d97706; font-weight:600;"><i class="fas fa-clock"></i> ${r.duration_formatted}</small>` : ''}
                 </td>
-                <td>${routeStations}</td>
-                <td>${r.total_distance?.toFixed(1) || '-'}</td>
-                <td>${r.total_cost?.toFixed(0) || '-'} TL</td>
-                <td>${r.total_weight?.toFixed(0) || '-'}</td>
-                <td>${r.cargo_count || '-'}</td>
-                <td><small title="Kargo ID'leri: ${cargoIds}">${cargoIds}</small></td>
-                <td>${new Date(r.created_at).toLocaleDateString('tr-TR')}</td>
+                <td class="route-col-stations" style="max-width:280px; font-size:12px; line-height:1.4;">${routeStations}</td>
+                <td><strong class="route-col-dist">${r.total_distance?.toFixed(1) || '-'} km</strong></td>
+                <td><strong style="color:#10b981;">${r.total_cost?.toFixed(0) || '-'} TL</strong></td>
+                <td><strong class="route-col-weight">${r.total_weight?.toFixed(0) || '-'} kg</strong></td>
+                <td class="route-col-cargocnt">${r.cargo_count || '-'}</td>
+                <td><small class="route-col-cargoids" title="Kargo ID'leri: ${cargoIds}">${cargoIds}</small></td>
+                <td class="route-col-date">${new Date(r.created_at).toLocaleDateString('tr-TR')}</td>
                 <td>
-                    <button onclick="showRouteOnMap(${r.id}, '${encodeURIComponent(r.route_data)}')" class="btn btn-primary btn-sm" title="Haritada Goster">
+                    <button onclick="showRouteOnMap(${r.id})" class="btn btn-primary btn-sm" title="Haritada Göster">
                         <i class="fas fa-map"></i>
                     </button>
                     ${isAdmin ? `<button onclick="deleteRoute(${r.id})" class="btn btn-danger btn-sm" title="Sil">
@@ -3374,34 +3315,88 @@ async function loadRoutes() {
             </tr>
         `}).join('');
     } catch (err) {
-        console.error('Rotalar yuklenemedi:', err);
+        console.error('Rotalar yüklenemedi:', err);
     }
 }
 
-async function showRouteOnMap(routeId, routeDataEncoded) {
-    const routeDataStr = decodeURIComponent(routeDataEncoded);
-    let routeStations;
-    try {
-        const parsed = JSON.parse(routeDataStr);
-        routeStations = parsed.stations || parsed;
-    } catch (e) {
-        alert('Rota verisi okunamadi');
+async function showRouteOnMap(routeId) {
+    await loadStationsData();
+    let route = (window.loadedRoutes || []).find(x => x.id === routeId);
+    if (!route) {
+        try {
+            const res = await fetch(`/api/routes/${routeId}`);
+            if (res.ok) {
+                route = await res.json();
+            } else {
+                const allRes = await fetch('/api/routes');
+                const all = await allRes.json();
+                window.loadedRoutes = all;
+                route = all.find(x => x.id === routeId);
+            }
+        } catch (e) {
+            console.error('Rota verisi çekilemedi:', e);
+        }
+    }
+
+    if (!route) {
+        alert('Rota kaydı bulunamadı.');
+        return;
+    }
+
+    let routeStationNames = [];
+    if (Array.isArray(route.route_names) && route.route_names.length > 0) {
+        routeStationNames = route.route_names;
+    } else if (Array.isArray(route.route_data)) {
+        routeStationNames = route.route_data.map(idOrName => {
+            const s = (stations || []).find(st => st.id === idOrName || st.name === idOrName);
+            return s ? s.name : String(idOrName);
+        });
+    } else if (typeof route.route_data === 'string') {
+        try {
+            const parsed = JSON.parse(route.route_data);
+            const list = parsed.stations || parsed.route_names || parsed;
+            if (Array.isArray(list)) {
+                routeStationNames = list.map(idOrName => {
+                    const s = (stations || []).find(st => st.id === idOrName || st.name === idOrName);
+                    return s ? s.name : String(idOrName);
+                });
+            } else {
+                routeStationNames = [route.route_data];
+            }
+        } catch (e) {
+            routeStationNames = route.route_data.split(',').map(s => s.trim());
+        }
+    }
+
+    if (!routeStationNames || routeStationNames.length === 0) {
+        alert('Bu rotaya ait istasyon güzergahı bulunamadı.');
         return;
     }
 
     document.getElementById('routeModal').classList.add('active');
 
     document.getElementById('routeModalContent').innerHTML = `
-        <p><strong>Guzergah:</strong> ${routeStations.join(' -> ')}</p>
+        <div style="margin-bottom:12px;">
+            <div style="font-size:16px; font-weight:700; color:#38bdf8; margin-bottom:4px;">
+                <i class="fas fa-truck"></i> ${route.vehicle_name || 'Araç'} (Rota #${route.id})
+            </div>
+            <div style="font-size:13px; color:#cbd5e1; margin-bottom:8px;">
+                <strong>Mesafe:</strong> ${route.total_distance?.toFixed(1) || '-'} km &bull;
+                <strong>Maliyet:</strong> <span style="color:#10b981; font-weight:700;">${route.total_cost?.toFixed(0) || '-'} TL</span> &bull;
+                <strong>Yük:</strong> ${route.total_weight?.toFixed(0) || '-'} kg &bull;
+                <strong>Kargo Sayısı:</strong> ${route.cargo_count || '-'}
+            </div>
+            <div style="font-size:13px; line-height:1.5; color:#94a3b8; background:rgba(255,255,255,0.05); padding:8px 12px; border-radius:6px; border:1px solid rgba(255,255,255,0.08);">
+                <strong style="color:#f8fafc;">Güzergah:</strong> ${routeStationNames.join(' <i class="fas fa-arrow-right" style="color:#10b981; font-size:11px;"></i> ')}
+            </div>
+        </div>
     `;
 
     setTimeout(async () => {
-        await loadStationsData();
-
         if (!routeModalMap) {
-            routeModalMap = L.map('routeModalMap').setView([40.7654, 29.9408], 10);
+            routeModalMap = L.map('routeModalMap').setView([40.7654, 29.9408], 9);
             L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-                attribution: ' OpenStreetMap'
+                attribution: '&copy; OpenStreetMap'
             }).addTo(routeModalMap);
         }
 
@@ -3411,25 +3406,30 @@ async function showRouteOnMap(routeId, routeDataEncoded) {
             }
         });
 
-        for (const stationName of routeStations) {
-            const station = stations.find(s => s.name === stationName);
+        const bounds = [];
+        for (const stationName of routeStationNames) {
+            const station = (stations || []).find(s => s.name === stationName || String(s.id) === String(stationName));
             if (station) {
-                const isDepot = station.name.includes('zmit');
+                const isDepot = station.name && (station.name.includes('Hub') || station.name.includes('Merkez') || station.name.includes('İzmit') || station.is_depot);
                 const icon = L.divIcon({
                     className: 'custom-marker',
-                    html: `<div style="background:${isDepot ? '#e74c3c' : '#3498db'}; width:20px; height:20px; border-radius:50%; border:2px solid white;"></div>`,
-                    iconSize: [20, 20],
-                    iconAnchor: [10, 10]
+                    html: `<div style="background:${isDepot ? '#ef4444' : '#3b82f6'}; width:22px; height:22px; border-radius:50%; border:2.5px solid white; box-shadow:0 0 8px rgba(0,0,0,0.5);"></div>`,
+                    iconSize: [22, 22],
+                    iconAnchor: [11, 11]
                 });
 
                 L.marker([station.latitude, station.longitude], { icon })
-                    .bindPopup(`<b>${station.name}</b>`)
+                    .bindPopup(`<b>${station.name}</b><br><small>${station.city || ''}</small>`)
                     .addTo(routeModalMap);
+                bounds.push([station.latitude, station.longitude]);
             }
         }
 
-        await drawRoute(routeModalMap, routeStations, '#27ae60');
+        await drawRoute(routeModalMap, routeStationNames, '#10b981');
 
+        if (bounds.length > 0) {
+            routeModalMap.fitBounds(bounds, { padding: [40, 40] });
+        }
         routeModalMap.invalidateSize();
     }, 200);
 }
@@ -3943,7 +3943,7 @@ function displayComparisonResults(comparison, problemType, title) {
     }
 
     html += '<table class="comparison-table"><thead><tr><th>Problem Tipi</th><th>Toplam Maliyet</th><th>Kargo Sayisi</th><th>Toplam Agirlik</th><th>Arac Sayisi</th><th>Kiralik</th><th>Teslim Edilemedi</th><th>Teslim Edilememe Sebebi</th></tr></thead><tbody>';
-    html += `<tr style="background-color: #d4edda;">
+    html += `<tr class="comparison-best-row">
         <td>${problemTypeNames[problemType]}</td>
         <td><strong>${bestResult.total_cost.toFixed(2)}</strong> birim</td>
         <td>${bestResult.total_cargos}</td>
@@ -3956,10 +3956,10 @@ function displayComparisonResults(comparison, problemType, title) {
     html += '</tbody></table>';
 
     html += '<div class="comparison-routes" style="margin-top: 20px;">';
-    html += '<h4 style="color: #3498db; margin-bottom: 15px;"><i class="fas fa-route"></i> Rota Detaylari</h4>';
+    html += '<h4 style="color: #38bdf8; margin-bottom: 15px;"><i class="fas fa-route"></i> Rota Detaylari</h4>';
 
     const r = bestResult;
-    html += `<div style="background: #d4edda; border-radius: 8px; padding: 15px; margin-bottom: 15px; border: 1px solid #28a745;">`;
+    html += `<div class="comparison-routes-box">`;
 
     if (r.routes && r.routes.length > 0) {
         r.routes.forEach((route, i) => {
@@ -3969,17 +3969,17 @@ function displayComparisonResults(comparison, problemType, title) {
             let stationDetails = '';
             if (route.station_cargo_details) {
                 stationDetails = route.station_cargo_details.map(s =>
-                    `<span style="background:#e3f2fd;padding:2px 6px;border-radius:3px;margin-right:5px;font-size:11px;">${s.name}: ${s.cargo_count} kargo (${s.weight.toFixed(1)} kg)</span>`
+                    `<span class="comparison-station-badge">${s.name}: ${s.cargo_count} kargo (${s.weight.toFixed(1)} kg)</span>`
                 ).join('');
             }
 
-            html += `<div style="background: white; border-left: 4px solid ${color}; padding: 12px; margin: 8px 0; border-radius: 4px;">`;
+            html += `<div class="comparison-route-item" style="border-left-color: ${color};">`;
             html += `<div style="display: flex; align-items: center; justify-content: space-between;">`;
             html += `<div style="flex: 1;">`;
             html += `<strong style="color: ${color};"><i class="fas fa-truck"></i> ${route.vehicle_name}</strong>`;
-            html += `<span style="margin-left: 15px; color: #666;">📏 ${route.distance} km | 💰 ${route.cost} birim | ⚖️ ${route.weight} kg | 📦 ${route.cargo_count} kargo</span>`;
-            html += `<div style="margin-top: 5px; font-size: 13px; color: #555;">`;
-            html += `<strong>Guzergah:</strong> ${route.route_names.join(' → ')}`;
+            html += `<span class="comparison-route-metrics">📏 ${route.distance} km | 💰 ${route.cost} birim | ⚖️ ${route.weight} kg | 📦 ${route.cargo_count} kargo</span>`;
+            html += `<div class="comparison-route-path">`;
+            html += `<strong>Güzergah:</strong> ${route.route_names.join(' → ')}`;
             html += `</div>`;
             if (stationDetails) {
                 html += `<div style="margin-top: 8px;">${stationDetails}</div>`;
@@ -3991,12 +3991,12 @@ function displayComparisonResults(comparison, problemType, title) {
             html += `</div></div>`;
         });
     } else {
-        html += `<p style="color: #888;"><i class="fas fa-info-circle"></i> Rota detayi mevcut degil</p>`;
+        html += `<p style="color: var(--text-muted);"><i class="fas fa-info-circle"></i> Rota detayi mevcut degil</p>`;
     }
 
     if (r.undelivered_details && r.undelivered_details.length > 0) {
-        html += `<div style="background: #fff3cd; border-left: 4px solid #ffc107; padding: 10px; margin: 8px 0; border-radius: 4px;">`;
-        html += `<strong style="color: #856404;"><i class="fas fa-exclamation-triangle"></i> Teslim Edilemeyen Kargolar (${r.undelivered_details.length} adet):</strong>`;
+        html += `<div class="comparison-undelivered-box">`;
+        html += `<strong><i class="fas fa-exclamation-triangle"></i> Teslim Edilemeyen Kargolar (${r.undelivered_details.length} adet):</strong>`;
         html += `<div style="margin-top: 8px; display: flex; flex-wrap: wrap; gap: 8px;">`;
 
         const byStation = {};
@@ -4009,7 +4009,7 @@ function displayComparisonResults(comparison, problemType, title) {
         Object.keys(byStation).forEach(station => {
             const cargos = byStation[station];
             const totalWeight = cargos.reduce((sum, c) => sum + c.weight, 0);
-            html += `<span style="background: #fff; padding: 4px 8px; border-radius: 4px; font-size: 12px; border: 1px solid #ffc107;">`;
+            html += `<span class="comparison-undelivered-badge">`;
             html += `<strong>${station}:</strong> ${cargos.length} kargo (${totalWeight.toFixed(1)} kg)`;
             html += `</span>`;
         });
@@ -4090,79 +4090,7 @@ document.addEventListener('keydown', (e) => {
     }
 });
 
-// =========================================================================
-// RESMİ KGM & EGM CANLI TRAFİK RAPORU & HABER DETAY MODALI (%90+ TEYİTLİ)
-// =========================================================================
-function switchIncidentTab(tabKey) {
-    const tabs = ['tutanak', 'basin', 'kacis'];
-    tabs.forEach(t => {
-        const btn = document.getElementById('tabBtn' + t.charAt(0).toUpperCase() + t.slice(1));
-        const content = document.getElementById('incidentTabContent' + t.charAt(0).toUpperCase() + t.slice(1));
-        if (btn) {
-            if (t === tabKey) btn.classList.add('active');
-            else btn.classList.remove('active');
-        }
-        if (content) {
-            content.style.display = (t === tabKey) ? 'block' : 'none';
-        }
-    });
-}
-window.switchIncidentTab = switchIncidentTab;
 
-function openIncidentNewsModal(incidentId) {
-    let inc = null;
-    if (incidentId) {
-        inc = TURKEY_TRAFFIC_INCIDENTS_DATA.find(i => i.id === incidentId);
-    }
-    if (!inc && curatedSimState.scenario && curatedSimState.scenario.incident) {
-        const scInc = curatedSimState.scenario.incident;
-        if (incidentId && scInc.id === incidentId) {
-            inc = scInc;
-        } else if (!incidentId) {
-            inc = TURKEY_TRAFFIC_INCIDENTS_DATA.find(i => i.id === scInc.id) || scInc;
-        }
-    }
-    if (!inc) {
-        inc = TURKEY_TRAFFIC_INCIDENTS_DATA[0];
-    }
-
-    const setEl = (id, val) => { const el = document.getElementById(id); if (el) el.textContent = val; };
-    setEl('modalConfidenceVal', inc.confidenceRate || '%96.8');
-    setEl('modalSourceOrg', inc.sourceOrg || 'T.C. KGM (4. Bölge Bolu) & EGM Bölge Trafik');
-    setEl('modalReportNo', inc.reportNo || 'KGM-2026-TR-81042');
-    setEl('modalRoadKm', inc.roadKm || 'O-4 KM 224+400 Bolu Dağı Tüneli');
-    setEl('modalAssignedUnits', inc.assignedUnits || '2 Ağır Kurtarıcı Çekici, 1 Kar Küreme, 2 Trafik Ekibi');
-    setEl('modalLaneStatus', inc.laneStatus || '2 Şerit Kapalı (Ulaşım Tek Şeritten Kontrollü)');
-    setEl('modalDispatchTranscript', inc.dispatchTranscript || inc.newsBody || 'Saha telsiz kaydı teyit edildi.');
-    setEl('modalNewsHeadline', inc.newsHeadline || inc.headline || 'Karayolu Trafik & Olay Bildirimi');
-    setEl('modalNewsBody', inc.newsBody || inc.sub || 'T.C. Karayolları Genel Müdürlüğü saha ekipleri ve trafik telemetrisi tarafından teyit edilmiş olay.');
-    setEl('modalAgencyMeta', inc.agencyMeta || `Bülten Kodu: TR-AA-8104 • ${new Date().toLocaleTimeString('tr-TR', { hour: '2-digit', minute: '2-digit' })}`);
-    setEl('modalBlockedRoute', inc.blockedRoute || `${inc.headline} (+${inc.delay || 40} dk bekleme)`);
-    setEl('modalBypassRoute', inc.bypassRoute || inc.bypass || 'Alternatif Devlet Yolu Kaçış Koridoru');
-
-    const timeEl = document.getElementById('modalReportTime');
-    if (timeEl) {
-        const now = new Date();
-        timeEl.textContent = `${now.toLocaleDateString('tr-TR')} ${now.toLocaleTimeString('tr-TR', { hour: '2-digit', minute: '2-digit' })} (Resmi Kayıt)`;
-    }
-
-    // Doğrudan KGM Resmi Yol Durumu Bülten Sayfası (Ana sayfa yerine spesifik bülten)
-    const linkOfficial = document.getElementById('modalOfficialLink');
-    if (linkOfficial) {
-        linkOfficial.href = inc.officialLink || 'https://www.kgm.gov.tr/Sayfalar/KGM/SiteTr/YolDanisma/GunlukYolDurumu.aspx';
-    }
-
-    const linkGNews = document.getElementById('modalGoogleNewsLink');
-    if (linkGNews) {
-        const queryTerm = inc.searchQuery || inc.newsHeadline || inc.headline || 'Karayolları kaza yol durumu';
-        linkGNews.href = `https://news.google.com/search?q=${encodeURIComponent(queryTerm)}&hl=tr-TR`;
-    }
-
-    switchIncidentTab('tutanak');
-
-    const modal = document.getElementById('incidentNewsModal');
-    if (modal) modal.classList.add('active');
-}
 
 // Lojistik Göstergeleri (Yakıt, CO2, Zamanında Teslimat) Canlı Hesaplama Formülü Modalı
 async function openTelemetryFormulaModal(type) {

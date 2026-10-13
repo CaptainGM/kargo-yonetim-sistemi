@@ -3,7 +3,7 @@
 Rota Görüntüleme, Silme ve OSRM Geometri HTTP İşleyicileri
 """
 from typing import Dict
-from database import get_db, serialize_docs
+from database import get_db, serialize_docs, serialize_doc
 from handlers.base_handler import BaseHandler
 from services.osrm_service import get_route_geometry
 
@@ -12,6 +12,15 @@ def handle_get_routes(handler):
     db = get_db()
     routes = list(db.routes.find().sort('created_at', -1))
     BaseHandler.send_json(handler, serialize_docs(routes))
+
+
+def handle_get_route(handler, route_id: int):
+    db = get_db()
+    route = db.routes.find_one({'id': route_id})
+    if route:
+        BaseHandler.send_json(handler, serialize_doc(route))
+    else:
+        BaseHandler.send_json(handler, {'error': 'Rota bulunamadı'}, 404)
 
 
 def handle_delete_route(handler, route_id: int):
@@ -37,7 +46,7 @@ def handle_delete_route(handler, route_id: int):
 
 def handle_route_geometry(handler, data: Dict):
     """
-    İstasyon adları listesini alarak OSRM üzerinden gerçek karayolu koordinat geometrisini döner.
+    İstasyon adları veya ID'leri listesini alarak OSRM üzerinden gerçek karayolu koordinat geometrisini döner.
     """
     route_station_names = data.get('stations', [])
     if len(route_station_names) < 2:
@@ -47,8 +56,12 @@ def handle_route_geometry(handler, data: Dict):
     db = get_db()
     coordinates = []
 
-    for name in route_station_names:
-        st = db.stations.find_one({'name': name})
+    for item in route_station_names:
+        st = None
+        if isinstance(item, int) or (isinstance(item, str) and item.isdigit()):
+            st = db.stations.find_one({'id': int(item)})
+        if not st and isinstance(item, str):
+            st = db.stations.find_one({'name': item})
         if st and 'latitude' in st and 'longitude' in st:
             coordinates.append((float(st['latitude']), float(st['longitude'])))
 
@@ -61,3 +74,4 @@ def handle_route_geometry(handler, data: Dict):
         BaseHandler.send_json(handler, geom_result)
     else:
         BaseHandler.send_json(handler, {'error': 'Rota geometrisi hesaplanamadı'}, 500)
+

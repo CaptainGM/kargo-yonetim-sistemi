@@ -27,7 +27,7 @@ from handlers.cargo_handlers import (
     handle_get_cargos, handle_add_cargo, handle_delete_cargo, handle_get_my_route
 )
 from handlers.route_handlers import (
-    handle_get_routes, handle_delete_route, handle_route_geometry
+    handle_get_routes, handle_get_route, handle_delete_route, handle_route_geometry
 )
 from handlers.optimize_handlers import (
     handle_optimize, handle_load_scenario,
@@ -75,6 +75,12 @@ class KargoRequestHandler(SimpleHTTPRequestHandler):
             handle_get_cargos(self)
         elif path == '/api/routes':
             handle_get_routes(self)
+        elif path.startswith('/api/routes/'):
+            try:
+                rid = int(path.split('/')[-1])
+                handle_get_route(self, rid)
+            except ValueError:
+                BaseHandler.send_json(self, {'error': 'Geçersiz rota ID'}, 400)
         elif path == '/api/my-route':
             handle_get_my_route(self)
         elif path == '/api/parameters':

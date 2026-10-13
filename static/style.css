@@ -3721,4 +3721,443 @@ body.dark-theme .verification-sources-box li {
     color: #ffffff;
     box-shadow: 0 2px 8px rgba(239, 68, 68, 0.35);
 }
+
+/* ==========================================================================
+   YÜKSEK KONTRASTLI EVRENSEL KOYU & AYDINLIK TEMA STİLLERİ
+   ========================================================================== */
+
+/* 1. Araçlar Tablosu Hücreleri */
+.vehicle-col-id, .vehicle-col-cap {
+    font-weight: 700;
+    color: #0f172a;
+}
+.vehicle-col-name {
+    font-weight: 700;
+    font-size: 14px;
+    color: #0f172a;
+}
+.vehicle-col-desc {
+    font-size: 11px;
+    color: #64748b;
+    margin-top: 2px;
+}
+.vehicle-col-plate {
+    display: inline-block;
+    background: #0f172a;
+    color: #f8fafc;
+    padding: 1px 6px;
+    border-radius: 4px;
+    font-weight: 700;
+    font-size: 10px;
+    letter-spacing: 0.5px;
+    margin-right: 6px;
+}
+.vehicle-col-vol, .vehicle-col-rent {
+    font-weight: 500;
+    color: #334155;
+}
+
+body.dark-theme .vehicle-col-id,
+body.dark-theme .vehicle-col-cap,
+body.dark-theme .vehicle-col-name {
+    color: #f8fafc !important;
+}
+body.dark-theme .vehicle-col-desc {
+    color: #94a3b8 !important;
+}
+body.dark-theme .vehicle-col-plate {
+    background: #1e293b !important;
+    border: 1px solid #334155 !important;
+    color: #38bdf8 !important;
+}
+body.dark-theme .vehicle-col-vol,
+body.dark-theme .vehicle-col-rent {
+    color: #cbd5e1 !important;
+}
+
+/* 2. Rota Planlama & Bekleyen Kargolar Tablosu */
+.summary-table .cargo-id,
+.summary-table .cargo-station,
+.summary-table .cargo-weight {
+    color: #0f172a;
+}
+.summary-table .cargo-date {
+    color: #475569;
+}
+.summary-table tr.row-assigned {
+    background-color: rgba(16, 185, 129, 0.08);
+}
+.summary-table tr.summary-total-row {
+    background: #f1f5f9;
+    color: #0f172a;
+}
+.selected-cargos-alert {
+    margin-top: 10px;
+    padding: 10px 14px;
+    background: #e0f2fe;
+    border: 1px solid #7dd3fc;
+    color: #0369a1;
+    border-radius: 8px;
+    font-size: 13px;
+    font-weight: 600;
+}
+
+body.dark-theme .summary-table {
+    background: #111827 !important;
+    border: 1px solid #1e293b !important;
+    color: #f8fafc !important;
+}
+body.dark-theme .summary-table th {
+    background: #1e293b !important;
+    color: #cbd5e1 !important;
+    border: 1px solid #334155 !important;
+}
+body.dark-theme .summary-table td {
+    background: #111827 !important;
+    color: #f8fafc !important;
+    border: 1px solid #1e293b !important;
+}
+body.dark-theme .summary-table .cargo-id,
+body.dark-theme .summary-table .cargo-station,
+body.dark-theme .summary-table .cargo-weight {
+    color: #f8fafc !important;
+}
+body.dark-theme .summary-table .cargo-date {
+    color: #94a3b8 !important;
+}
+body.dark-theme .summary-table tr:hover td {
+    background: rgba(99, 102, 241, 0.12) !important;
+}
+body.dark-theme .summary-table tr.row-assigned td {
+    background: rgba(16, 185, 129, 0.15) !important;
+}
+body.dark-theme .summary-table tr.summary-total-row td {
+    background: #1e293b !important;
+    color: #38bdf8 !important;
+    font-weight: 700 !important;
+}
+body.dark-theme .selected-cargos-alert {
+    background: rgba(14, 165, 233, 0.15) !important;
+    border-color: rgba(14, 165, 233, 0.4) !important;
+    color: #38bdf8 !important;
+}
+
+/* 3. Rota Geçmişi Tablosu */
+.route-col-id, .route-col-vname, .route-col-dist, .route-col-weight, .route-col-cargocnt {
+    color: #0f172a;
+}
+.route-col-stations, .route-col-cargoids, .route-col-date {
+    color: #475569;
+}
+
+body.dark-theme .route-col-id,
+body.dark-theme .route-col-vname,
+body.dark-theme .route-col-dist,
+body.dark-theme .route-col-weight,
+body.dark-theme .route-col-cargocnt {
+    color: #f8fafc !important;
+}
+body.dark-theme .route-col-stations {
+    color: #e2e8f0 !important;
+}
+body.dark-theme .route-col-cargoids,
+body.dark-theme .route-col-date {
+    color: #94a3b8 !important;
+}
+
+/* 4. Tüm Genel Tabloların Koyu Mod Kontrastı */
+body.dark-theme .data-table {
+    background: #111827 !important;
+    color: #e2e8f0 !important;
+}
+body.dark-theme .data-table thead th {
+    background: #1e293b !important;
+    color: #cbd5e1 !important;
+    border-bottom: 1px solid #334155 !important;
+}
+body.dark-theme .data-table tbody td {
+    border-bottom: 1px solid #1e293b !important;
+    color: #e2e8f0 !important;
+}
+body.dark-theme .data-table tbody td strong {
+    color: #f8fafc !important;
+}
+body.dark-theme .data-table tbody td small {
+    color: #94a3b8 !important;
+}
+body.dark-theme .data-table tbody tr:hover {
+    background: rgba(99, 102, 241, 0.08) !important;
+}
+body.dark-theme .table-container {
+    background: #111827 !important;
+    border: 1px solid #1e293b !important;
+}
+
+/* 5. Rota Planlama Kartları, Formlar ve Sonuç Panelleri */
+body.dark-theme .route-card {
+    background: #111827 !important;
+    border: 1px solid #1e293b !important;
+    border-left: 4px solid var(--primary) !important;
+    color: #f8fafc !important;
+}
+body.dark-theme .route-card.rented {
+    border-left-color: var(--warning) !important;
+}
+body.dark-theme .route-card h4 {
+    color: #f8fafc !important;
+}
+body.dark-theme .route-info span {
+    color: #cbd5e1 !important;
+}
+body.dark-theme .route-info strong {
+    color: #f8fafc !important;
+}
+body.dark-theme .route-path {
+    color: #e2e8f0 !important;
+}
+body.dark-theme .result-item {
+    background: #1e293b !important;
+    border: 1px solid #334155 !important;
+}
+body.dark-theme .result-item .label {
+    color: #94a3b8 !important;
+}
+body.dark-theme .result-item .value {
+    color: #818cf8 !important;
+}
+body.dark-theme .cargo-users {
+    background: #1e293b !important;
+    color: #cbd5e1 !important;
+    border: 1px solid #334155 !important;
+}
+body.dark-theme .cargo-users strong {
+    color: #f8fafc !important;
+}
+body.dark-theme .cargo-users li {
+    color: #cbd5e1 !important;
+}
+body.dark-theme .comparison-table {
+    background: #111827 !important;
+    color: #f8fafc !important;
+    border-color: #334155 !important;
+}
+body.dark-theme .comparison-table th {
+    background: #1e293b !important;
+    color: #cbd5e1 !important;
+    border-color: #334155 !important;
+}
+body.dark-theme .comparison-table td {
+    background: #111827 !important;
+    color: #f8fafc !important;
+    border-color: #1e293b !important;
+}
+body.dark-theme .comparison-table tr:hover td {
+    background: #1e293b !important;
+}
+
+/* 6. Formlar, Seçim Alanları ve Etiketler */
+body.dark-theme label,
+body.dark-theme .form-group label {
+    color: #cbd5e1 !important;
+}
+body.dark-theme .text-muted,
+body.dark-theme small.text-muted {
+    color: #94a3b8 !important;
+}
+body.dark-theme .form-control,
+body.dark-theme select,
+body.dark-theme input {
+    background: #1e293b !important;
+    color: #f8fafc !important;
+    border-color: #334155 !important;
+}
+body.dark-theme .form-control:focus,
+body.dark-theme select:focus {
+    border-color: #6366f1 !important;
+    box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.25) !important;
+}
+
+/* 7. Modallar */
+body.dark-theme .modal-content {
+    background: #111827 !important;
+    color: #f8fafc !important;
+    border: 1px solid #334155 !important;
+}
+body.dark-theme #routeModalContent {
+    color: #f8fafc !important;
+}
+
+/* 8. Rota Planlama & Karşılaştırma Sonuçları */
+.undelivered-alert-card {
+    background: #fffbeb;
+    border: 1px solid #f59e0b;
+    border-radius: 8px;
+    padding: 16px;
+    margin-top: 16px;
+}
+.undelivered-alert-card h5 {
+    color: #b45309;
+    font-size: 15px;
+    font-weight: 700;
+    margin-bottom: 8px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+.undelivered-desc {
+    color: #92400e;
+    font-size: 13px;
+    margin-bottom: 12px;
+}
+.undelivered-table {
+    width: 100%;
+    background: #ffffff;
+    border-radius: 6px;
+    overflow: hidden;
+    border-collapse: collapse;
+}
+.undelivered-table th {
+    background: #fef3c7;
+    color: #78350f;
+    padding: 10px 12px;
+    text-align: left;
+    font-size: 12px;
+    font-weight: 700;
+}
+.undelivered-table td {
+    padding: 10px 12px;
+    border-bottom: 1px solid #f1f5f9;
+    font-size: 13px;
+    color: #1e293b;
+}
+.undelivered-weight {
+    color: #ef4444 !important;
+    font-weight: 700;
+}
+.undelivered-reason {
+    color: #d97706 !important;
+}
+
+.comparison-best-row td {
+    background-color: #ecfdf5 !important;
+    color: #065f46 !important;
+    font-weight: 600;
+}
+.comparison-routes-box {
+    background: #f8fafc;
+    border-radius: 10px;
+    padding: 16px;
+    margin-bottom: 16px;
+    border: 1px solid #e2e8f0;
+}
+.comparison-route-item {
+    background: #ffffff;
+    border-left: 4px solid var(--primary);
+    padding: 14px;
+    margin: 10px 0;
+    border-radius: 6px;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+}
+.comparison-route-metrics {
+    margin-left: 14px;
+    color: #64748b;
+    font-size: 13px;
+}
+.comparison-route-path {
+    margin-top: 6px;
+    font-size: 13px;
+    color: #334155;
+}
+.comparison-station-badge {
+    display: inline-block;
+    background: #e0f2fe;
+    color: #0369a1;
+    padding: 2px 8px;
+    border-radius: 4px;
+    margin-right: 6px;
+    margin-top: 4px;
+    font-size: 11px;
+    font-weight: 600;
+}
+.comparison-undelivered-box {
+    background: #fffbeb;
+    border-left: 4px solid #f59e0b;
+    padding: 12px 14px;
+    margin: 10px 0;
+    border-radius: 6px;
+    color: #92400e;
+}
+.comparison-undelivered-badge {
+    background: #ffffff;
+    padding: 4px 10px;
+    border-radius: 6px;
+    font-size: 12px;
+    border: 1px solid #fde68a;
+    color: #78350f;
+}
+
+/* Koyu Tema Rota Planlama & Karşılaştırma Uyumluluğu */
+body.dark-theme .undelivered-alert-card {
+    background: #1c1917 !important;
+    border-color: #b45309 !important;
+}
+body.dark-theme .undelivered-alert-card h5 {
+    color: #fbbf24 !important;
+}
+body.dark-theme .undelivered-desc {
+    color: #fde68a !important;
+}
+body.dark-theme .undelivered-table {
+    background: #111827 !important;
+    border: 1px solid #334155 !important;
+}
+body.dark-theme .undelivered-table th {
+    background: #1e293b !important;
+    color: #fde68a !important;
+}
+body.dark-theme .undelivered-table td {
+    color: #f8fafc !important;
+    border-color: #1e293b !important;
+}
+body.dark-theme .undelivered-id {
+    color: #94a3b8 !important;
+}
+body.dark-theme .undelivered-station strong {
+    color: #f8fafc !important;
+}
+body.dark-theme .comparison-best-row td {
+    background-color: rgba(16, 185, 129, 0.15) !important;
+    color: #34d399 !important;
+}
+body.dark-theme .comparison-routes-box {
+    background: #0f172a !important;
+    border-color: #334155 !important;
+}
+body.dark-theme .comparison-route-item {
+    background: #1e293b !important;
+    border-color: #334155 !important;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.3) !important;
+}
+body.dark-theme .comparison-route-metrics {
+    color: #cbd5e1 !important;
+}
+body.dark-theme .comparison-route-path {
+    color: #f8fafc !important;
+}
+body.dark-theme .comparison-station-badge {
+    background: #0369a1 !important;
+    color: #e0f2fe !important;
+}
+body.dark-theme .comparison-undelivered-box {
+    background: #1c1917 !important;
+    border-left-color: #f59e0b !important;
+    color: #fbbf24 !important;
+}
+body.dark-theme .comparison-undelivered-badge {
+    background: #292524 !important;
+    border-color: #78350f !important;
+    color: #fde68a !important;
+}
+
+
 
