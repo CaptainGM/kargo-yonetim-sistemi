@@ -11,7 +11,7 @@
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <link rel="stylesheet" href="/static/style.css?v=3">
+    <link rel="stylesheet" href="/static/style.css?v=4">
     <script>
         (function() {
             var saved = localStorage.getItem('app_theme');
@@ -532,7 +532,7 @@
                         <!-- Hazır Senaryolar Menüsü (14 Türkiye Koridoru) -->
                         <div class="scenario-select-wrapper">
                             <i class="fas fa-route text-warning"></i>
-                            <select id="curatedScenarioSelect" onchange="if(this.value) startCuratedSimulation(this.value)" class="map-select scenario-select">
+                            <select id="curatedScenarioSelect" onchange="if(this.value) selectCuratedScenario(this.value)" class="map-select scenario-select">
                                 <option value="" disabled selected>🎬 Türkiye Lojistik Koridoru Seç (14 Hat)...</option>
                                 <option value="marmara_d100">🚚 1. Marmara Bölgesel Ring (D-100 & D-130 Sahil • 1 Doblo • ₺1.420 TL)</option>
                                 <option value="ege_osmangazi">🛣️ 2. Ege Otoyol Ekspres (Osmangazi Köprüsü & O-5 • 1 Actros TIR • ₺7.850 TL)</option>
@@ -1493,7 +1493,7 @@
     </div>
 
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
-    <script src="/static/app.js"></script>
+    <script src="/static/app.js?v=4"></script>
 </body>
 
 </html>

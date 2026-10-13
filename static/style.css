@@ -3048,6 +3048,26 @@ body.is-admin .user-dashboard-info {
     50% { transform: scale(1); }
 }
 
+.incident-map-hazard-pin {
+    width: 32px;
+    height: 32px;
+    background: #ef4444;
+    border: 3px solid #ffffff;
+    border-radius: 50%;
+    color: #ffffff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 14px;
+    box-shadow: 0 0 18px rgba(239, 68, 68, 0.95), 0 3px 8px rgba(0, 0, 0, 0.4);
+    animation: hazardPinPulse 1.8s infinite ease-in-out;
+}
+
+@keyframes hazardPinPulse {
+    0%, 100% { transform: scale(1); box-shadow: 0 0 15px rgba(239, 68, 68, 0.9); }
+    50% { transform: scale(1.15); box-shadow: 0 0 25px rgba(239, 68, 68, 1); }
+}
+
 .incident-title-box {
     flex: 1;
     overflow: hidden;
